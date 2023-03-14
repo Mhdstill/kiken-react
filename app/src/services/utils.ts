@@ -124,4 +124,4 @@ export const refreshAuthToken = async (refreshToken: string) => {
   }
 };
 
-export const API_URL = 'https://kiken-qr.com';
+export const API_URL = 'https://api.kiken-qr.com';
