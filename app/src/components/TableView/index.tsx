@@ -51,42 +51,89 @@ const TableView: FC<TableViewProps> = (props) => {
   };
 
   return (
-    <div className="table-container">
-      {props.actionsItems && props.actionsItems.length > 0 && (
-        <Dropdown
-          className="actions-container"
-          menu={{ items: props.actionsItems }}
-          trigger={['click']}
-        >
-          <Button size="small" icon={<PlusOutlined />}>
-            {props.t('new')}
-          </Button>
-        </Dropdown>
-      )}
-      <Table
-        style={{ paddingTop }}
-        columns={props.columns}
-        dataSource={props.data}
-        scroll={{ x: '100%' }}
-        loading={props.isFetching}
-        pagination={{
-          pageSize: pageSize,
-          hideOnSinglePage: true,
-          position: ['topRight'],
-        }}
-        locale={{ emptyText: props.t('nodata') }}
-        size="middle"
-        onChange={handleTableChange}
-        showSorterTooltip={false}
-      />
-      <Modal
-        showModal={props.showModal}
-        onOk={() => props.modalOnOkHandler()}
-        okText={props.okText}
-        onCancel={props.hideModalHandler}
-      >
-        {props.modalContent}
-      </Modal>
+    <div className="row mb-4">
+      <div className="col-12">
+        <div className="card">
+          {/* 
+          <div className="card-header pb-0">
+            <div className="row">
+             
+              <div className="col-lg-6 col-5 my-auto text-end">
+                <div className="dropdown float-lg-end pe-4">
+                  <a className="cursor-pointer" id="dropdownTable" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i className="fa fa-ellipsis-v text-secondary" aria-hidden="true"></i>
+                  </a>
+                  <ul className="dropdown-menu px-2 py-3 ms-sm-n4 ms-n5" aria-labelledby="dropdownTable">
+                    <li><a className="dropdown-item border-radius-md" href="javascript:;">Action</a>
+                    </li>
+                    <li><a className="dropdown-item border-radius-md" href="javascript:;">Another
+                      action</a></li>
+                    <li><a className="dropdown-item border-radius-md" href="javascript:;">Something
+                      else here</a></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+                */}
+
+          <div className="card-body px-0 py-1">
+            <div className="table-responsive">
+              <table className="table align-items-center mb-0">
+                <thead>
+                  <tr>
+                    <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                      Nom
+                    </th>
+                    <th className="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                      Créé le
+                    </th>
+                    <th className="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                      Mis à jour le
+                    </th>
+                    <th className="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                      Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <div className="d-flex px-2 py-1">
+                        <div>
+                          <img src="https://material-dashboard-laravel-livewire.creative-tim.com/assets/img/small-logos/logo-xd.svg" className="avatar avatar-sm me-3" alt="xd" />
+                        </div>
+                        <div className="d-flex flex-column justify-content-center">
+                          <h6 className="mb-0 text-sm">Material XD Version</h6>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="align-middle text-center text-sm">
+                      <span className="text-xs font-weight-bold"> 14/03/2023 21h15 </span>
+                    </td>
+                    <td className="align-middle text-center text-sm">
+                      <span className="text-xs font-weight-bold"> 14/03/2023 21h15 </span>
+                    </td>
+                    <td className="align-middle text-center">
+                        <div className="dropdown pe-4">
+                          <a className="cursor-pointer" id="dropdownTable" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i className="fa fa-ellipsis-v text-secondary" aria-hidden="true"></i>
+                          </a>
+                          <ul className="dropdown-menu px-2 py-3 ms-sm-n4 ms-n5" aria-labelledby="dropdownTable">
+                            <li><a className="dropdown-item border-radius-md" href="javascript:;">Editer</a>
+                            </li>
+                            <li><a className="dropdown-item border-radius-md" href="javascript:;">Supprimer
+                              action</a></li>
+                          </ul>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   );
 };

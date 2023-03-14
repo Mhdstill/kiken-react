@@ -129,9 +129,9 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
       const files = folder.mediaObjects.map((file: FileType) => {
         const type =
           Type[
-            (file.extension
-              ? file.extension.toLowerCase()
-              : getExtension(file.path)) as keyof typeof Type
+          (file.extension
+            ? file.extension.toLowerCase()
+            : getExtension(file.path)) as keyof typeof Type
           ] || Type.FILE;
         const path = `/media_objects/${file.path}`;
         return Object.assign(file, { key: i++, name: file.path, type, path });
@@ -541,7 +541,7 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
                       'data:image/svg+xml;charset=utf-8,' +
                       encodeURIComponent(
                         '<?xml version="1.0" standalone="no"?>' +
-                          serializer.serializeToString(node)
+                        serializer.serializeToString(node)
                       );
                     triggerDownload(
                       `qrcode-${record.name.split('.')[0]}.svg`,
@@ -649,19 +649,25 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
   };
 
   return (
-    <TableView
-      data={folders?.data}
-      isFetching={isFetching}
-      actionsItems={items}
-      columns={columns}
-      formData={modalFormData}
-      setFormData={setModalFormData}
-      modalOnOkHandler={modalState.onOk || modalOnOk}
-      hideModalHandler={hideModal}
-      showModal={modalState.showModal}
-      modalContent={modalState.content}
-      okText={modalState.okText}
-    />
+    <>
+      <h3 className='mx-2'>Application</h3>
+      <div className="input-group input-group-outline">
+        <input type="text" className="form-control focused bg-white mb-3" placeholder="Rechercher..." />
+     </div>
+      <TableView
+        data={folders?.data}
+        isFetching={isFetching}
+        actionsItems={items}
+        columns={columns}
+        formData={modalFormData}
+        setFormData={setModalFormData}
+        modalOnOkHandler={modalState.onOk || modalOnOk}
+        hideModalHandler={hideModal}
+        showModal={modalState.showModal}
+        modalContent={modalState.content}
+        okText={modalState.okText}
+      />
+    </>
   );
 };
 

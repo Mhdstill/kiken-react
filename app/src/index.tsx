@@ -4,7 +4,6 @@ import { I18nextProvider } from 'react-i18next';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ConfigProvider } from 'antd';
 import frFR from 'antd/es/locale/fr_FR';
-
 import App from './App';
 import i18n from './services/i18n/i18n';
 import DataManagerProvider from './services/dataManager/DataManagerProvider';

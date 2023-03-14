@@ -6,18 +6,18 @@ import Footer from '../Footer';
 import Navbar from '../Navbar';
 
 import './style.less';
+import Sidebar from '../Sidebar';
 
 const { Content } = Layout;
 
 const DefaultLayout: FC = () => {
   return (
     <Layout className="layout">
+      <Sidebar />
       <Navbar />
-      <Content className="content-wrapper">
-        <div className="content">
+      <div className="container-fluid py-4">
           <Outlet />
         </div>
-      </Content>
       <Footer />
     </Layout>
   );

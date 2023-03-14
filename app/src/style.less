@@ -28,3 +28,33 @@
     color: #ff4d4f;
   }
 }
+
+.sidenav-header{
+  display: flex;
+  vertical-align: middle;
+  align-items: center;
+  justify-content: center;
+}
+
+.hamburger-wrapper {
+  .hamburger {
+    color: white;
+    font-size: 25px;
+  }
+}
+
+.g-sidenav-show.rtl .sidenav {
+  transform:translateX(17.125rem)
+}
+
+.g-sidenav-show:not(.rtl) .sidenav {
+  transform:translateX(-17.125rem)
+}
+
+.g-sidenav-show .sidenav.fixed-start + .main-content {
+  margin-left:0 !important
+}
+
+.g-sidenav-show.g-sidenav-pinned .sidenav {
+  transform:translateX(0)
+}
