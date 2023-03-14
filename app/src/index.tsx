@@ -10,6 +10,7 @@ import i18n from './services/i18n/i18n';
 import DataManagerProvider from './services/dataManager/DataManagerProvider';
 import { DefaultDataManager } from './services/dataManager/DefaultDataManager';
 import { buildAxiosInstance } from './services/utils';
+import { API_URL } from './services/utils';
 
 import './antd.less';
 
@@ -17,7 +18,7 @@ const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 
-const axiosClient = buildAxiosInstance({ baseURL: 'https://kiken-qr.com' });
+const axiosClient = buildAxiosInstance({ baseURL: API_URL });
 const dataManager = new DefaultDataManager(axiosClient);
 const queryClient = new QueryClient();
 

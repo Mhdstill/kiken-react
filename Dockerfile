@@ -14,7 +14,7 @@ RUN npm install
 #RUN npm run build
 
 # Expose le port 80 pour que l'application soit accessible depuis l'extérieur du conteneur
-EXPOSE 3000
+EXPOSE 8080
 
 # Lance l'application une fois le conteneur démarré
 CMD ["npm", "start"]

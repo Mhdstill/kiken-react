@@ -11,6 +11,12 @@ export const buildAxiosInstance = (config: CreateAxiosDefaults) => {
   axiosClient.interceptors.request.use((config) => {
     const token = sessionStorage.getItem('token');
     if (token) {
+
+      const refreshToken = sessionStorage.getItem('refresh_token');
+      if (!checkTokenValidity && refreshToken) {
+        refreshAuthToken(refreshToken);
+      }
+
       config.headers = {
         ...config.headers,
         Authorization: `Bearer ${token}`,
@@ -78,3 +84,44 @@ export const getUrlWithQueryParams = (baseUrl: string, queryParams = {}) => {
   }
   return url;
 };
+
+export const checkTokenValidity = async () => {
+  try {
+    const response = await fetch("/api/token/check", { method: "GET" });
+    if (!response.ok) {
+      throw new Error("Token is expired or invalid");
+    }
+    return true;
+  } catch (error) {
+    console.error("Token is expired or invalid");
+    return false;
+  }
+};
+
+export const refreshAuthToken = async (refreshToken: string) => {
+  try {
+    const response = await fetch(`${API_URL}/api/token/refresh`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        refresh_token: refreshToken,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Response not OK");
+    }
+
+    const data = await response.json();
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("refresh_token", data.refresh_token);
+    return data.token;
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+};
+
+export const API_URL = 'https://kiken-qr.com';
