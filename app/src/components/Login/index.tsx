@@ -75,7 +75,7 @@ const LoginPage: FC = ({
 
                 <img style={{ height: '60px' }} src="../public/assets/img/logos/logo-wastreet.svg" alt="Logo de Wastreet"></img>
 
-                <h2 className='mt-2'>Connexion</h2>
+                <h3 className='mt-2'>Connexion</h3>
                 <Card>
                   <Form
                     form={form}
