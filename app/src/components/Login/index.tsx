@@ -66,33 +66,48 @@ const LoginPage: FC = ({
   };
 
   return (
-    <div className="login-view-container">
-      <Card>
-        <Form
-          form={form}
-          onFinish={onFinish}
-          validateMessages={validateMessages}
-        >
-          <Form.Item name="email" rules={[{ required: true, type: 'email' }]}>
-            <Input placeholder={t('email.label')} />
-          </Form.Item>
+    <section className="vh-100 login">
+      <div className="container py-5 h-100">
+        <div className="row d-flex justify-content-center align-items-center h-100">
+          <div className="col-12 col-md-8 col-lg-6 col-xl-5">
+            <div className="card shadow-2-strong" style={{ borderRadius: '1rem' }}>
+              <div className="card-body p-5 text-center">
 
-          <Form.Item
-            name="password"
-            messageVariables={{ name: t('password').toLowerCase() }}
-            rules={[{ required: true }]}
-          >
-            <Input.Password placeholder={t('password')} />
-          </Form.Item>
+                <img style={{ height: '60px' }} src="../public/assets/img/logos/logo-wastreet.svg" alt="Logo de Wastreet"></img>
 
-          <Row justify="center">
-            <Button type="primary" htmlType="submit" loading={isLoading}>
-              {t('login.submit')}
-            </Button>
-          </Row>
-        </Form>
-      </Card>
-    </div>
+                <h2 className='mt-2'>Connexion</h2>
+                <Card>
+                  <Form
+                    form={form}
+                    onFinish={onFinish}
+                    validateMessages={validateMessages}
+                  >
+                    <Form.Item name="email" rules={[{ required: true, type: 'email' }]}>
+                      <Input placeholder={t('email.label')} />
+                    </Form.Item>
+
+                    <Form.Item
+                      name="password"
+                      messageVariables={{ name: t('password').toLowerCase() }}
+                      rules={[{ required: true }]}
+                    >
+                      <Input.Password placeholder={t('password')} />
+                    </Form.Item>
+
+                    <Row justify="center">
+                      <Button type="primary" htmlType="submit" loading={isLoading}>
+                        {t('login.submit')}
+                      </Button>
+                    </Row>
+                  </Form>
+                </Card>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 };
 

@@ -448,6 +448,7 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
         new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime(),
       render: getFormattedDate,
     },
+    /*
     {
       key: 'type',
       title: 'Type',
@@ -468,7 +469,7 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
       render: (value) => (
         <Tag>{t(`type.${value.toLowerCase()}`, value.toLowerCase())}</Tag>
       ),
-    },
+    }, */
   ];
 
   const deleteFile = useMutation(
@@ -651,9 +652,10 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
   return (
     <>
       <h3 className='mx-2'>Application</h3>
+      {/* 
       <div className="input-group input-group-outline">
-        <input type="text" className="form-control focused bg-white mb-3" placeholder="Rechercher..." />
-     </div>
+        <input type="text" className="form-control form-control-lg focused bg-white mb-3" placeholder="Rechercher..." />
+     </div> */}
       <TableView
         data={folders?.data}
         isFetching={isFetching}

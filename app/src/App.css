@@ -1,0 +1,247 @@
+.ant-table {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+input[type=text],
+.ant-select-selector {
+    width: 100% !important;
+    padding: 12px 20px !important;
+    margin: 8px 0 !important;
+    box-sizing: border-box !important;
+    font-size: 1.2rem !important;
+}
+input[type=password]{
+    padding: 12px 20px !important;
+    font-size: 1.2rem !important;
+}
+
+input::placeholder {
+    font-size: 1.2rem !important;
+}
+
+.ant-select-item {
+    padding: 15px 20px !important;
+}
+
+th,
+td,
+td a {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    font-size: 1.2rem;
+    line-height: 3rem;
+    text-align: center !important;
+    vertical-align: middle !important;
+    color: rgb(33, 37, 41) !important;
+}
+
+th {
+    font-weight: bold !important;
+}
+
+table .anticon {
+    font-size: 1.5rem;
+}
+
+/** Ant Menu **/
+.ant-dropdown-menu-title-content {
+    font-size: 1.1rem !important;
+    padding: 1.2rem !important;
+}
+
+.ant-upload {
+    font-size: 1.1rem !important;
+}
+
+.ant-dropdown-menu svg,
+.ant-dropdown-menu img,
+.ant-dropdown-menu i {
+    position: relative;
+    top: -3px;
+}
+
+
+/** Ant Button **/
+.ant-btn-primary,
+.ant-btn-default {
+    padding: 0.375rem 0.75rem !important;
+    font-size: 1.2rem !important;
+    line-height: 1.5 !important;
+    border-radius: 0.25rem !important;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
+        border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out !important;
+    height: 3rem !important;
+    margin-bottom: 1rem !important;
+    font-weight: bold !important;
+}
+
+.ant-btn-primary img,
+.ant-btn-primary i,
+.ant-btn-primary svg,
+.ant-btn-default img,
+.ant-btn-default i,
+.ant-btn-default svg {
+    position: relative !important;
+    top: -3px !important;
+}
+
+/** Default **/
+.ant-btn-default {
+    color: #fff !important;
+    background-color: #6c757d !important;
+    border-color: #6c757d !important;
+}
+
+.ant-btn-default:hover {
+    color: #fff !important;
+    background-color: #5a6268 !important;
+    border-color: #545b62 !important;
+}
+
+.ant-btn-default:focus,
+.ant-btn-default.focus {
+    box-shadow: 0 0 0 0.25rem rgba(108, 117, 125, 0.5) !important;
+}
+
+.ant-btn-default.disabled,
+.ant-btn-default:disabled {
+    color: #fff !important;
+    background-color: #6c757d !important;
+    border-color: #6c757d !important;
+}
+
+.ant-btn-default:not(:disabled):not(.disabled):active,
+.ant-btn-default:not(:disabled):not(.disabled).active,
+.show>.ant-btn-default.dropdown-toggle {
+    color: #fff !important;
+    background-color: #545b62 !important;
+    border-color: #4e555b !important;
+}
+
+.ant-btn-default:not(:disabled):not(.disabled):active:focus,
+.ant-btn-default:not(:disabled):not(.disabled).active:focus,
+.show>.ant-btn-default.dropdown-toggle:focus {
+    box-shadow: 0 0 0 0.25rem rgba(108, 117, 125, 0.5) !important;
+}
+
+/** Primary **/
+.ant-btn-primary {
+    color: #fff !important;
+    background-color: #0d6efd !important;
+    border-color: #0d6efd !important;
+}
+
+.ant-btn-primary:hover {
+    color: #fff !important;
+    background-color: #0b5ed7 !important;
+    border-color: #0a58ca !important;
+}
+
+.ant-btn-primary:focus,
+.ant-btn-primary.focus {
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.5) !important;
+}
+
+.ant-btn-primary.disabled,
+.ant-btn-primary:disabled {
+    color: #fff !important;
+    background-color: #0d6efd !important;
+    border-color: #0d6efd !important;
+}
+
+.ant-btn-primary:not(:disabled):not(.disabled):active,
+.ant-btn-primary:not(:disabled):not(.disabled).active,
+.show>.ant-btn-primary.dropdown-toggle {
+    color: #fff !important;
+    background-color: #0a58ca !important;
+    border-color: #0a53be !important;
+}
+
+.ant-btn-primary:not(:disabled):not(.disabled):active:focus,
+.ant-btn-primary:not(:disabled):not(.disabled).active:focus,
+.show>.ant-btn-primary.dropdown-toggle:focus {
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.5) !important;
+}
+
+/** Ant Pagination **/
+.ant-pagination{
+    margin-top: 0 !important
+}
+
+.ant-pagination li {
+    padding: 15 20px !important;
+    height: 3rem !important;
+    width: 3rem !important;
+    font-size: 2rem !important;
+    display: flex !important;
+    vertical-align: middle !important;
+    align-items: center !important;
+}
+
+.ant-pagination li a,
+.ant-pagination li p,
+.ant-pagination li span {
+    width: 100% !important;
+}
+
+.ant-pagination li button {
+    font-size: 1.5rem !important;
+}
+
+
+/** Ant Tabs **/
+.ant-tabs-tab {
+    background: none !important;
+    border: none !important;
+}
+
+.ant-tabs-tab * {
+    font-size: 2rem !important;
+    color: rgba(0, 0, 0, 0.85) !important;
+    font-weight: 500 !important;
+    font-size: 1.875rem !important;
+    font-family: "roboto slab", sans-serif !important;
+    margin-bottom: 0.3rem;
+}
+
+.ant-tabs-tab svg {
+    position: relative;
+    top: -5px;
+}
+
+.ant-tabs-tab:not(:first-child) {
+    display: none !important;
+}
+
+/** Ant Login **/
+.login .ant-card {
+    border: none !important;
+}
+.login .ant-card-body {
+    padding: 0 !important;
+}
+
+/** Ant Notif **/
+.ant-notification-notice-message
+{
+    font-size: 1.2rem !important;
+    font-weight: bold !important;
+}
+
+.ant-notification-notice-description
+{
+    font-size: 1rem !important;
+}
+
+.nav-link {
+    font-size: 1.2rem !important;
+}
+
+.ant-popover-message-title {
+    font-size: 1.2rem !important;
+}
+
+.ant-popover-message-icon {
+    font-size: 1.2rem !important;
+    position:  relative !important;
+    top: -5px !important;
+}

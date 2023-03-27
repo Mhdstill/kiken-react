@@ -12,6 +12,7 @@ import DefaultLayout from './components/Layout';
 import LoginPage from './components/Login';
 import AdministrationPage from './components/Administration';
 import { Role } from './services/auth/auth';
+import './App.css'
 
 type ProtectedRouteProps = {
   rolesAllowed: Role[];
