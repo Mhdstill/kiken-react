@@ -51,11 +51,11 @@ const Navbar: React.FC = ({ t }: WithTranslation) => {
       <Header>
         <nav
           ref={navRef}
-          className="fs-3 navbar navbar-main"
+          className="fs-3 navbar navbar-main d-flex align-items-center justify-content-center"
           id="navbarBlur" navbar-scroll="true"
         >
-          <img style={{ height: '40px', cursor: 'pointer' }} onClick={() => navigate("/")} src="https://my.wastreet.app//public/assets/img/logos/logo-wastreet.svg" alt="Logo de Wastreet" />
-          <FontAwesomeIcon icon={faBars} style={{ float: 'right', color: 'white', cursor: 'pointer' }} onClick={handleIconClick} />
+          <FontAwesomeIcon icon={faBars} style={{ position: 'absolute', left: 0, color: 'white', cursor: 'pointer' }} onClick={handleIconClick} />
+          <img style={{ height: '40px', cursor: 'pointer' }} onClick={() => navigate("/")} src="/images/logo.png" alt="Logo de QR4You" />
         </nav>
       </Header>
     </>

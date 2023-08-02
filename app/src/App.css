@@ -1,9 +1,20 @@
+:root {
+    --main-color: #47abff;
+    --soft-main-color: #7ac2ff;
+    --second-color: #ffffff;
+    --third-color: #041635;
+    --fourth-color: #e6e6e6;
+    --fifth-color: #1494ff;
+}
+
 .ant-table {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
-input[type=text],input[type=password],
-input[type=password], input[type=email],
+input[type=text],
+input[type=password],
+input[type=password],
+input[type=email],
 .ant-select-selector {
     width: 100% !important;
     padding: 8px 16px !important;
@@ -12,10 +23,10 @@ input[type=password], input[type=email],
     font-size: 1rem !important;
 }
 
-.ant-input-password
-{
+.ant-input-password {
     padding: 0 !important;
 }
+
 input::placeholder {
     font-size: 1rem !important;
 }
@@ -164,7 +175,7 @@ table .anticon {
 }
 
 /** Ant Pagination **/
-.ant-pagination{
+.ant-pagination {
     margin-top: 0 !important
 }
 
@@ -217,19 +228,18 @@ table .anticon {
 .login .ant-card {
     border: none !important;
 }
+
 .login .ant-card-body {
     padding: 0 !important;
 }
 
 /** Ant Notif **/
-.ant-notification-notice-message
-{
+.ant-notification-notice-message {
     font-size: 1rem !important;
     font-weight: bold !important;
 }
 
-.ant-notification-notice-description
-{
+.ant-notification-notice-description {
     font-size: 1rem !important;
 }
 
@@ -243,6 +253,69 @@ table .anticon {
 
 .ant-popover-message-icon {
     font-size: 1rem !important;
-    position:  relative !important;
+    position: relative !important;
     top: -5px !important;
+}
+
+.float-right {
+    float: right
+}
+
+.ant-table-wrapper>div {
+    border-radius: 18px !important;
+}
+
+.ant-table-wrapper div {
+    border-radius: 18px !important;
+}
+
+.ant-table-row-level-0 td:first-child {
+    text-align: left !important;
+    font-weight: bold;
+}
+
+.ant-layout-header {
+    background: var(--third-color) !important;
+}
+
+.ant-btn-default {
+    background-color: var(--fifth-color) !important;
+    border: solid 1px var(--fifth-color) !important;
+}
+
+.ant-btn-default:hover {
+    background-color: var(--main-color) !important;
+    border: solid 1px var(--main-color) !important;
+}
+
+.anticon-qrcode {
+    color: blue !important;
+}
+
+.c-card {
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    background-color: var(--soft-main-color);
+    padding: 0.5rem;
+    border-radius: 18px;
+    border: solid 0.5px rgb(210, 214, 218);
+}
+
+.arbo-name {
+    font-weight: bold;
+    color: var(--fifth-color);
+    cursor: pointer;
+}
+
+.arbo-name:hover {
+    text-decoration: underline;
+}
+
+.arbo-name.active {
+    font-weight: normal;
+    color: var(--third-color);
+    cursor: unset !important;
+}
+
+.arbo-name.active:hover {
+    text-decoration: none !important;
 }

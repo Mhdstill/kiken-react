@@ -28,7 +28,7 @@ const Sidebar = () => {
         <aside className="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3 bg-gradient-dark" id="sidenav-main">
             <div className="sidenav-header">
                 <i className="fas fa-times p-3 cursor-pointer text-white opacity-5 position-absolute end-0 top-0 d-xl-none" aria-hidden="true" id="iconSidenav"></i>
-                <img style={{ height: '40px' }} src="https://my.wastreet.app/public/assets/img/logos/logo-wastreet.svg" alt="Logo de Wastreet"></img>
+                <img style={{ height: '40px' }} src="/images/logo.png" alt="Logo de QR4You"></img>
             </div>
             <hr className="horizontal light mt-0 mb-2" />
             <div className="collapse navbar-collapse  w-auto  max-height-vh-100" id="sidenav-collapse-main">

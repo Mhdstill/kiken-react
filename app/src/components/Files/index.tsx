@@ -2,6 +2,8 @@ import React, { FC, useEffect, useReducer, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { FormInstance, Popconfirm, Tag, Tooltip, Upload } from 'antd';
 import type { MenuProps } from 'antd';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFolder, faImage} from '@fortawesome/free-solid-svg-icons';
 import {
   DeleteOutlined,
   EditOutlined,
@@ -25,7 +27,7 @@ import {
 } from 'react-router-dom';
 import type { WithTranslation } from 'react-i18next';
 
-import TableView from '../TableView';
+import TableView from '../TableHomeView';
 import ModalForm from '../Modal/ModalForm';
 import withDataManager, {
   WithDataManagerProps,
@@ -122,6 +124,18 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
         folder = (await dataManager.getRootFolder(operationToken))[0];
       }
       let i = 1;
+      const getParentTree = async (folder: any, tree: any[] = []): Promise<any[]> => {
+        if(tree.length == 0){
+          tree.unshift(folder);
+        }
+        if (folder.parent) {
+          tree.unshift(folder.parent);
+          return getParentTree(folder.parent, tree);
+        } else {
+          return tree;
+        }
+      };
+      let tree = await getParentTree(folder);
       const folders = folder.subfolders.map((folder: FileType) => {
         const path = `/${operationToken}/folder/${folder.id}`;
         return Object.assign(folder, { key: i++, type: Type.FOLDER, path });
@@ -134,15 +148,17 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
             : getExtension(file.path)) as keyof typeof Type
           ] || Type.FILE;
         const path = `/media_objects/${file.path}`;
-        return Object.assign(file, { key: i++, name: file.path, type, path });
+        return Object.assign(file, { key: i++, name: file.name, type, path });
       });
       const data = folders.concat(files);
-      return { root: folder, data };
+      return { root: folder, data, tree };
     } catch (error) {
       console.error(error);
-      return { root: folder || null, data: [] };
+      return { root: folder || null, data: [], tree: [] };
     }
   };
+
+
 
   const {
     data: folders,
@@ -177,17 +193,19 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
   const getFileIcon = (type: Type) => {
     switch (type) {
       case Type.FOLDER:
-        return <FolderOutlined />;
+        return <FontAwesomeIcon icon={faFolder} style={{ fontSize: "22px", color: "orange", position: "relative", top: "4px" }} className='me-2' />;
       case Type.FILE:
-        return <FileImageOutlined />;
+        return <FontAwesomeIcon icon={faImage} style={{ fontSize: "22px", color: "blue", position: "relative", top: "4px" }} className='me-2' />;
       default:
-        return <FileOutlined />;
+        return <FontAwesomeIcon icon={faImage} style={{ fontSize: "22px", color: "blue", position: "relative", top: "4px"}} className='me-2' />;
     }
   };
 
   const [modalFormData, setModalFormData] = useState<any | null>(null);
 
   const handleFormValues = (changedValues: any, allValues: any) => {
+    console.log(changedValues);
+    console.log(allValues);
     setModalFormData(allValues);
   };
 
@@ -308,6 +326,12 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
   };
 
   const modalReducer = (prevState: any, action: any) => {
+    if(action.file && action.file.users){
+      let users = [];
+      Object.entries(action.file.users).forEach(([key, val]) => {
+        //  console.log(val.email);
+      });
+    }
     switch (action.type) {
       case Action.EDIT_ACCESS:
         return {
@@ -651,13 +675,9 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
 
   return (
     <>
-      <h3 className='mx-2'>Application</h3>
-      {/* 
-      <div className="input-group input-group-outline">
-        <input type="text" className="form-control form-control-lg focused bg-white mb-3" placeholder="Rechercher..." />
-     </div> */}
       <TableView
         data={folders?.data}
+        tree={folders?.tree}
         isFetching={isFetching}
         actionsItems={items}
         columns={columns}
