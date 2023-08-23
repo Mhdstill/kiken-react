@@ -39,7 +39,7 @@
     color: var(--white-color) !important;
 }
 
-#searchbar, input, input:focus, input:valid {
+#searchbar, input, input:focus, input:valid, .ant-select-selector {
     background-color: var(--dark-gray-color) !important;
     border: solid 1px rgb(73, 80, 87) !important;
 }
