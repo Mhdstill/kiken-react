@@ -193,11 +193,11 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
   const getFileIcon = (type: Type) => {
     switch (type) {
       case Type.FOLDER:
-        return <FontAwesomeIcon icon={faFolder} style={{ fontSize: "22px", color: "orange", position: "relative", top: "4px" }} className='me-2' />;
+        return <FontAwesomeIcon icon={faFolder} style={{ fontSize: "22px", color: "orange", position: "relative", top: "4px", }} className='me-2' />;
       case Type.FILE:
-        return <FontAwesomeIcon icon={faImage} style={{ fontSize: "22px", color: "blue", position: "relative", top: "4px" }} className='me-2' />;
+        return <FontAwesomeIcon icon={faImage} style={{ fontSize: "22px", color: "var(--main-color)", position: "relative", top: "4px" }} className='me-2' />;
       default:
-        return <FontAwesomeIcon icon={faImage} style={{ fontSize: "22px", color: "blue", position: "relative", top: "4px"}} className='me-2' />;
+        return <FontAwesomeIcon icon={faImage} style={{ fontSize: "22px", color: "var(--main-color)", position: "relative", top: "4px"}} className='me-2' />;
     }
   };
 

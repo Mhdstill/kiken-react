@@ -89,7 +89,7 @@ const TableHomeView: FC<TableViewProps> = (props) => {
       )}
 
       <div className="input-group input-group-outline mb-3">
-        <input onChange={(e) => handleSearch(e.target.value)} type="text" className="form-control form-control-lg focused bg-white mb-3" placeholder="Rechercher..." />
+        <input id="searchbar" onChange={(e) => handleSearch(e.target.value)} type="text" className="form-control form-control-lg focused bg-white mb-3" placeholder="Rechercher..." />
       </div>
 
       {tree && tree.length > 0 && (

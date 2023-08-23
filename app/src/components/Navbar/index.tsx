@@ -55,7 +55,7 @@ const Navbar: React.FC = ({ t }: WithTranslation) => {
           id="navbarBlur" navbar-scroll="true"
         >
           <FontAwesomeIcon icon={faBars} style={{ position: 'absolute', left: 0, color: 'white', cursor: 'pointer' }} onClick={handleIconClick} />
-          <img style={{ height: '40px', cursor: 'pointer' }} onClick={() => navigate("/")} src="/images/logo.png" alt="Logo de QR4You" />
+          <img style={{ height: '40px', cursor: 'pointer' }} onClick={() => navigate("/")} src="/images/logo.svg" alt="Logo de QR4You" />
         </nav>
       </Header>
     </>

@@ -54,7 +54,7 @@ const TableView: FC<TableViewProps> = (props) => {
     <div className="table-container">
       {props.actionsItems && props.actionsItems.length > 0 && (
         <Dropdown
-          className="actions-container"
+          className="actions-container float-right"
           menu={{ items: props.actionsItems }}
           trigger={['click']}
         >
@@ -72,7 +72,7 @@ const TableView: FC<TableViewProps> = (props) => {
         pagination={{
           pageSize: pageSize,
           hideOnSinglePage: true,
-          position: ['topRight'],
+          position: ['bottomRight'],
         }}
         locale={{ emptyText: props.t('nodata') }}
         size="middle"

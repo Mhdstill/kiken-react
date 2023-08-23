@@ -1,0 +1,15 @@
+@font-face {
+    font-family: 'Saira-Medium'; /* Nom de la police */
+    src: url('../public/fonts/Saira-Medium.ttf') format('truetype'); /* Chemin vers le fichier .ttf */
+    /* Vous pouvez également spécifier d'autres formats ici (woff, woff2, etc.) */
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Saira-Bold'; /* Nom de la police */
+    src: url('../public/fonts/Saira-Bold.ttf') format('truetype'); /* Chemin vers le fichier .ttf */
+    /* Vous pouvez également spécifier d'autres formats ici (woff, woff2, etc.) */
+    font-weight: bold;
+    font-style: normal;
+}

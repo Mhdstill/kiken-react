@@ -13,6 +13,7 @@ import LoginPage from './components/Login';
 import AdministrationPage from './components/Administration';
 import { Role } from './services/auth/auth';
 import './App.css'
+import './Fonts.css'
 
 type ProtectedRouteProps = {
   rolesAllowed: Role[];

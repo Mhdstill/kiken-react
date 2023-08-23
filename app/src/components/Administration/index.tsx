@@ -31,7 +31,6 @@ const AdministrationPage = ({
     items.push({
       label: (
         <span>
-          <ToolOutlined />
           {t('admin.operationsTab')}
         </span>
       ),

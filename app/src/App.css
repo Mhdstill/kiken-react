@@ -1,14 +1,47 @@
 :root {
-    --main-color: #47abff;
+    --main-color: #06d889;
     --soft-main-color: #7ac2ff;
     --second-color: #ffffff;
-    --third-color: #041635;
+    --third-color: #08090b;
     --fourth-color: #e6e6e6;
     --fifth-color: #1494ff;
+    --white-color: #ffffff;
+    --dark-gray-color: rgba(217, 217, 217, 0.05);
+}
+
+.ant-layout,
+.ant-tabs-nav-wrap,
+.ant-layout-footer,
+#root,
+.container-fluid {
+    background-color: #1E1C22 !important;
 }
 
 .ant-table {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.ant-layout-footer {
+    color: var(--second-color) !important;
+}
+
+.ant-table,
+.ant-table-content table th,
+.ant-table-content table td,
+.ant-table-content table tr {
+    background-color: var(--dark-gray-color) !important;
+    color: var(--white-color) !important;
+    border-bottom: solid 1px rgba(0, 0, 0, 0.9) !important;
+    font-family: "Saira-Medium";
+}
+
+.ant-table-content table a {
+    color: var(--white-color) !important;
+}
+
+#searchbar, input, input:focus, input:valid {
+    background-color: var(--dark-gray-color) !important;
+    border: solid 1px rgb(73, 80, 87) !important;
 }
 
 input[type=text],
@@ -97,16 +130,16 @@ table .anticon {
 }
 
 /** Default **/
-.ant-btn-default {
-    color: #fff !important;
-    background-color: #6c757d !important;
-    border-color: #6c757d !important;
-}
-
-.ant-btn-default:hover {
+.ant-btn-default, .ant-btn-primary {
     color: #fff !important;
     background-color: #5a6268 !important;
     border-color: #545b62 !important;
+}
+
+.ant-btn-default:hover, .ant-btn-primary:hover {
+    color: var(--main-color) !important;
+    background-color: transparent !important;
+    border-color: solid 1px var(--main-color) !important;
 }
 
 .ant-btn-default:focus,
@@ -135,48 +168,14 @@ table .anticon {
     box-shadow: 0 0 0 0.25rem rgba(108, 117, 125, 0.5) !important;
 }
 
-/** Primary **/
-.ant-btn-primary {
-    color: #fff !important;
-    background-color: #0d6efd !important;
-    border-color: #0d6efd !important;
-}
-
-.ant-btn-primary:hover {
-    color: #fff !important;
-    background-color: #0b5ed7 !important;
-    border-color: #0a58ca !important;
-}
-
-.ant-btn-primary:focus,
-.ant-btn-primary.focus {
-    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.5) !important;
-}
-
-.ant-btn-primary.disabled,
-.ant-btn-primary:disabled {
-    color: #fff !important;
-    background-color: #0d6efd !important;
-    border-color: #0d6efd !important;
-}
-
-.ant-btn-primary:not(:disabled):not(.disabled):active,
-.ant-btn-primary:not(:disabled):not(.disabled).active,
-.show>.ant-btn-primary.dropdown-toggle {
-    color: #fff !important;
-    background-color: #0a58ca !important;
-    border-color: #0a53be !important;
-}
-
-.ant-btn-primary:not(:disabled):not(.disabled):active:focus,
-.ant-btn-primary:not(:disabled):not(.disabled).active:focus,
-.show>.ant-btn-primary.dropdown-toggle:focus {
-    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.5) !important;
-}
-
 /** Ant Pagination **/
 .ant-pagination {
-    margin-top: 0 !important
+    margin-top: 16px !important
+}
+
+.ant-pagination li,
+.ant-pagination svg {
+    color: var(--white-color) !important;
 }
 
 .ant-pagination li {
@@ -188,6 +187,13 @@ table .anticon {
     vertical-align: middle !important;
     align-items: center !important;
 }
+
+.ant-pagination li.ant-pagination-item-active {
+    border: solid 2px var(--main-color) !important;
+    color: var(--main-color) !important;
+    background: transparent !important;
+}
+
 
 .ant-pagination li a,
 .ant-pagination li p,
@@ -204,6 +210,8 @@ table .anticon {
 .ant-tabs-tab {
     background: none !important;
     border: none !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
 }
 
 .ant-tabs-tab * {
@@ -261,6 +269,15 @@ table .anticon {
     float: right
 }
 
+/** ANT **/
+.ant-modal-content{
+    background-image: linear-gradient(195deg, rgb(66, 66, 74) 0%, rgb(25, 25, 25) 100%) !important;
+    /* background-color: # !important; */
+}
+.ant-modal-footer{
+    border-top: solid 1px rgb(73, 80, 87) !important;
+}
+
 .ant-table-wrapper>div {
     border-radius: 18px !important;
 }
@@ -275,34 +292,32 @@ table .anticon {
 }
 
 .ant-layout-header {
-    background: var(--third-color) !important;
+    background-color: var(--third-color) !important;
 }
 
-.ant-btn-default {
-    background-color: var(--fifth-color) !important;
-    border: solid 1px var(--fifth-color) !important;
-}
-
-.ant-btn-default:hover {
-    background-color: var(--main-color) !important;
-    border: solid 1px var(--main-color) !important;
+.ant-tabs-tab span {
+    font-family: "Saira-Bold" !important;
+    color: var(--main-color) !important;
+    text-shadow: none !important;
+    font-size: 2.3rem !important;
 }
 
 .anticon-qrcode {
-    color: blue !important;
+    color: var(--main-color) !important;
 }
 
 .c-card {
     box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
-    background-color: var(--soft-main-color);
+    background-color: var(--dark-gray-color) !important;
     padding: 0.5rem;
     border-radius: 18px;
-    border: solid 0.5px rgb(210, 214, 218);
+    border: solid 0.5px rgb(73, 80, 87) !important;
+    color: rgba(255, 255, 255, 0.8) !important;
 }
 
 .arbo-name {
     font-weight: bold;
-    color: var(--fifth-color);
+    color: rgba(255, 255, 255, 0.8) !important;
     cursor: pointer;
 }
 
@@ -311,11 +326,40 @@ table .anticon {
 }
 
 .arbo-name.active {
-    font-weight: normal;
-    color: var(--third-color);
+    color: var(--main-color) !important;
     cursor: unset !important;
 }
 
 .arbo-name.active:hover {
     text-decoration: none !important;
+}
+
+
+.nav-item a {
+    font-family: "Saira-Medium";
+}
+
+.nav-item.active .nav-link {
+    color: var(--main-color) !important;
+    font-weight: bold;
+}
+
+.nav-item.active .nav-link svg {
+    color: var(--main-color) !important;
+}
+
+.login .card, .login input[type="text"]{
+    border: solid 0.5px rgb(73, 80, 87) !important;
+    background-color: var(--dark-gray-color) !important;
+
+}
+
+.login .ant-card,  .login .ant-input-affix-wrapper  {
+    background-color: transparent !important;
+    border: none !important;
+}
+
+.title-txt {
+    color: var(--main-color);
+    font-family: "Saira-Bold";
 }

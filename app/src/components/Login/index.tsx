@@ -66,16 +66,16 @@ const LoginPage: FC = ({
   };
 
   return (
-    <section className="vh-100 login" style={{ backgroundColor: 'var(--main-color)' }}>
+    <section className="vh-100 login" style={{ backgroundColor: '#1E1C22 !important' }}>
       <div className="container py-5 h-100">
         <div className="row d-flex justify-content-center align-items-center h-100">
           <div className="col-12 col-md-8 col-lg-6 col-xl-5">
             <div className="card shadow-2-strong" style={{ borderRadius: '1rem' }}>
               <div className="card-body p-5 text-center">
 
-                <img style={{ height: '60px' }} src="/images/logo.png" alt="Logo de QR4You"></img>
+                <img style={{ height: '60px' }} src="/images/logo.svg" alt="Logo de QR4You"></img>
 
-                <h3 className='mt-2'>Connexion</h3>
+                <h3 className='mt-2 title-txt'>Connexion</h3>
                 <Card>
                   <Form
                     form={form}
@@ -83,7 +83,7 @@ const LoginPage: FC = ({
                     validateMessages={validateMessages}
                   >
                     <Form.Item name="email" rules={[{ required: true, type: 'email' }]}>
-                      <Input placeholder={t('email.label')} />
+                      <Input placeholder={t('email.label')} className='form-control form-control-lg focused bg-white mb-3' />
                     </Form.Item>
 
                     <Form.Item
@@ -91,11 +91,11 @@ const LoginPage: FC = ({
                       messageVariables={{ name: t('password').toLowerCase() }}
                       rules={[{ required: true }]}
                     >
-                      <Input.Password placeholder={t('password')} />
+                      <Input.Password placeholder={t('password')} className='form-control form-control-lg focused bg-white mb-3' />
                     </Form.Item>
 
                     <Row justify="center">
-                      <Button type="primary" htmlType="submit" loading={isLoading}>
+                      <Button type="primary" htmlType="submit" loading={isLoading} className='ant-btn ant-btn-default ant-btn-sm'>
                         {t('login.submit')}
                       </Button>
                     </Row>
