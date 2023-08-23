@@ -9,6 +9,7 @@
     --dark-gray-color: rgba(217, 217, 217, 0.05);
 }
 
+body,
 .ant-layout,
 .ant-tabs-nav-wrap,
 .ant-layout-footer,
