@@ -92,7 +92,9 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
       .downloadFile(operationToken, file.id)
       .then((blob) => {
         const url = URL.createObjectURL(blob);
-        if (blob.type.indexOf('image') > -1) {
+        console.log(blob);
+        console.log(url);
+        if (blob.type.indexOf('image') > -1 || blob.type === 'application/pdf') {
           modalDispatch({
             type: Action.SHOW_FILE,
             imageFile: url,
@@ -625,7 +627,8 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
       return dataManager.uploadFile(data);
     },
     {
-      onSuccess: (file: string) => {
+      onSuccess: (data: any) => {
+        let file = data.name;
         showSuccesNotification('fileImported', t, { file });
         refetch();
       },

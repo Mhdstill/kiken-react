@@ -40,9 +40,19 @@ body,
     color: var(--white-color) !important;
 }
 
-#searchbar, input, input:focus, input:valid, .ant-select-selector {
+#searchbar,
+input,
+input:focus,
+input:valid,
+.ant-select-selector,
+.ant-input-password
+ {
     background-color: var(--dark-gray-color) !important;
     border: solid 1px rgb(73, 80, 87) !important;
+}
+
+.ant-select-selector{
+    min-height: 50px !important;
 }
 
 input[type=text],
@@ -131,13 +141,15 @@ table .anticon {
 }
 
 /** Default **/
-.ant-btn-default, .ant-btn-primary {
+.ant-btn-default,
+.ant-btn-primary {
     color: #fff !important;
     background-color: #5a6268 !important;
     border-color: #545b62 !important;
 }
 
-.ant-btn-default:hover, .ant-btn-primary:hover {
+.ant-btn-default:hover,
+.ant-btn-primary:hover {
     color: var(--main-color) !important;
     background-color: transparent !important;
     border-color: solid 1px var(--main-color) !important;
@@ -271,11 +283,12 @@ table .anticon {
 }
 
 /** ANT **/
-.ant-modal-content{
+.ant-modal-content {
     background-image: linear-gradient(195deg, rgb(66, 66, 74) 0%, rgb(25, 25, 25) 100%) !important;
     /* background-color: # !important; */
 }
-.ant-modal-footer{
+
+.ant-modal-footer {
     border-top: solid 1px rgb(73, 80, 87) !important;
 }
 
@@ -349,13 +362,15 @@ table .anticon {
     color: var(--main-color) !important;
 }
 
-.login .card, .login input[type="text"]{
+.login .card,
+.login input[type="text"] {
     border: solid 0.5px rgb(73, 80, 87) !important;
     background-color: var(--dark-gray-color) !important;
 
 }
 
-.login .ant-card,  .login .ant-input-affix-wrapper  {
+.login .ant-card,
+.login .ant-input-affix-wrapper {
     background-color: transparent !important;
     border: none !important;
 }
@@ -363,4 +378,52 @@ table .anticon {
 .title-txt {
     color: var(--main-color);
     font-family: "Saira-Bold";
+}
+
+.ant-input-suffix {
+    position: absolute !important;
+    right: 10px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+}
+
+
+.input-with-value,
+.input-with-value[value],
+.input-with-value:focus,
+.input-with-value input[type="text"][value],
+.input-with-value input[type="password"][value],
+.input-with-value input[type="text"]:focus,
+.input-with-value input[type="password"]:focus,
+.ant-input-suffix,
+.ant-input-suffix svg,
+.ant-select-selector,
+.ant-select-selector[value],
+.ant-select-selector:focus,
+.ant-select-selection-item
+{
+    color: white !important
+}
+
+.anticon-caret-up.active,
+.anticon-caret-down.active{
+    color: var(--main-color) !important;
+}
+
+.ant-modal-close-x,
+.ant-modal-close-x svg{
+    color: white !important;
+    font-size: 18px !important;
+}
+
+.ant-select-multiple .ant-select-selection-item {
+    background-color: var(--third-color) !important;
+    border: 1px solid var(--third-color) !important;
+    font-family: 'Saira-medium' !important;
+}
+
+.ant-select-clear{
+    background-color: unset !important;
+    color: white !important;
+    font-size: 16px !important;
 }

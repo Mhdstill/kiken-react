@@ -28,10 +28,11 @@ const AdministrationPage = ({
   );
 
   if (opAuth) {
+    let label = (location.pathname === "/admin/users") ? <>{t('admin.usersTab')}</> : <>{t('admin.operationsTab')}</>
     items.push({
       label: (
         <span>
-          {t('admin.operationsTab')}
+          {label}
         </span>
       ),
       key: 'operations',

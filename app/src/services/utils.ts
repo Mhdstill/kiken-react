@@ -61,6 +61,7 @@ export const showErrorNotification = (error: Error | any, t: TFunction) => {
   notification.error({
     message: t('notification.error.title'),
     description: description,
+    placement: 'topLeft'
   });
 };
 
@@ -72,6 +73,7 @@ export const showSuccesNotification = (
   notification.success({
     message: t('notification.success.title'),
     description: t(`notification.success.${message}`, options),
+    placement: 'topLeft'
   });
 };
 

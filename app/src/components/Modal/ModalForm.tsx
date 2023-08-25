@@ -82,6 +82,7 @@ const ModalForm = ({
         }
         return (
           <Form.Item
+            className='input-with-value'
             key={index}
             name={input.name}
             rules={[{ required: true, ...rules }]}

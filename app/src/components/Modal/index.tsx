@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal } from 'antd';
+import { Modal, Button } from 'antd';
 import type { WithTranslation } from 'react-i18next';
 
 import withTranslation from '../../hoc/withTranslation';
@@ -27,9 +27,14 @@ const CustomModal = ({
       onOk={onOk}
       okText={okText || t('modal.ok')}
       onCancel={onCancel}
-      cancelText={t('modal.close')}
+      // cancelText={t('modal.close')}
       bodyStyle={{ display: 'flex', justifyContent: 'center' }}
       destroyOnClose
+      footer={[ 
+        <Button key="ok" type="primary" onClick={onOk}>
+          {okText || t('modal.ok')}
+        </Button>
+      ]}
     >
       {children}
     </Modal>

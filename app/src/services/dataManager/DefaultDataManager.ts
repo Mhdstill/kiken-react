@@ -72,8 +72,8 @@ export class DefaultDataManager implements DataManager {
 
   async uploadFile(data: FormData): Promise<any> {
     try {
-      await this.axios.post('/api/media_objects', data);
-      return true;
+      const response = await this.axios.post('/api/media_objects', data);
+      return response.data;
     } catch (err) {
       throw new Error(err.response.statusText);
     }

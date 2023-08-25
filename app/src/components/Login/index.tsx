@@ -3,6 +3,7 @@ import { useMutation } from '@tanstack/react-query';
 import { Button, Card, Form, Input, notification, Row } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import type { WithTranslation } from 'react-i18next';
+import { EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons';
 
 import withTranslation from '../../hoc/withTranslation';
 import withDataManager, {
@@ -50,6 +51,7 @@ const LoginPage: FC = ({
       notification.error({
         message: t('error'),
         description: t('login.errorMessage'),
+        placement: 'topLeft'
       });
     },
   });
@@ -83,7 +85,7 @@ const LoginPage: FC = ({
                     validateMessages={validateMessages}
                   >
                     <Form.Item name="email" rules={[{ required: true, type: 'email' }]}>
-                      <Input placeholder={t('email.label')} className='form-control form-control-lg focused bg-white mb-3' />
+                      <Input placeholder={t('email.label')} className='form-control form-control-lg focused bg-white mb-3 input-with-value' />
                     </Form.Item>
 
                     <Form.Item
@@ -91,7 +93,10 @@ const LoginPage: FC = ({
                       messageVariables={{ name: t('password').toLowerCase() }}
                       rules={[{ required: true }]}
                     >
-                      <Input.Password placeholder={t('password')} className='form-control form-control-lg focused bg-white mb-3' />
+                      <Input.Password
+                        placeholder={t('password')}
+                        className='form-control form-control-lg focused bg-white mb-3 input-with-value'
+                      />
                     </Form.Item>
 
                     <Row justify="center">
