@@ -17,7 +17,7 @@ import {
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/lib/table';
 import type { FilterValue } from 'antd/lib/table/interface';
-import { QRCodeSVG } from 'qrcode.react';
+import { QRCodeCanvas } from 'qrcode.react';
 import {
   Link,
   useLocation,
@@ -192,21 +192,21 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
 
   const getFileIcon = (record: any) => {
     let defaultReturn = <FontAwesomeIcon icon={faFile} style={{ fontSize: "22px", color: "var(--main-color)", position: "relative", top: "4px" }} className='me-2' />;
-    
+
     const type = record['@type'];
     console.log(type);
-    if(type === Type.FOLDER){
+    if (type === Type.FOLDER) {
       defaultReturn = <FontAwesomeIcon icon={faFolder} style={{ fontSize: "22px", color: "orange", position: "relative", top: "4px", }} className='me-2' />;
-    }else if(type === Type.FILE){
+    } else if (type === Type.FILE) {
       const extension = record['extension'];
       console.log(extension);
-      if(extension === 'png' || extension === 'jpg' || extension === 'jpeg'){
+      if (extension === 'png' || extension === 'jpg' || extension === 'jpeg') {
         defaultReturn = <FontAwesomeIcon icon={faImage} style={{ fontSize: "22px", color: "var(--main-color)", position: "relative", top: "4px" }} className='me-2' />;
-      }else if(extension === 'pdf'){
+      } else if (extension === 'pdf') {
         defaultReturn = <FontAwesomeIcon icon={faFilePdf} style={{ fontSize: "22px", color: "var(--main-color)", position: "relative", top: "4px" }} className='me-2' />;
-      }else if(extension === 'eml'){
+      } else if (extension === 'eml') {
         defaultReturn = <FontAwesomeIcon icon={faEnvelope} style={{ fontSize: "22px", color: "var(--main-color)", position: "relative", top: "4px" }} className='me-2' />;
-      }else if(extension === 'docx'){
+      } else if (extension === 'docx') {
         defaultReturn = <FontAwesomeIcon icon={faFileWord} style={{ fontSize: "22px", color: "var(--main-color)", position: "relative", top: "4px" }} className='me-2' />;
       }
     }
@@ -414,9 +414,9 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
       case Action.SHOW_QRCODE:
         return {
           content: (
-            <QRCodeSVG
+            <QRCodeCanvas
               id="qrcode"
-              onClick={() => window.open(action.qrCodeValue, '_blank')}
+             // onClick={() => window.open(action.qrCodeValue, '_blank')}
               value={action.qrCodeValue}
             />
           ),
@@ -548,7 +548,7 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
         showSuccesNotification('fileDeleted', t, { file: '' });
         refetch();
         return;
-        
+
         console.error(e);
         showErrorNotification(e, t);
       },
@@ -592,21 +592,14 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
                   type: Action.SHOW_QRCODE,
                   qrCodeValue: url,
                   onOk: () => {
-                    const node = document.getElementById('qrcode');
-                    if (node == null) {
-                      return;
+                    const canvas = document.getElementById('qrcode') as HTMLCanvasElement; 
+                    if (canvas) {
+                      const url = canvas.toDataURL('image/png');
+                      const link = document.createElement('a');
+                      link.download = `qrcode-${record.name.split('.')[0]}.png`; 
+                      link.href = url;
+                      link.click();
                     }
-                    const serializer = new XMLSerializer();
-                    const fileURI =
-                      'data:image/svg+xml;charset=utf-8,' +
-                      encodeURIComponent(
-                        '<?xml version="1.0" standalone="no"?>' +
-                        serializer.serializeToString(node)
-                      );
-                    triggerDownload(
-                      `qrcode-${record.name.split('.')[0]}.svg`,
-                      fileURI
-                    );
                   },
                   okText: t('modal.download'),
                 });
