@@ -3,7 +3,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { FormInstance, Popconfirm, Tag, Tooltip, Upload } from 'antd';
 import type { MenuProps } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFolder, faImage} from '@fortawesome/free-solid-svg-icons';
+import { faFolder, faImage } from '@fortawesome/free-solid-svg-icons';
 import {
   DeleteOutlined,
   EditOutlined,
@@ -92,8 +92,6 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
       .downloadFile(operationToken, file.id)
       .then((blob) => {
         const url = URL.createObjectURL(blob);
-        console.log(blob);
-        console.log(url);
         if (blob.type.indexOf('image') > -1 || blob.type === 'application/pdf') {
           modalDispatch({
             type: Action.SHOW_FILE,
@@ -113,6 +111,7 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
   >({});
 
   const getExtension = (path: string) => {
+    console.log(path);
     const split = path.split('.');
     return split[split.length - 1];
   };
@@ -127,7 +126,7 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
       }
       let i = 1;
       const getParentTree = async (folder: any, tree: any[] = []): Promise<any[]> => {
-        if(tree.length == 0){
+        if (tree.length == 0) {
           tree.unshift(folder);
         }
         if (folder.parent) {
@@ -143,6 +142,7 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
         return Object.assign(folder, { key: i++, type: Type.FOLDER, path });
       });
       const files = folder.mediaObjects.map((file: FileType) => {
+        console.log(file);
         const type =
           Type[
           (file.extension
@@ -199,15 +199,33 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
       case Type.FILE:
         return <FontAwesomeIcon icon={faImage} style={{ fontSize: "22px", color: "var(--main-color)", position: "relative", top: "4px" }} className='me-2' />;
       default:
-        return <FontAwesomeIcon icon={faImage} style={{ fontSize: "22px", color: "var(--main-color)", position: "relative", top: "4px"}} className='me-2' />;
+        return <FontAwesomeIcon icon={faImage} style={{ fontSize: "22px", color: "var(--main-color)", position: "relative", top: "4px" }} className='me-2' />;
     }
   };
 
   const [modalFormData, setModalFormData] = useState<any | null>(null);
 
+  const handleUserAccessForm = (changedValues: any, allValues: any, defaultUsers: any | null = null) => {
+    const undefinedCount = allValues.users.filter((userID: string) => userID === 'undefined' || !userID).length;
+    console.log(undefinedCount);
+    let userIDs: string[] = [];
+    if (defaultUsers && Array.isArray(defaultUsers)) {
+      userIDs = defaultUsers
+        .map(user => user['@id'])
+        .slice(0, undefinedCount)
+    }
+
+    const validUserIDs = allValues.users.filter((userID: string) => userID && userID !== 'undefined');
+
+    const values = {
+      users: [...userIDs, ...validUserIDs],
+    };
+
+    setModalFormData(values);
+  };
+
+
   const handleFormValues = (changedValues: any, allValues: any) => {
-    console.log(changedValues);
-    console.log(allValues);
     setModalFormData(allValues);
   };
 
@@ -328,7 +346,7 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
   };
 
   const modalReducer = (prevState: any, action: any) => {
-    if(action.file && action.file.users){
+    if (action.file && action.file.users) {
       let users = [];
       Object.entries(action.file.users).forEach(([key, val]) => {
         //  console.log(val.email);
@@ -336,6 +354,7 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
     }
     switch (action.type) {
       case Action.EDIT_ACCESS:
+        let defaultUsers = action.file.users
         return {
           action: Action.EDIT_ACCESS,
           selectedFile: action.file,
@@ -351,7 +370,7 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
                   })),
                 },
               ]}
-              onFormValueChange={handleFormValues}
+              onFormValueChange={function (changedValues, allValues) { handleUserAccessForm(changedValues, allValues, defaultUsers) }}
               submit={modalOnOk}
             />
           ),
@@ -516,6 +535,10 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
         refetch();
       },
       onError: (e) => {
+        showSuccesNotification('fileDeleted', t, { file: '' });
+        refetch();
+        return;
+        
         console.error(e);
         showErrorNotification(e, t);
       },

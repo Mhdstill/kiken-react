@@ -400,7 +400,10 @@ table .anticon {
 .ant-select-selector,
 .ant-select-selector[value],
 .ant-select-selector:focus,
-.ant-select-selection-item
+.ant-select-selection-item,
+#searchbar:focus,
+#searchbar:valid,
+#searchbar[value]
 {
     color: white !important
 }

@@ -16,6 +16,7 @@ import withTranslation from '../../hoc/withTranslation';
 import { useTablePageSize } from '../../hooks/useTablePageSize';
 
 import '../../style.less';
+import SearchBar from '../Searchbar';
 
 interface TableViewProps extends WithTranslation {
   data: any[] | undefined;
@@ -39,7 +40,7 @@ const TableHomeView: FC<TableViewProps> = (props) => {
   const [filteredData, setFilteredData] = useState<any[] | undefined>(props.data);
   const [tree, setTree] = useState<any[] | undefined>(props.tree);
   const navigate = useNavigate();
-  
+
   useEffect(() => {
     if (props.data) {
       setPaddingTop(props.data.length > pageSize ? 0 : 0);
@@ -89,7 +90,7 @@ const TableHomeView: FC<TableViewProps> = (props) => {
       )}
 
       <div className="input-group input-group-outline mb-3">
-        <input id="searchbar" onChange={(e) => handleSearch(e.target.value)} type="text" className="form-control form-control-lg focused bg-white mb-3" placeholder="Rechercher..." />
+        <SearchBar onChange={(e: any) => handleSearch(e.target.value)} />
       </div>
 
       {tree && tree.length > 0 && (
@@ -101,7 +102,7 @@ const TableHomeView: FC<TableViewProps> = (props) => {
               {tree.map((value, key) => (
                 <React.Fragment key={key}>
                   <span className={`arbo-name me-2 ${key === tree.length - 1 ? 'active' : ''}`}
-                  onClick={key < tree.length - 1 ? () => navigate(value["@id"].replace("/api","").replace("folders","folder")) : undefined}
+                    onClick={key < tree.length - 1 ? () => navigate(value["@id"].replace("/api", "").replace("folders", "folder")) : undefined}
                   >
                     {value.name}
                   </span>

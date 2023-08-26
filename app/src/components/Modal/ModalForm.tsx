@@ -60,8 +60,10 @@ const ModalForm = ({
               allowClear
             >
               {input.possibleValues.map((value, key) => {
+                const isSelected = input.values && input.values.some(v => v.id === value.id);
+                console.log(isSelected);
                 return (
-                  <Option key={key} value={value.id}>
+                  <Option key={key} value={value.id} selected={isSelected}>
                     {value.label}
                   </Option>
                 );
@@ -86,7 +88,7 @@ const ModalForm = ({
             key={index}
             name={input.name}
             rules={[{ required: true, ...rules }]}
-            initialValue={input.possibleValues ? input.values : input.value}
+            initialValue={input.values ? input.values : input.value}
           >
             {component}
           </Form.Item>
