@@ -96,7 +96,7 @@ export class DefaultDataManager implements DataManager {
   async deleteFile(operationToken: string, file: File): Promise<File> {
     try {
       await this.axios.delete(
-        `/api/media_objects/${file.id}`
+        `/api/${operationToken}/media_objects/${file.id}`
       );
       return file;
     } catch (err) {
