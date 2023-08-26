@@ -1,5 +1,5 @@
 export enum Type {
-  FILE = 'File',
+  FILE = 'MediaObject',
   FOLDER = 'Folder',
 }
 

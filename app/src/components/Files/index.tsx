@@ -3,7 +3,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { FormInstance, Popconfirm, Tag, Tooltip, Upload } from 'antd';
 import type { MenuProps } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFolder, faImage } from '@fortawesome/free-solid-svg-icons';
+import { faFolder, faImage, faFile, faFilePdf, faFileWord, faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import {
   DeleteOutlined,
   EditOutlined,
@@ -111,7 +111,6 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
   >({});
 
   const getExtension = (path: string) => {
-    console.log(path);
     const split = path.split('.');
     return split[split.length - 1];
   };
@@ -142,7 +141,6 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
         return Object.assign(folder, { key: i++, type: Type.FOLDER, path });
       });
       const files = folder.mediaObjects.map((file: FileType) => {
-        console.log(file);
         const type =
           Type[
           (file.extension
@@ -192,22 +190,34 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
     refetch();
   }, [location]);
 
-  const getFileIcon = (type: Type) => {
-    switch (type) {
-      case Type.FOLDER:
-        return <FontAwesomeIcon icon={faFolder} style={{ fontSize: "22px", color: "orange", position: "relative", top: "4px", }} className='me-2' />;
-      case Type.FILE:
-        return <FontAwesomeIcon icon={faImage} style={{ fontSize: "22px", color: "var(--main-color)", position: "relative", top: "4px" }} className='me-2' />;
-      default:
-        return <FontAwesomeIcon icon={faImage} style={{ fontSize: "22px", color: "var(--main-color)", position: "relative", top: "4px" }} className='me-2' />;
+  const getFileIcon = (record: any) => {
+    let defaultReturn = <FontAwesomeIcon icon={faFile} style={{ fontSize: "22px", color: "var(--main-color)", position: "relative", top: "4px" }} className='me-2' />;
+    
+    const type = record['@type'];
+    console.log(type);
+    if(type === Type.FOLDER){
+      defaultReturn = <FontAwesomeIcon icon={faFolder} style={{ fontSize: "22px", color: "orange", position: "relative", top: "4px", }} className='me-2' />;
+    }else if(type === Type.FILE){
+      const extension = record['extension'];
+      console.log(extension);
+      if(extension === 'png' || extension === 'jpg' || extension === 'jpeg'){
+        defaultReturn = <FontAwesomeIcon icon={faImage} style={{ fontSize: "22px", color: "var(--main-color)", position: "relative", top: "4px" }} className='me-2' />;
+      }else if(extension === 'pdf'){
+        defaultReturn = <FontAwesomeIcon icon={faFilePdf} style={{ fontSize: "22px", color: "var(--main-color)", position: "relative", top: "4px" }} className='me-2' />;
+      }else if(extension === 'eml'){
+        defaultReturn = <FontAwesomeIcon icon={faEnvelope} style={{ fontSize: "22px", color: "var(--main-color)", position: "relative", top: "4px" }} className='me-2' />;
+      }else if(extension === 'docx'){
+        defaultReturn = <FontAwesomeIcon icon={faFileWord} style={{ fontSize: "22px", color: "var(--main-color)", position: "relative", top: "4px" }} className='me-2' />;
+      }
     }
+
+    return defaultReturn;
   };
 
   const [modalFormData, setModalFormData] = useState<any | null>(null);
 
   const handleUserAccessForm = (changedValues: any, allValues: any, defaultUsers: any | null = null) => {
     const undefinedCount = allValues.users.filter((userID: string) => userID === 'undefined' || !userID).length;
-    console.log(undefinedCount);
     let userIDs: string[] = [];
     if (defaultUsers && Array.isArray(defaultUsers)) {
       userIDs = defaultUsers
@@ -471,7 +481,7 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
       sorter: (a, b) => a.name.localeCompare(b.name),
       render: (value, record) => (
         <Tooltip placement="bottomLeft" title={record.name}>
-          {getFileIcon(record['@type'])} {getNameComponent(record)}
+          {getFileIcon(record)} {getNameComponent(record)}
         </Tooltip>
       ),
     },

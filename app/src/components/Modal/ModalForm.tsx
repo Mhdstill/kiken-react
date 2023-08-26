@@ -61,7 +61,6 @@ const ModalForm = ({
             >
               {input.possibleValues.map((value, key) => {
                 const isSelected = input.values && input.values.some(v => v.id === value.id);
-                console.log(isSelected);
                 return (
                   <Option key={key} value={value.id} selected={isSelected}>
                     {value.label}
