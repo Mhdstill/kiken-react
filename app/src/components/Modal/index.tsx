@@ -7,7 +7,7 @@ import withTranslation from '../../hoc/withTranslation';
 interface CustomModalProps extends WithTranslation {
   showModal: boolean;
   onOk: () => void;
-  okText?: string;
+  okText?: string|boolean;
   onCancel: () => void;
   children?: React.ReactNode;
 }
@@ -20,6 +20,20 @@ const CustomModal = ({
   onCancel,
   children,
 }: CustomModalProps) => {
+  let footer = [];
+
+  console.log(okText);
+
+  if (okText === false) {
+    footer = [];
+  } else {
+    footer.push(
+      <Button key="ok" type="primary" onClick={onOk}>
+        {okText || t('modal.ok')}
+      </Button>
+    );
+  }
+
   return (
     <Modal
       centered
@@ -30,11 +44,7 @@ const CustomModal = ({
       // cancelText={t('modal.close')}
       bodyStyle={{ display: 'flex', justifyContent: 'center' }}
       destroyOnClose
-      footer={[ 
-        <Button key="ok" type="primary" onClick={onOk}>
-          {okText || t('modal.ok')}
-        </Button>
-      ]}
+      footer={footer}
     >
       {children}
     </Modal>

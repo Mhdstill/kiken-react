@@ -27,7 +27,7 @@ export default {
   },
   nodata: 'Pas de données',
   file: {
-    upload: 'Téléverser un fichier',
+    upload: 'Téléverser fichier(s)',
   },
   folder: {
     new: 'Nouveau dossier',

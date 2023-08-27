@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useReducer, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { FormInstance, Popconfirm, Tag, Tooltip, Upload } from 'antd';
+import { FormInstance, Popconfirm, Tag, Tooltip, Upload, Modal } from 'antd';
 import type { MenuProps } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFolder, faImage, faFile, faFilePdf, faFileWord, faEnvelope } from '@fortawesome/free-solid-svg-icons';
@@ -49,6 +49,7 @@ import type File from '../../types/File';
 import type User from '../../types/User';
 
 import '../../style.less';
+import DragAndDrop from '../DragAndDrop';
 
 interface FileType extends File {
   key: React.Key;
@@ -74,6 +75,29 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
   ) {
     navigate(location.pathname);
   }
+
+  const fileUpload = useMutation(
+    (options: any): any => {
+      const data = new FormData();
+      data.set('operationID', operationToken);
+      data.set('folderID', folders?.root.id);
+      data.set('file', options.file, options.file.name);
+      data.set('name', options.file.name);
+      return dataManager.uploadFile(data);
+    },
+    {
+      onSuccess: (data: any) => {
+        let file = data.name;
+        showSuccesNotification('fileImported', t, { file });
+        hideModal();
+        refetch();
+      },
+      onError: (e) => {
+        console.error(e);
+        showErrorNotification(e, t);
+      },
+    }
+  );
 
   const triggerDownload = (filename: string, data: string) => {
     const a = document.createElement('a');
@@ -194,12 +218,10 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
     let defaultReturn = <FontAwesomeIcon icon={faFile} style={{ fontSize: "22px", color: "var(--main-color)", position: "relative", top: "4px" }} className='me-2' />;
 
     const type = record['@type'];
-    console.log(type);
     if (type === Type.FOLDER) {
       defaultReturn = <FontAwesomeIcon icon={faFolder} style={{ fontSize: "22px", color: "orange", position: "relative", top: "4px", }} className='me-2' />;
     } else if (type === Type.FILE) {
       const extension = record['extension'];
-      console.log(extension);
       if (extension === 'png' || extension === 'jpg' || extension === 'jpeg') {
         defaultReturn = <FontAwesomeIcon icon={faImage} style={{ fontSize: "22px", color: "var(--main-color)", position: "relative", top: "4px" }} className='me-2' />;
       } else if (extension === 'pdf') {
@@ -411,12 +433,22 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
           ),
           showModal: true,
         };
+      case Action.UPLOAD_FILE:
+        return {
+          action: Action.UPLOAD_FILE,
+          content: (
+            <DragAndDrop customRequest={fileUpload.mutate} showUploadList={false} />
+          ),
+          showModal: true,
+          onOk: action.onOk,
+          okText: action.okText
+        };
       case Action.SHOW_QRCODE:
         return {
           content: (
             <QRCodeCanvas
               id="qrcode"
-             // onClick={() => window.open(action.qrCodeValue, '_blank')}
+              // onClick={() => window.open(action.qrCodeValue, '_blank')}
               value={action.qrCodeValue}
             />
           ),
@@ -592,11 +624,11 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
                   type: Action.SHOW_QRCODE,
                   qrCodeValue: url,
                   onOk: () => {
-                    const canvas = document.getElementById('qrcode') as HTMLCanvasElement; 
+                    const canvas = document.getElementById('qrcode') as HTMLCanvasElement;
                     if (canvas) {
                       const url = canvas.toDataURL('image/png');
                       const link = document.createElement('a');
-                      link.download = `qrcode-${record.name.split('.')[0]}.png`; 
+                      link.download = `qrcode-${record.name.split('.')[0]}.png`;
                       link.href = url;
                       link.click();
                     }
@@ -643,28 +675,6 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
     });
   }
 
-  const fileUpload = useMutation(
-    (options: any): any => {
-      const data = new FormData();
-      data.set('operationID', operationToken);
-      data.set('folderID', folders?.root.id);
-      data.set('file', options.file, options.file.name);
-      data.set('name', options.file.name);
-      return dataManager.uploadFile(data);
-    },
-    {
-      onSuccess: (data: any) => {
-        let file = data.name;
-        showSuccesNotification('fileImported', t, { file });
-        refetch();
-      },
-      onError: (e) => {
-        console.error(e);
-        showErrorNotification(e, t);
-      },
-    }
-  );
-
   /**
    * New file/folder buttons
    */
@@ -688,9 +698,17 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
   if (isAuthorized(Action.UPLOAD_FILE)) {
     items.push({
       label: (
-        <Upload showUploadList={false} customRequest={fileUpload.mutate}>
+        <div
+          onClick={() => {
+            modalDispatch({
+              type: Action.UPLOAD_FILE,
+              onOk: () => {},
+              okText: false
+            });
+          }}
+        >
           <UploadOutlined /> {t('file.upload')}
-        </Upload>
+        </div>
       ),
       key: 'file',
     });

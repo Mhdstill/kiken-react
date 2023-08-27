@@ -46,12 +46,12 @@ input:focus,
 input:valid,
 .ant-select-selector,
 .ant-input-password
- {
+{
     background-color: var(--dark-gray-color) !important;
     border: solid 1px rgb(73, 80, 87) !important;
 }
 
-.ant-select-selector{
+.ant-select-selector {
     min-height: 50px !important;
 }
 
@@ -403,18 +403,17 @@ table .anticon {
 .ant-select-selection-item,
 #searchbar:focus,
 #searchbar:valid,
-#searchbar[value]
-{
+#searchbar[value] {
     color: white !important
 }
 
 .anticon-caret-up.active,
-.anticon-caret-down.active{
+.anticon-caret-down.active {
     color: var(--main-color) !important;
 }
 
 .ant-modal-close-x,
-.ant-modal-close-x svg{
+.ant-modal-close-x svg {
     color: white !important;
     font-size: 18px !important;
 }
@@ -425,8 +424,32 @@ table .anticon {
     font-family: 'Saira-medium' !important;
 }
 
-.ant-select-clear{
+.ant-select-clear {
     background-color: unset !important;
     color: white !important;
     font-size: 16px !important;
+}
+
+.ant-upload.ant-upload-drag {
+    width: 80% !important;
+    margin: auto !important;
+    padding: 20px;
+    background-color: var(--dark-gray-color) !important;
+}
+
+.ant-upload.ant-upload-drag p.ant-upload-text {
+    color: white !important;
+    font-weight: bold;
+}
+
+.ant-upload.ant-upload-drag p.ant-upload-hint {
+    color: white !important;
+    opacity: 0.7 !important;
+}
+
+.ant-dropdown-menu-title-content {
+    font-family: 'Saira-medium' !important;
+}
+.ant-dropdown-menu-title-content .anticon{
+    margin-right: 5px !important;
 }
