@@ -453,3 +453,7 @@ table .anticon {
 .ant-dropdown-menu-title-content .anticon{
     margin-right: 5px !important;
 }
+
+.ant-modal-body img {
+    background-color: white;
+}

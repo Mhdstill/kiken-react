@@ -174,7 +174,10 @@ export class DefaultDataManager implements DataManager {
         body = { ...body, operation, roles: [Role.CLIENT] };
         req = await this.axios.post('/api/users', body);
       } else {
-        req = await this.axios.post(`/api/${operation}/users`, body);
+        let operationIRI = `/api/operations/${operation}`
+        body = { ...body, operation: operationIRI};
+        req = await this.axios.post('/api/users/client', body);
+        //req = await this.axios.post(`/api/${operation}/users`, body);
       }
       return true;
     } catch (err) {

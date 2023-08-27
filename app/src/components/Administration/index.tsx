@@ -48,7 +48,6 @@ const AdministrationPage = ({
     items.push({
       label: (
         <span>
-          <UserOutlined />
           {t('admin.usersTab')}
         </span>
       ),
