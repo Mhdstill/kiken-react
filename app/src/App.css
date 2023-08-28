@@ -457,3 +457,15 @@ table .anticon {
 .ant-modal-body img {
     background-color: white;
 }
+
+.ant-upload-drag-icon svg {
+    color: var(--main-color) !important;
+}
+
+.ant-upload-drag:hover{
+    border: 1px dashed var(--main-color) !important;
+}
+
+.ant-upload.ant-upload-drag.ant-upload-drag-hover:not(.ant-upload-disabled){
+    border-color: var(--main-color) !important;
+}

@@ -26,7 +26,7 @@ const DragAndDrop: React.FC<DragAndDropProps> = ({ onFileUpload, customRequest, 
             </p>
             <p className="ant-upload-text">Cliquez/Glisser fichier(s) vers cette zone</p>
             <p className="ant-upload-hint">
-                Prise en charge d'un téléchargement unique ou groupé. Il est strictement interdit de télécharger des données d'entreprise ou d'autres fichiers interdits.
+                Prise en charge d'un téléchargement unique ou groupé. Il est strictement interdit de télécharger des données d’entreprise ou autres fichiers pour lesquels vous ne disposez pas d’autorisation
             </p>
         </Upload.Dragger>
     );
