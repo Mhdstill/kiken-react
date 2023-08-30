@@ -55,7 +55,7 @@ const PointersPage: FC<
 
     const [modalFormData, setModalFormData] = useState<any | null>(null);
     const params = useParams();
-    const operationToken = params.operationToken as string;
+    const { operation_token } = sessionStorage;
     const handleFormValues = (changedValues: any, allValues: any) => {
         setModalFormData(allValues);
     };
@@ -164,7 +164,7 @@ const PointersPage: FC<
                     onClick={() => {
                         modalDispatch({
                             type: Action.SHOW_QRCODE,
-                            qrCodeValue: `${window.location.origin}/${operationToken}/pointer`,
+                            qrCodeValue: `${window.location.origin}/${operation_token}/pointer`,
                             onOk: () => {
                                 const canvas = document.getElementById('qrcode') as HTMLCanvasElement;
                                 if (canvas) {
