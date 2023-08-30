@@ -250,6 +250,7 @@ const OperationsPage: FC<
 
   return (
     <TableView
+      title={t('admin.operationsTab')}
       data={operations}
       isFetching={isFetching}
       actionsItems={items}

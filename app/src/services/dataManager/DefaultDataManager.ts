@@ -4,6 +4,7 @@ import { DataManager } from './DataManager';
 import { Type as FileType } from '../../types/File';
 import type File from '../../types/File';
 import type User from '../../types/User';
+import type Pointer from '../../types/Pointer';
 import type Operation from '../../types/Operation';
 import { Role } from '../auth/auth';
 
@@ -27,7 +28,7 @@ export class DefaultDataManager implements DataManager {
         operationToken: response.data.operation,
       };
     } catch (err) {
-      throw new Error(err.response.statusText);
+      throw new Error((err.response && err.response.statusText) ? err.response.statusText : err);
     }
   }
 
@@ -41,7 +42,7 @@ export class DefaultDataManager implements DataManager {
       );
       return response.data['hydra:member'];
     } catch (err) {
-      throw new Error(err.response.statusText);
+      throw new Error((err.response && err.response.statusText) ? err.response.statusText : err);
     }
   }
 
@@ -52,7 +53,7 @@ export class DefaultDataManager implements DataManager {
       );
       return response.data;
     } catch (err) {
-      throw new Error(err.response.statusText);
+      throw new Error((err.response && err.response.statusText) ? err.response.statusText : err);
     }
   }
 
@@ -66,7 +67,7 @@ export class DefaultDataManager implements DataManager {
       );
       return response.data;
     } catch (err) {
-      throw new Error(err.response.statusText);
+      throw new Error((err.response && err.response.statusText) ? err.response.statusText : err);
     }
   }
 
@@ -75,7 +76,7 @@ export class DefaultDataManager implements DataManager {
       const response = await this.axios.post('/api/media_objects', data);
       return response.data;
     } catch (err) {
-      throw new Error(err.response.statusText);
+      throw new Error((err.response && err.response.statusText) ? err.response.statusText : err);
     }
   }
 
@@ -89,7 +90,7 @@ export class DefaultDataManager implements DataManager {
       });
       return true;
     } catch (err) {
-      throw new Error(err.response.statusText);
+      throw new Error((err.response && err.response.statusText) ? err.response.statusText : err);
     }
   }
 
@@ -100,7 +101,7 @@ export class DefaultDataManager implements DataManager {
       );
       return file;
     } catch (err) {
-      throw new Error(err.response.statusText);
+      throw new Error((err.response && err.response.statusText) ? err.response.statusText : err);
     }
   }
 
@@ -109,7 +110,7 @@ export class DefaultDataManager implements DataManager {
       await this.axios.delete(`/api/${operationToken}/folders/${folder.id}`);
       return folder;
     } catch (err) {
-      throw new Error(err.response.statusText);
+      throw new Error((err.response && err.response.statusText) ? err.response.statusText : err);
     }
   }
 
@@ -133,7 +134,7 @@ export class DefaultDataManager implements DataManager {
       }
       return true;
     } catch (err) {
-      throw new Error(err.response.statusText);
+      throw new Error((err.response && err.response.statusText) ? err.response.statusText : err);
     }
   }
 
@@ -157,7 +158,7 @@ export class DefaultDataManager implements DataManager {
       }
       return true;
     } catch (err) {
-      throw new Error(err.response.statusText);
+      throw new Error((err.response && err.response.statusText) ? err.response.statusText : err);
     }
   }
 
@@ -175,13 +176,13 @@ export class DefaultDataManager implements DataManager {
         req = await this.axios.post('/api/users', body);
       } else {
         let operationIRI = `/api/operations/${operation}`
-        body = { ...body, operation: operationIRI};
+        body = { ...body, operation: operationIRI };
         req = await this.axios.post('/api/users/client', body);
         //req = await this.axios.post(`/api/${operation}/users`, body);
       }
       return true;
     } catch (err) {
-      throw new Error(err.response.statusText);
+      throw new Error((err.response && err.response.statusText) ? err.response.statusText : err);
     }
   }
 
@@ -195,7 +196,7 @@ export class DefaultDataManager implements DataManager {
         return response.data['hydra:member'];
       }
     } catch (err) {
-      throw new Error(err.response.statusText);
+      throw new Error((err.response && err.response.statusText) ? err.response.statusText : err);
     }
   }
 
@@ -206,7 +207,7 @@ export class DefaultDataManager implements DataManager {
       );
       return response.data['hydra:member'];
     } catch (err) {
-      throw new Error(err.response.statusText);
+      throw new Error((err.response && err.response.statusText) ? err.response.statusText : err);
     }
   }
 
@@ -225,7 +226,7 @@ export class DefaultDataManager implements DataManager {
       }
       return true;
     } catch (err) {
-      throw new Error(err.response.statusText);
+      throw new Error((err.response && err.response.statusText) ? err.response.statusText : err);
     }
   }
 
@@ -239,7 +240,7 @@ export class DefaultDataManager implements DataManager {
       }
       return user;
     } catch (err) {
-      throw new Error(err.response.statusText);
+      throw new Error((err.response && err.response.statusText) ? err.response.statusText : err);
     }
   }
 
@@ -248,7 +249,16 @@ export class DefaultDataManager implements DataManager {
       await this.axios.post('/api/operations', { name });
       return true;
     } catch (err) {
-      throw new Error(err.response.statusText);
+      throw new Error((err.response && err.response.statusText) ? err.response.statusText : err);
+    }
+  }
+
+  async getOperation(operationToken: string): Promise<Operation> {
+    try {
+      const response: any = await this.axios.get(`/api/operations/${operationToken}`);
+      return response.data['hydra:member'];
+    } catch (err) {
+      throw new Error((err.response && err.response.statusText) ? err.response.statusText : err);
     }
   }
 
@@ -257,7 +267,7 @@ export class DefaultDataManager implements DataManager {
       const response: any = await this.axios.get('/api/operations');
       return response.data['hydra:member'];
     } catch (err) {
-      throw new Error(err.response.statusText);
+      throw new Error((err.response && err.response.statusText) ? err.response.statusText : err);
     }
   }
 
@@ -271,7 +281,7 @@ export class DefaultDataManager implements DataManager {
       });
       return true;
     } catch (err) {
-      throw new Error(err.response.statusText);
+      throw new Error((err.response && err.response.statusText) ? err.response.statusText : err);
     }
   }
 
@@ -280,7 +290,71 @@ export class DefaultDataManager implements DataManager {
       await this.axios.delete(`/api/operations/${operation.id}`);
       return operation;
     } catch (err) {
-      throw new Error(err.response.statusText);
+      throw new Error((err.response && err.response.statusText) ? err.response.statusText : err);
+    }
+  }
+
+  async getPersonPointerByEmail(operationToken: string, email: string): Promise<any> {
+    try {
+      const response: any = await this.axios.get(
+        `/api/${operationToken}/person_pointers/get_by_email`,
+        {
+          params: {
+            email: email,
+          },
+        }
+      );
+      return response.data;
+    } catch (err) {
+      throw new Error((err.response && err.response.statusText) ? err.response.statusText : err);
+    }
+  }
+
+  async createPersonPointer(operationToken: string, email: string, firstname: string, lastname: string): Promise<boolean> {
+    try {
+      let personPointer = await this.getPersonPointerByEmail(operationToken, email);
+      if (personPointer !== null && personPointer !== undefined) {
+        throw new Error('Email déjà existant');
+      }
+
+      await this.axios.post('/api/person_pointers', {
+        operation: `/api/operations/${operationToken}`,
+        email: email,
+        firstname: firstname,
+        lastname: lastname
+      });
+
+      return true;
+    } catch (err) {
+      throw new Error((err.response && err.response.statusText) ? err.response.statusText : err);
+    }
+  }
+
+  async makePointer(operationToken: string, email: string): Promise<any> {
+    try {
+      let personPointer = await this.getPersonPointerByEmail(operationToken, email);
+      if (personPointer === null || personPointer === undefined) {
+        throw new Error('Email Not found');
+      }
+      await this.axios.post('/api/pointers', {
+        operation: operationToken,
+        person: personPointer['id']
+      });
+      return true;
+    } catch (err) {
+      throw new Error((err.response && err.response.statusText) ? err.response.statusText : err);
+    }
+  }
+
+  async getPointers(): Promise<Pointer[]> {
+    try {
+      const { operation_token } = sessionStorage;
+      const response: any = await this.axios.get(
+        `/api/${operation_token}/pointers`
+      );
+      return response.data['hydra:member'];
+    } catch (err) {
+      throw new Error((err.response && err.response.statusText) ? err.response.statusText : err);
     }
   }
 }

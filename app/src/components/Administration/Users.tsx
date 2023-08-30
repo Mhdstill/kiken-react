@@ -108,9 +108,9 @@ const UsersPage: FC<
             name: 'operationName',
             possibleValues: operations
               ? operations.map((op) => ({
-                  id: op['@id'],
-                  label: op.name,
-                }))
+                id: op['@id'],
+                label: op.name,
+              }))
               : [],
             multiple: false,
           });
@@ -244,8 +244,8 @@ const UsersPage: FC<
         operation:
           role === Role.ADMIN
             ? (operations as any[]).find((op) => op['@id'] === operationName)[
-                '@id'
-              ]
+            '@id'
+            ]
             : sessionStorage.getItem('operation_token'),
       });
     },
@@ -301,6 +301,7 @@ const UsersPage: FC<
 
   return (
     <TableView
+      title={t('admin.usersTab')}
       data={users}
       isFetching={isFetching}
       actionsItems={items}

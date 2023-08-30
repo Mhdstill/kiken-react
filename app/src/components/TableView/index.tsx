@@ -13,6 +13,7 @@ import { useTablePageSize } from '../../hooks/useTablePageSize';
 import '../../style.less';
 
 interface TableViewProps extends WithTranslation {
+  title?: string | undefined | null;
   data: any[] | undefined;
   isFetching: boolean;
   actionsItems: MenuProps['items'];
@@ -52,6 +53,20 @@ const TableView: FC<TableViewProps> = (props) => {
 
   return (
     <div className="table-container">
+      {props.title ? (
+        <div role="tablist" className="ant-tabs-nav">
+          <div className="ant-tabs-nav-wrap">
+            <div className="ant-tabs-nav-list" style={{ transform: 'translate(0px, 0px)' }}>
+              <div className="ant-tabs-tab ant-tabs-tab-active">
+                <div className="ant-tabs-tab-btn" id="rc-tabs-0-tab-operations">
+                  <span> {props.title} </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null
+      }
       {props.actionsItems && props.actionsItems.length > 0 && (
         <Dropdown
           className="actions-container float-right"
@@ -59,7 +74,7 @@ const TableView: FC<TableViewProps> = (props) => {
           trigger={['click']}
         >
           <Button size="small" icon={<PlusOutlined />}>
-            {props.t('new')}
+            Actions
           </Button>
         </Dropdown>
       )}

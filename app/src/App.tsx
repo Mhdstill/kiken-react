@@ -10,10 +10,14 @@ import FilesPage from './components/Files';
 import HomePage from './components/Home';
 import DefaultLayout from './components/Layout';
 import LoginPage from './components/Login';
-import AdministrationPage from './components/Administration';
+import PointerPage from './components/Pointer';
 import { Role } from './services/auth/auth';
 import './App.css'
 import './Fonts.css'
+import PointerSuccessPage from './components/PointerSuccess';
+import OperationsPage from './components/Administration/Operations';
+import UsersPage from './components/Administration/Users';
+import PointersPage from './components/Administration/Pointers';
 
 type ProtectedRouteProps = {
   rolesAllowed: Role[];
@@ -66,19 +70,31 @@ const router = createBrowserRouter([
       </ProtectedRoute>
     ),
     children: [
-      { index: true, element: <AdministrationPage /> },
+      { index: true },
       {
         path: 'operations',
         element: (
           <ProtectedRoute rolesAllowed={[Role.ADMIN]}>
-            <AdministrationPage />
+            <OperationsPage />
           </ProtectedRoute>
         ),
       },
       {
         path: 'users',
-        element: <AdministrationPage selectedKey="users" />,
+        element: (
+          <ProtectedRoute rolesAllowed={[Role.ADMIN, Role.CLIENT]}>
+            <UsersPage />
+          </ProtectedRoute>
+        )
       },
+      {
+        path: 'pointers',
+        element: (
+          <ProtectedRoute rolesAllowed={[Role.ADMIN, Role.CLIENT]}>
+            <PointersPage />
+          </ProtectedRoute>
+        )
+      }
     ],
   },
   {
@@ -89,6 +105,16 @@ const router = createBrowserRouter([
     path: 'logout',
     element: <LogoutPage />,
   },
+  {
+    path: ':operationToken/pointer',
+    element:
+      <PointerPage />
+  },
+  {
+    path: ':operationToken/pointer/success',
+    element:
+      <PointerSuccessPage />
+  }
 ]);
 
 const App: FC = () => {

@@ -1,5 +1,6 @@
 export default {
   error: 'Erreur',
+  error_description: 'Merci de bien vouloir réessayer ultérieurement.',
   login: {
     invalidInput: 'Veuillez renseigner votre {{input}}.',
     errorMessage:
@@ -75,6 +76,8 @@ export default {
   },
   home: 'Accueil',
   name: 'Nom',
+  start: 'Début',
+  end: 'Fin',
   createdAt: 'Créé le',
   updatedAt: 'Mis à jour le',
   user: {
@@ -91,5 +94,17 @@ export default {
   admin: {
     usersTab: 'Utilisateurs',
     operationsTab: 'Opérations',
+    pointersTab: 'Pointeurs',
+  },
+  pointer: {
+    form: {
+      submit: 'S\'inscrire',
+      firstname: 'Prénom',
+      lastname: 'Nom',
+      SST: 'SST'
+    },
+    error: {
+      email: 'Email déjà utilisé.'
+    }
   },
 };

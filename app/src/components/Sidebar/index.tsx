@@ -1,5 +1,5 @@
 import React from 'react';
-import { faUser, faClipboardList, faHome, faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faClipboardList, faHome, faRightFromBracket, faSignature } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     isAuthorized,
@@ -60,14 +60,29 @@ const Sidebar = () => {
                     }
 
                     {usAuth ? (
-                        <li className={`nav-item ${location.pathname === "/admin/users" ? "active" : ""}`} onClick={() => navigate("/admin/users")}>
-                            <a className="nav-link text-white" onClick={(event) => { event.preventDefault(); }}>
-                                <div className="text-white text-center me-2 d-flex align-items-center justify-content-center">
-                                    <FontAwesomeIcon icon={faUser} style={{ fontSize: '1.2rem' }} className="fas fa-user-circle ps-2 pe-2 text-center" />
-                                </div>
-                                <span className="nav-link-text ms-1">Utilisateurs</span>
-                            </a>
-                        </li>)
+                        <>
+                            <li className={`nav-item ${location.pathname === "/admin/users" ? "active" : ""}`} onClick={() => navigate("/admin/users")}>
+                                <a className="nav-link text-white" onClick={(event) => { event.preventDefault(); }}>
+                                    <div className="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                                        <FontAwesomeIcon icon={faUser} style={{ fontSize: '1.2rem' }} className="fas fa-user-circle ps-2 pe-2 text-center" />
+                                    </div>
+                                    <span className="nav-link-text ms-1">Utilisateurs</span>
+                                </a>
+                            </li>
+                            {usAuth ? (
+                                <li className={`nav-item ${location.pathname === "/admin/pointers" ? "active" : ""}`} onClick={() => navigate("/admin/pointers")}>
+                                    <a className="nav-link text-white" onClick={(event) => { event.preventDefault(); }}>
+                                        <div className="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                                            <FontAwesomeIcon icon={faSignature} style={{ fontSize: '1.2rem' }} className="fas fa-user-circle ps-2 pe-2 text-center" />
+                                        </div>
+                                        <span className="nav-link-text ms-1">Pointeurs</span>
+                                    </a>
+                                </li>
+                            ) : (<></>)
+                            }
+
+                        </>
+                    )
                         :
                         (<></>)
                     }

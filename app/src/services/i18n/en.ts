@@ -1,5 +1,6 @@
 export default {
   error: 'Error',
+  error_description: 'Please try again later.',
   login: {
     invalidInput: 'Please input your {{input}}.',
     errorMessage:
@@ -79,6 +80,8 @@ export default {
   },
   home: 'Home',
   name: 'Name',
+  start: 'Start',
+  end: 'End',
   createdAt: 'Created at',
   updatedAt: 'Updated at',
   user: {
@@ -94,5 +97,17 @@ export default {
   admin: {
     usersTab: 'Users',
     operationsTab: 'Operations',
+    pointersTab: 'Pointers',
+  },
+  pointer: {
+    form: {
+      submit: 'S\'inscrire',
+      firstname: 'Prénom',
+      lastname: 'Nom',
+      SST: 'SST'
+    },
+    error: {
+      email: 'Email already used.'
+    }
   },
 };

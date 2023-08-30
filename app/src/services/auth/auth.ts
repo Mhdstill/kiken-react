@@ -26,11 +26,15 @@ export enum UserAction {
   MODIFY_USER = 'MODIFY_USER',
 }
 
+export enum PointerAction {
+  SHOW_QRCODE = 'SHOW_QRCODE',
+}
+
 export enum ModalAction {
   CLOSE_MODAL = 'CLOSE_MODAL',
 }
 
-export type Action = FileAction | OperationAction | UserAction | ModalAction;
+export type Action = FileAction | OperationAction | UserAction | PointerAction | ModalAction;
 
 const permissions: {
   [key in FileAction | OperationAction | UserAction | ModalAction]:
