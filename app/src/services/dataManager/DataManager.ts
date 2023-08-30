@@ -29,7 +29,7 @@ export interface DataManager {
   renameOperation(operation: Operation, newName: string): Promise<any>;
   deleteOperation(operation: Operation): Promise<any>;
   getPersonPointerByEmail(operationToken: string, email: string): Promise<any>;
-  createPersonPointer(operationToken: string, email: string, firstname: string, lastname: string) : Promise<any>;
+  createPersonPointer(operationToken: string, email: string, firstname: string, lastname: string, societe: string) : Promise<any>;
   makePointer(operationToken: string, email: string): Promise<any[]>;
   getPointers(): Promise<any[]>;
 }

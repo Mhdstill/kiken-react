@@ -310,7 +310,7 @@ export class DefaultDataManager implements DataManager {
     }
   }
 
-  async createPersonPointer(operationToken: string, email: string, firstname: string, lastname: string): Promise<boolean> {
+  async createPersonPointer(operationToken: string, email: string, firstname: string, lastname: string, societe: string): Promise<boolean> {
     try {
       let personPointer = await this.getPersonPointerByEmail(operationToken, email);
       if (personPointer !== null && personPointer !== undefined) {
@@ -321,7 +321,8 @@ export class DefaultDataManager implements DataManager {
         operation: `/api/operations/${operationToken}`,
         email: email,
         firstname: firstname,
-        lastname: lastname
+        lastname: lastname,
+        societe: societe
       });
 
       return true;

@@ -74,6 +74,7 @@ export default {
       unknown: 'Une erreur est survenue, veuillez réessayer plus tard.',
     },
   },
+  society: 'Société',
   home: 'Accueil',
   name: 'Nom',
   start: 'Début',

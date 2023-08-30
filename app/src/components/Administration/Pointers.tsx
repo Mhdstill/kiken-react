@@ -38,6 +38,7 @@ const PointersPage: FC<
         const ops = await dataManager.getPointers();
         return ops.map((op, i) => {
             op.email = op.person.email;
+            op.societe = op.person.societe;
             return Object.assign(op, { key: i });
         });
     };
@@ -95,6 +96,16 @@ const PointersPage: FC<
             key: 'email',
             title: 'Email',
             dataIndex: 'email',
+            render: (value) => (
+                <Tooltip placement="bottomLeft" title={value}>
+                    {value}
+                </Tooltip>
+            ),
+        },
+        {
+            key: 'societe',
+            title: t('society'),
+            dataIndex: 'societe',
             render: (value) => (
                 <Tooltip placement="bottomLeft" title={value}>
                     {value}

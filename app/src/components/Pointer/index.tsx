@@ -48,7 +48,8 @@ const PointerPage: FC = ({
         operationToken,
         values.email,
         values.lastname,
-        values.firstname
+        values.firstname,
+        values.societe
       );
     } catch (error) {
       throw new Error("Problème lors de la création d'une personne.");
@@ -152,6 +153,13 @@ const PointerPage: FC = ({
                         <Form.Item name="lastname" rules={[{ required: true }]}>
                           <Input
                             placeholder={t('pointer.form.lastname')}
+                            className='form-control form-control-lg focused bg-white mb-3 input-with-value'
+                          />
+                        </Form.Item>
+
+                        <Form.Item name="societe" rules={[{ required: true }]}>
+                          <Input
+                            placeholder={t('society')}
                             className='form-control form-control-lg focused bg-white mb-3 input-with-value'
                           />
                         </Form.Item>

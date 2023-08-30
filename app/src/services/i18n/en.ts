@@ -78,6 +78,7 @@ export default {
       unknown: 'Something went wrong, please try again later.',
     },
   },
+  society: 'Society',
   home: 'Home',
   name: 'Name',
   start: 'Start',
