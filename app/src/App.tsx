@@ -18,6 +18,7 @@ import PointerSuccessPage from './components/PointerSuccess';
 import OperationsPage from './components/Administration/Operations';
 import UsersPage from './components/Administration/Users';
 import PointersPage from './components/Administration/Pointers';
+import { ThemeProvider } from './contexts/ThemeContext';
 
 type ProtectedRouteProps = {
   rolesAllowed: Role[];
@@ -118,7 +119,11 @@ const router = createBrowserRouter([
 ]);
 
 const App: FC = () => {
-  return <RouterProvider router={router} />;
+  return (
+    <ThemeProvider>
+      <RouterProvider router={router} />
+    </ThemeProvider>
+  );
 };
 
 export default App;

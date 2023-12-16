@@ -1,15 +1,14 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { Button, Card, Form, Input, notification, Row } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import type { WithTranslation } from 'react-i18next';
 import { EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons';
-
 import withTranslation from '../../hoc/withTranslation';
 import withDataManager, {
   WithDataManagerProps,
 } from '../../hoc/withDataManager';
-
+import { useTheme } from '../../contexts/ThemeContext';
 import './style.less';
 
 const LoginPage: FC = ({
@@ -18,6 +17,7 @@ const LoginPage: FC = ({
 }: WithTranslation & WithDataManagerProps) => {
   const navigate = useNavigate();
   const [form] = Form.useForm();
+  const { isDarkMode, toggleTheme } = useTheme();
 
   if (sessionStorage.getItem('token')) {
     const operationToken = sessionStorage.getItem('operation_token');
@@ -66,6 +66,18 @@ const LoginPage: FC = ({
       email: t('email.invalidMessage'),
     },
   };
+
+  useEffect(() => {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = isDarkMode ? '/AppDarkMode.css' : '/AppLightMode.css';
+    document.head.appendChild(link);
+
+    return () => {
+      document.head.removeChild(link);
+    };
+  }, [isDarkMode]);
 
   return (
     <section className="vh-100 login" style={{ backgroundColor: '#1E1C22 !important' }}>
