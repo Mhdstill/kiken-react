@@ -1,5 +1,5 @@
-import React from 'react';
-import { faUser, faClipboardList, faHome, faRightFromBracket, faSignature } from '@fortawesome/free-solid-svg-icons';
+import React, { useState } from 'react';
+import { faUser, faClipboardList, faHome, faRightFromBracket, faSignature, faBuilding, faChevronRight, faChevronDown, faTable, faList, faUserTie, faGear } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     isAuthorized,
@@ -7,11 +7,13 @@ import {
     UserAction,
 } from '../../services/auth/auth';
 import { useNavigate } from 'react-router-dom';
+import NavItem from '../NavbarList/NavItem';
 
 const Sidebar = () => {
 
     /* const { Footer: BaseFooter } = Layout; */
     const navigate = useNavigate();
+    const [isHovered, setIsHovered] = useState(false);
 
     var isOnline = false;
     var operationToken = null;
@@ -26,6 +28,45 @@ const Sidebar = () => {
         isOnline = true;
     }
 
+    const handleMouseOver = () => {
+        setIsHovered(true);
+    };
+
+    const handleMouseLeave = () => {
+        setIsHovered(false);
+    };
+
+    const operationItems = [
+        {
+            title: "Liste",
+            icon: faTable,
+            path: "/admin/operations/list"
+        },
+        {
+            title: "Clients",
+            icon: faUserTie,
+            path: "/admin/operations/clients"
+        },
+    ]
+
+    const pointerItems = [
+        {
+            title: "Liste",
+            icon: faTable,
+            path: "/pointers/list"
+        },
+        {
+            title: "Adresses",
+            icon: faBuilding,
+            path: "/pointers/addresses"
+        },
+        {
+            title: "Champs",
+            icon: faClipboardList,
+            path: "/pointers/addresses"
+        },
+    ]
+
     return (
         <aside className="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3 bg-gradient-dark" id="sidenav-main">
             <div className="sidenav-header">
@@ -33,79 +74,38 @@ const Sidebar = () => {
                 <img style={{ height: '40px' }} src="/images/logo.svg" alt="Logo de QR4You"></img>
             </div>
             <hr className="horizontal light mt-0 mb-2" />
-            <div className="collapse navbar-collapse  w-auto  max-height-vh-100" id="sidenav-collapse-main">
+            <div className="collapse navbar-collapse  w-auto  h-100" id="sidenav-collapse-main">
+
                 <ul className="navbar-nav">
                     <li className="nav-item mt-3">
                         <h6 className="ps-4 ms-2 text-uppercase text-white font-weight-bolder opacity-8" style={{ fontSize: '1rem !important' }} >Pages</h6>
                     </li>
-                    <li className={`nav-item ${location.pathname === `/${operationToken}` ? "active" : ""}`} onClick={() => navigate("/")}>
-                        <a className="nav-link text-white" onClick={(event) => { event.preventDefault(); }}>
-                            <div className="text-white text-center me-2 d-flex align-items-center justify-content-center">
-                                <FontAwesomeIcon icon={faHome} style={{ fontSize: '1.2rem' }} className="fas fa-user-circle ps-2 pe-2 text-center" />
-                            </div>
-                            <span className="nav-link-text ms-1">Accueil</span>
-                        </a>
-                    </li>
+
+                    <NavItem title="Accueil" icon={faHome} path={`/${operationToken}`} />
+
                     {opAuth ? (
-                        <li className={`nav-item ${location.pathname === "/admin/operations" ? "active" : ""}`} onClick={() => navigate("/admin/operations")}>
-                            <a className="nav-link text-white" onClick={(event) => { event.preventDefault(); }}>
-                                <div className="text-white text-center me-2 d-flex align-items-center justify-content-center">
-                                    <FontAwesomeIcon icon={faClipboardList} style={{ fontSize: '1.2rem' }} className="fas fa-user-circle ps-2 pe-2 text-center" />
-                                </div>
-                                <span className="nav-link-text ms-1">Opérations</span>
-                            </a>
-                        </li>)
-                        :
-                        (<></>)
-                    }
-
-                    {usAuth ? (
                         <>
-                            <li className={`nav-item ${location.pathname === "/admin/users" ? "active" : ""}`} onClick={() => navigate("/admin/users")}>
-                                <a className="nav-link text-white" onClick={(event) => { event.preventDefault(); }}>
-                                    <div className="text-white text-center me-2 d-flex align-items-center justify-content-center">
-                                        <FontAwesomeIcon icon={faUser} style={{ fontSize: '1.2rem' }} className="fas fa-user-circle ps-2 pe-2 text-center" />
-                                    </div>
-                                    <span className="nav-link-text ms-1">Utilisateurs</span>
-                                </a>
-                            </li>
-                            {usAuth ? (
-                                <li className={`nav-item ${location.pathname === "/admin/pointers" ? "active" : ""}`} onClick={() => navigate("/admin/pointers")}>
-                                    <a className="nav-link text-white" onClick={(event) => { event.preventDefault(); }}>
-                                        <div className="text-white text-center me-2 d-flex align-items-center justify-content-center">
-                                            <FontAwesomeIcon icon={faSignature} style={{ fontSize: '1.2rem' }} className="fas fa-user-circle ps-2 pe-2 text-center" />
-                                        </div>
-                                        <span className="nav-link-text ms-1">Pointeurs</span>
-                                    </a>
-                                </li>
-                            ) : (<></>)
-                            }
-
+                            <NavItem title="Opérations" icon={faClipboardList} path="/admin/operations" dropdownItems={operationItems} />
                         </>
                     )
                         :
                         (<></>)
                     }
 
-                    {isOnline ? (
-                        <li className="nav-item" onClick={() => navigate("/logout")}>
-                            <a className="nav-link text-white" onClick={(event) => { event.preventDefault(); }}>
-                                <div className="text-white text-center me-2 d-flex align-items-center justify-content-center">
-                                    <FontAwesomeIcon icon={faRightFromBracket} style={{ fontSize: '1.2rem' }} className="fas fa-user-circle ps-2 pe-2 text-center" />
-                                </div>
-                                <span className="nav-link-text ms-1">Déconnexion</span>
-                            </a>
-                        </li>
+                    {usAuth ? (
+                        <>
+                            <NavItem title="Pointages" icon={faSignature} path="/admin/pointers" dropdownItems={pointerItems} />
+                            <NavItem title="Utilisateurs" icon={faUser} path="/admin/users" />
+                        </>
                     )
                         :
-                        (<li className="nav-item" onClick={() => navigate("/")}>
-                            <a className="nav-link text-white" onClick={(event) => { event.preventDefault(); }}>
-                                <div className="text-white text-center me-2 d-flex align-items-center justify-content-center">
-                                    <FontAwesomeIcon icon={faUser} style={{ fontSize: '1.2rem' }} className="fas fa-user-circle ps-2 pe-2 text-center" />
-                                </div>
-                                <span className="nav-link-text ms-1">Connexion</span>
-                            </a>
-                        </li>)
+                        (<></>)
+                    }
+
+                    {isOnline ?
+                        (<NavItem title="Déconnexion" icon={faRightFromBracket} path={"logout"} />)
+                        :
+                        (<NavItem title="Connexion" icon={faUser} path={"/"} />)
                     }
                 </ul>
             </div>

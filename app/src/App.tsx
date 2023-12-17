@@ -73,7 +73,7 @@ const router = createBrowserRouter([
     children: [
       { index: true },
       {
-        path: 'operations',
+        path: 'operations/list',
         element: (
           <ProtectedRoute rolesAllowed={[Role.ADMIN]}>
             <OperationsPage />
@@ -90,6 +90,14 @@ const router = createBrowserRouter([
       },
       {
         path: 'pointers',
+        element: (
+          <ProtectedRoute rolesAllowed={[Role.ADMIN, Role.CLIENT]}>
+            <PointersPage />
+          </ProtectedRoute>
+        )
+      },
+      {
+        path: 'pointers/list',
         element: (
           <ProtectedRoute rolesAllowed={[Role.ADMIN, Role.CLIENT]}>
             <PointersPage />
