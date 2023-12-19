@@ -52,12 +52,12 @@ const NavItem: React.FC<NavItemProps> = ({ title, icon, dropdownItems, path }) =
                 )}
             </div>
             {dropdownItems && dropdownItems.length > 0 && (
-                /*  <CSSTransition in={isHovered} timeout={600} classNames="dropdown-animation" unmountOnExit> */
-                <NavDropdown
-                    isExpanded={isHovered}
-                    items={dropdownItems}
-                />
-                /*    </CSSTransition> */
+                <CSSTransition in={isHovered} timeout={600} classNames="dropdown-animation" unmountOnExit> 
+                    <NavDropdown
+                        isExpanded={isHovered}
+                        items={dropdownItems}
+                    />
+                </CSSTransition>
             )}
         </li>
     );

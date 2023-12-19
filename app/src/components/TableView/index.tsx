@@ -11,6 +11,7 @@ import withTranslation from '../../hoc/withTranslation';
 import { useTablePageSize } from '../../hooks/useTablePageSize';
 
 import '../../style.less';
+import * as XLSX from 'xlsx';
 
 interface TableViewProps extends WithTranslation {
   title?: string | undefined | null;
@@ -51,8 +52,18 @@ const TableView: FC<TableViewProps> = (props) => {
     }
   };
 
-  const exportToCSV = () => {
-    console.log("export");
+  const exportToXLSX = () => {
+
+    if (!props.data) {
+      console.error("Aucune donnée disponible pour l'exportation.");
+      return;
+    }
+
+    const ws = XLSX.utils.json_to_sheet(props.data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Données Exportées");
+
+    XLSX.writeFile(wb, "donnees_exportees.xlsx");
   }
 
 
@@ -101,7 +112,7 @@ const TableView: FC<TableViewProps> = (props) => {
                   </>
                 ),
                 key: 'export',
-                onClick: exportToCSV,
+                onClick: exportToXLSX,
               }
             ],
           }}

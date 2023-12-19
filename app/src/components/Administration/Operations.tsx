@@ -1,7 +1,7 @@
 import React, { FC, useReducer, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { FormInstance, MenuProps, Popconfirm, Tooltip } from 'antd';
-import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import { AppstoreAddOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/lib/table';
 import type { WithTranslation } from 'react-i18next';
 
@@ -293,6 +293,7 @@ const OperationsPage: FC<
             });
           }}
         >
+          <AppstoreAddOutlined />
           {t('operation.new')}
         </div>
       ),

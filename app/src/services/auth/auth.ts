@@ -34,6 +34,9 @@ export enum ModuleAction {
 
 export enum PointerAction {
   SHOW_POINTER_QR = 'SHOW_POINTER_QR',
+  CREATE_POINTER_FIELD = 'CREATE_POINTER_FIELD',
+  DELETE_POINTER_FIELD = 'DELETE_POINTER_FIELD',
+  MODIFY_POINTER_FIELD = 'MODIFY_POINTER_FIELD',
 }
 
 export enum ModalAction {
@@ -69,6 +72,10 @@ const userPermissions: {
   [ModuleAction.DELETE_MODULE]: [Role.ADMIN],
 
   [PointerAction.SHOW_POINTER_QR]: [Role.CLIENT, Role.ADMIN],
+  [PointerAction.CREATE_POINTER_FIELD]: [Role.CLIENT, Role.ADMIN],
+  [PointerAction.DELETE_POINTER_FIELD]: [Role.CLIENT, Role.ADMIN],
+  [PointerAction.MODIFY_POINTER_FIELD]: [Role.CLIENT, Role.ADMIN],
+
 
   [ModalAction.CLOSE_MODAL]: null,
 };
@@ -87,6 +94,9 @@ const operationPermissions: {
   [FileAction.SHOW_QRCODE]: "QRD",
 
   [PointerAction.SHOW_POINTER_QR]: "PT",
+  [PointerAction.CREATE_POINTER_FIELD]: "PT",
+  [PointerAction.DELETE_POINTER_FIELD]: "PT",
+  [PointerAction.MODIFY_POINTER_FIELD]: "PT",
 
   [OperationAction.CREATE_OPERATION]: null,
   [OperationAction.DELETE_OPERATION]: null,

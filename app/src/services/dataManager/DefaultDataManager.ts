@@ -8,6 +8,7 @@ import type Module from '../../types/Module';
 import type Pointer from '../../types/Pointer';
 import type Operation from '../../types/Operation';
 import { Role } from '../auth/auth';
+import PointerField from '../../types/PointerField';
 
 export class DefaultDataManager implements DataManager {
   private readonly axios: AxiosInstance;
@@ -231,6 +232,9 @@ export class DefaultDataManager implements DataManager {
     }
   }
 
+
+
+  /** MODULES */
   async getModules(): Promise<Module[]> {
     try {
       const response: any = await this.axios.get(
@@ -280,6 +284,66 @@ export class DefaultDataManager implements DataManager {
     }
   }
 
+
+
+/** Pointer Fields */
+  async getPointerFields(): Promise<PointerField[]> {
+    try {
+      const { operation_token } = sessionStorage;
+      const response: any = await this.axios.get(
+        `/api/${operation_token}/fields`
+      );
+      return response.data['hydra:member'];
+    } catch (err) {
+      throw new Error((err.response && err.response.statusText) ? err.response.statusText : err);
+    }
+  }
+
+  async createPointerField(data: any): Promise<boolean> {
+    try {
+      const { operation_token } = sessionStorage;
+      const { label, type } = data;
+      let body: any = {
+        label,
+        type,
+      };
+
+      let operationIRI = `/api/operations/${operation_token}`
+      body = { ...body, operation: operationIRI };
+      
+      let req;
+      req = await this.axios.post('/api/fields', body);
+      return true;
+    } catch (err) {
+      throw new Error((err.response && err.response.statusText) ? err.response.statusText : err);
+    }
+  }
+
+  async updatePointerField(field: PointerField, data: any): Promise<boolean> {
+    try {
+      const { label, type } = data;
+      const body = {
+        label,
+        type,
+      };
+      await this.axios.put(`/api/fields/${field.id}`, body);
+      return true;
+    } catch (err) {
+      throw new Error((err.response && err.response.statusText) ? err.response.statusText : err);
+    }
+  }
+
+  async deletePointerField(field: PointerField): Promise<PointerField> {
+    try {
+      await this.axios.delete(`/api/fields/${field.id}`);
+      return field;
+    } catch (err) {
+      throw new Error((err.response && err.response.statusText) ? err.response.statusText : err);
+    }
+  }
+
+
+  
   async updateUser(user: User, data: any): Promise<boolean> {
     try {
       const { email, password } = data;

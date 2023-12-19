@@ -77,7 +77,7 @@ const Sidebar = () => {
         {
             title: "Champs",
             icon: faClipboardList,
-            path: "/admin/pointers/addresses"
+            path: "/admin/pointers/fields"
         },
     ]
 

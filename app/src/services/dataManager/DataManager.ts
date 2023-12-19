@@ -3,6 +3,7 @@ import type Operation from '../../types/Operation';
 import type User from '../../types/User';
 import type Module from '../../types/Module';
 import Pointer from '../../components/Pointer';
+import PointerField from '../../types/PointerField';
 
 export interface DataManager {
   login(email: string, password: string): Promise<any>;
@@ -29,6 +30,11 @@ export interface DataManager {
   updateModule(module: Module, data: any): Promise<any>;
   deleteModule(module: Module): Promise<any>;
   
+  createPointerField(data: any): Promise<any>;
+  getPointerFields(): Promise<any[]>;
+  updatePointerField(module: PointerField, data: any): Promise<any>;
+  deletePointerField(module: PointerField): Promise<any>;
+
   updateUser(user: User, data: any): Promise<any>;
   deleteUser(user: User): Promise<any>;
   createOperation(name: string): Promise<any>;

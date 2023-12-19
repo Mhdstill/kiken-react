@@ -73,6 +73,9 @@ export default {
       moduleDeleted: 'The module {{module}} has been successfully deleted.',
       moduleCreated: 'The module {{module}} has been successfully created',
       moduleUpdated: 'The module {{module}} has been successfully updated.',
+      pointerFieldDeleted: 'The field {{field}} has been successfully deleted.',
+      pointerFieldCreated: 'The field {{field}} has been successfully created',
+      pointerFieldUpdated: 'The field {{field}} has been successfully updated.',
       folderAccessUpdated:
         'The access to the directory {{directory}} has been successfully updated.',
       fileAccessUpdated:
@@ -101,6 +104,9 @@ export default {
   module: {
     new: 'New module',
   },
+  field: {
+    new: 'New field',
+  },
   welcome: 'Welcome on Kiken.',
   appDescriptionConnected: 'Please scan a QR code to continue.',
   appDescriptionDisconnected: 'Please scan a QR code or login to continue.',
@@ -108,6 +114,7 @@ export default {
     usersTab: 'Users',
     clientsTab: 'Clients',
     modulesTab: 'Modules',
+    pointerFieldTabs: 'Fields',
     operationsTab: 'Operations',
     pointersTab: 'Pointers',
   },

@@ -42,7 +42,9 @@ export default {
     operationName: "Nom de l'opération",
     name: 'Nom du module',
     code: 'Code du module',
-    modules: 'Module(s)'
+    modules: 'Module(s)',
+    pointerFieldName: 'Nom du champs',
+    pointerFieldType: 'Type de champs',
   },
   confirm: {
     title: 'Êtes-vous sûr?',
@@ -69,6 +71,9 @@ export default {
       moduleDeleted: "Le module {{module}} a été supprimé avec succès.",
       moduleUpdated: "Le module {{module}} a été mis à jour avec succès.",
       moduleCreated: "Le module {{module}} a été créé avec succès.",
+      pointerFieldDeleted: 'Le champs {{field}} a été supprimé avec succès.',
+      pointerFieldCreated: 'Le champs {{field}} a été créé avec succès.',
+      pointerFieldUpdated: 'Le champs {{field}}  a été mis à jour avec succès.',
       folderAccessUpdated:
         'Les accès au dossier {{directory}} ont été mis à jour avec succès',
       fileAccessUpdated:
@@ -97,6 +102,9 @@ export default {
   module: {
     new: 'Nouveau module',
   },
+  field: {
+    new: 'Nouveau champs',
+  },
   welcome: 'Bienvenue sur Kiken.',
   appDescriptionConnected: 'Veuillez scanner un QR code pour continuer.',
   appDescriptionDisconnected:
@@ -104,7 +112,7 @@ export default {
   admin: {
     usersTab: 'Utilisateurs',
     clientsTab: 'Clients',
-    modulesTab: 'Modules',
+    pointerFieldTabs: 'Champs',
     operationsTab: 'Opérations',
     pointersTab: 'Pointeurs',
   },
