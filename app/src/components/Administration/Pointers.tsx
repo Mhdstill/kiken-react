@@ -63,9 +63,9 @@ const PointersPage: FC<
 
     const modalReducer = (prevState: any, action: any) => {
         switch (action.type) {
-            case Action.SHOW_QRCODE:
+            case Action.SHOW_POINTER_QR:
                 return {
-                    action: Action.SHOW_QRCODE,
+                    action: Action.SHOW_POINTER_QR,
                     content: (
                         <QRCodeCanvas
                             id="qrcode"
@@ -174,7 +174,7 @@ const PointersPage: FC<
                 <div
                     onClick={() => {
                         modalDispatch({
-                            type: Action.SHOW_QRCODE,
+                            type: Action.SHOW_POINTER_QR,
                             qrCodeValue: `${window.location.origin}/${operation_token}/pointer`,
                             onOk: () => {
                                 const canvas = document.getElementById('qrcode') as HTMLCanvasElement;

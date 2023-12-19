@@ -40,6 +40,9 @@ export default {
     roles: 'Rôle(s)',
     users: 'Utilisateur(s)',
     operationName: "Nom de l'opération",
+    name: 'Nom du module',
+    code: 'Code du module',
+    modules: 'Module(s)'
   },
   confirm: {
     title: 'Êtes-vous sûr?',
@@ -63,6 +66,9 @@ export default {
         "L'opération {{operation}} a été mise à jour avec succès.",
       operationDeleted:
         "L'opération {{operation}} a été supprimée avec succès.",
+      moduleDeleted: "Le module {{module}} a été supprimé avec succès.",
+      moduleUpdated: "Le module {{module}} a été mis à jour avec succès.",
+      moduleCreated: "Le module {{module}} a été créé avec succès.",
       folderAccessUpdated:
         'Les accès au dossier {{directory}} ont été mis à jour avec succès',
       fileAccessUpdated:
@@ -88,12 +94,17 @@ export default {
   operation: {
     new: 'Nouvelle opération',
   },
+  module: {
+    new: 'Nouveau module',
+  },
   welcome: 'Bienvenue sur Kiken.',
   appDescriptionConnected: 'Veuillez scanner un QR code pour continuer.',
   appDescriptionDisconnected:
     'Veuillez scanner un QR code ou vous connectez pour continuer.',
   admin: {
     usersTab: 'Utilisateurs',
+    clientsTab: 'Clients',
+    modulesTab: 'Modules',
     operationsTab: 'Opérations',
     pointersTab: 'Pointeurs',
   },

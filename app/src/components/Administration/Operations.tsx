@@ -52,6 +52,26 @@ const OperationsPage: FC<
   });
 
   const [modalFormData, setModalFormData] = useState<any | null>(null);
+  let [modules, setModules] = useState<any>([]);
+  if (isAuthorized(Action.MODIFY_OPERATION)) {
+    useQuery(
+      ['modules'],
+      async () => {
+        return await dataManager.getModules();
+      },
+      {
+        onSuccess: (data: any[]) => {
+          const modules = data.map((module: any) => ({
+            id: module['@id'],
+            label: module.name,
+          }));
+          setModules(modules);
+        },
+        onError: console.error,
+        refetchOnWindowFocus: false,
+      }
+    );
+  }
 
   const handleFormValues = (changedValues: any, allValues: any) => {
     setModalFormData(allValues);
@@ -66,7 +86,7 @@ const OperationsPage: FC<
           refetch();
           break;
         case Action.MODIFY_OPERATION:
-          renameOperation.mutate();
+          editOperation.mutate();
           refetch();
           break;
       }
@@ -94,7 +114,17 @@ const OperationsPage: FC<
           selectedOperation: action.operation,
           content: (
             <ModalForm
-              inputs={[{ name: 'operationName', value: action.operation.name }]}
+              inputs={[
+                { name: 'operationName', value: action.operation.name },
+                {
+                  name: 'modules',
+                  possibleValues: modules,
+                  values: action.operation.modules?.map((module: any) => ({
+                    id: module['@id'],
+                    label: module.name,
+                  })),
+                },
+              ]}
               onFormValueChange={handleFormValues}
               submit={modalOnOk}
             />
@@ -134,6 +164,17 @@ const OperationsPage: FC<
 
   const columns: ColumnsType<OperationType> = [
     {
+      key: 'id',
+      title: 'ID',
+      dataIndex: 'id',
+      sorter: (a, b) => a.id.localeCompare(b.id),
+      render: (value) => (
+        <Tooltip placement="bottomLeft" title={value}>
+          {value}
+        </Tooltip>
+      ),
+    },
+    {
       key: 'name',
       title: t('name'),
       dataIndex: 'name',
@@ -142,6 +183,16 @@ const OperationsPage: FC<
         <Tooltip placement="bottomLeft" title={value}>
           {value}
         </Tooltip>
+      ),
+    },
+    {
+      key: 'modules',
+      title: 'Modules',
+      dataIndex: 'modules',
+      render: (values) => (
+        <>
+          {values.map((value: any) => <>{value.name} <br /> </>)}
+        </>
       ),
     },
     {
@@ -209,12 +260,13 @@ const OperationsPage: FC<
     }
   );
 
-  const renameOperation = useMutation(
+  const editOperation = useMutation(
     (): any => {
-      return dataManager.renameOperation(
-        modalState.selectedOperation,
-        modalFormData.operationName
-      );
+      const { name, modules } = modalFormData;
+      return dataManager.updateOperation(modalState.selectedOperation, {
+        name,
+        modules,
+      });
     },
     {
       onSuccess: () => {

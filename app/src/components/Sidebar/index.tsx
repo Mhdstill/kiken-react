@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { faUser, faClipboardList, faHome, faRightFromBracket, faSignature, faBuilding, faChevronRight, faChevronDown, faTable, faList, faUserTie, faGear } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faClipboardList, faHome, faRightFromBracket, faSignature, faBuilding, faChevronRight, faChevronDown, faTable, faList, faUserTie, faGear, faGears, faFolder } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
+    FileAction,
     isAuthorized,
     OperationAction,
+    PointerAction,
     UserAction,
 } from '../../services/auth/auth';
 import { useNavigate } from 'react-router-dom';
@@ -22,6 +24,12 @@ const Sidebar = () => {
             isAuthorized(action)
         );
         var usAuth = Object.values(UserAction).find((action) =>
+            isAuthorized(action)
+        );
+        var ptAuth = Object.values(PointerAction).find((action) =>
+            isAuthorized(action)
+        );
+        var qrdAuth = Object.values(FileAction).find((action) =>
             isAuthorized(action)
         );
         operationToken = sessionStorage.getItem('operation_token');
@@ -45,7 +53,13 @@ const Sidebar = () => {
         {
             title: "Clients",
             icon: faUserTie,
-            path: "/admin/operations/clients"
+            path: "/admin/operations/clients",
+            access: "OP"
+        },
+        {
+            title: "Modules",
+            icon: faGears,
+            path: "/admin/operations/modules"
         },
     ]
 
@@ -53,17 +67,17 @@ const Sidebar = () => {
         {
             title: "Liste",
             icon: faTable,
-            path: "/pointers/list"
+            path: "/admin/pointers/list"
         },
         {
             title: "Adresses",
             icon: faBuilding,
-            path: "/pointers/addresses"
+            path: "/admin/pointers/addresses"
         },
         {
             title: "Champs",
             icon: faClipboardList,
-            path: "/pointers/addresses"
+            path: "/admin/pointers/addresses"
         },
     ]
 
@@ -81,7 +95,15 @@ const Sidebar = () => {
                         <h6 className="ps-4 ms-2 text-uppercase text-white font-weight-bolder opacity-8" style={{ fontSize: '1rem !important' }} >Pages</h6>
                     </li>
 
-                    <NavItem title="Accueil" icon={faHome} path={`/${operationToken}`} />
+                    {qrdAuth ? (
+                        <>
+                            <NavItem title="QR Drive" icon={faFolder} path={`/${operationToken}`} />
+                        </>
+                    )
+                        :
+                        (<></>)
+                    }
+
 
                     {opAuth ? (
                         <>
@@ -92,9 +114,17 @@ const Sidebar = () => {
                         (<></>)
                     }
 
-                    {usAuth ? (
+                    {ptAuth ? (
                         <>
                             <NavItem title="Pointages" icon={faSignature} path="/admin/pointers" dropdownItems={pointerItems} />
+                        </>
+                    )
+                        :
+                        (<></>)
+                    }
+
+                    {usAuth ? (
+                        <>
                             <NavItem title="Utilisateurs" icon={faUser} path="/admin/users" />
                         </>
                     )
@@ -103,7 +133,7 @@ const Sidebar = () => {
                     }
 
                     {isOnline ?
-                        (<NavItem title="Déconnexion" icon={faRightFromBracket} path={"logout"} />)
+                        (<NavItem title="Déconnexion" icon={faRightFromBracket} path={"/logout"} />)
                         :
                         (<NavItem title="Connexion" icon={faUser} path={"/"} />)
                     }

@@ -26,8 +26,14 @@ export enum UserAction {
   MODIFY_USER = 'MODIFY_USER',
 }
 
+export enum ModuleAction {
+  CREATE_MODULE = 'CREATE_MODULE',
+  DELETE_MODULE = 'DELETE_MODULE',
+  MODIFY_MODULE = 'MODIFY_MODULE',
+}
+
 export enum PointerAction {
-  SHOW_QRCODE = 'SHOW_QRCODE',
+  SHOW_POINTER_QR = 'SHOW_POINTER_QR',
 }
 
 export enum ModalAction {
@@ -36,11 +42,12 @@ export enum ModalAction {
 
 export type Action = FileAction | OperationAction | UserAction | PointerAction | ModalAction;
 
-const permissions: {
-  [key in FileAction | OperationAction | UserAction | ModalAction]:
-    | Role[]
-    | null;
+const userPermissions: {
+  [key in FileAction | OperationAction | UserAction | ModalAction | ModuleAction | PointerAction]:
+  | Role[]
+  | null;
 } = {
+
   [FileAction.UPLOAD_FILE]: [Role.CLIENT, Role.ADMIN],
   [FileAction.CREATE_FOLDER]: [Role.CLIENT, Role.ADMIN],
   [FileAction.DELETE_FILE]: [Role.CLIENT, Role.ADMIN],
@@ -48,25 +55,85 @@ const permissions: {
   [FileAction.EDIT_FILENAME]: [Role.CLIENT, Role.ADMIN],
   [FileAction.SHOW_FILE]: null,
   [FileAction.SHOW_QRCODE]: [Role.CLIENT, Role.ADMIN],
+
   [OperationAction.CREATE_OPERATION]: [Role.ADMIN],
   [OperationAction.DELETE_OPERATION]: [Role.ADMIN],
   [OperationAction.MODIFY_OPERATION]: [Role.ADMIN],
-  [UserAction.CREATE_USER]: [Role.CLIENT, Role.ADMIN],
-  [UserAction.DELETE_USER]: [Role.CLIENT, Role.ADMIN],
-  [UserAction.MODIFY_USER]: [Role.CLIENT, Role.ADMIN],
+
+  [UserAction.CREATE_USER]: [Role.CLIENT],
+  [UserAction.DELETE_USER]: [Role.CLIENT],
+  [UserAction.MODIFY_USER]: [Role.CLIENT],
+
+  [ModuleAction.CREATE_MODULE]: [Role.ADMIN],
+  [ModuleAction.MODIFY_MODULE]: [Role.ADMIN],
+  [ModuleAction.DELETE_MODULE]: [Role.ADMIN],
+
+  [PointerAction.SHOW_POINTER_QR]: [Role.CLIENT, Role.ADMIN],
+
   [ModalAction.CLOSE_MODAL]: null,
 };
 
-export default permissions;
+const operationPermissions: {
+  [key in FileAction | OperationAction | UserAction | ModalAction | ModuleAction | PointerAction]:
+  | string
+  | null;
+} = {
+  [FileAction.UPLOAD_FILE]: "QRD",
+  [FileAction.CREATE_FOLDER]: "QRD",
+  [FileAction.DELETE_FILE]: "QRD",
+  [FileAction.EDIT_ACCESS]: "QRD",
+  [FileAction.EDIT_FILENAME]: "QRD",
+  [FileAction.SHOW_FILE]: "QRD",
+  [FileAction.SHOW_QRCODE]: "QRD",
+
+  [PointerAction.SHOW_POINTER_QR]: "PT",
+
+  [OperationAction.CREATE_OPERATION]: null,
+  [OperationAction.DELETE_OPERATION]: null,
+  [OperationAction.MODIFY_OPERATION]: null,
+
+  [UserAction.CREATE_USER]: null,
+  [UserAction.DELETE_USER]: null,
+  [UserAction.MODIFY_USER]: null,
+
+  [ModuleAction.CREATE_MODULE]: null,
+  [ModuleAction.MODIFY_MODULE]: null,
+  [ModuleAction.DELETE_MODULE]: null,
+
+  [ModalAction.CLOSE_MODAL]: null,
+};
+
+
+export default userPermissions;
 
 export const isAuthorized = (action: Action) => {
+  return userHasAccess(action) && operationHasAccess(action);
+};
+
+export const userHasAccess = (action: Action) => {
   const role = sessionStorage.getItem('role');
   if (role) {
-    const perm = permissions[action];
+    const perm = userPermissions[action];
     if (perm === null) {
       return true;
     }
     return !!perm.find((allowedRole) => role === allowedRole);
   }
   return false;
+};
+
+export const operationHasAccess = (action: Action) => {
+  const modulesString = sessionStorage.getItem('modules');
+
+  if (!modulesString) {
+    return false;
+  }
+
+  const perm = operationPermissions[action];
+  if (perm === null) {
+    return true;
+  }
+
+  const modules = JSON.parse(modulesString);
+  return modules.includes(perm);
 };

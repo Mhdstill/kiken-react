@@ -442,6 +442,12 @@ table .anticon {
     background-color: var(--third-color) !important;
     border: 1px solid var(--third-color) !important;
     font-family: 'Saira-medium' !important;
+    color: white !important;
+    border-radius: 40px !important;
+}
+
+.ant-select-multiple .anticon-close {
+    color: white !important;
 }
 
 .ant-select-clear {
@@ -469,6 +475,11 @@ table .anticon {
 
 .ant-dropdown-menu-title-content {
     font-family: 'Saira-medium' !important;
+    color: rgb(78, 92, 113) !important;
+}
+
+.ant-dropdown-menu-item:not(:last-child) {
+    border-bottom: solid 0.5px rgb(210, 214, 220) !important;
 }
 
 .ant-dropdown-menu-title-content .anticon {

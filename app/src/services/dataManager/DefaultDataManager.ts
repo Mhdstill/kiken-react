@@ -4,6 +4,7 @@ import { DataManager } from './DataManager';
 import { Type as FileType } from '../../types/File';
 import type File from '../../types/File';
 import type User from '../../types/User';
+import type Module from '../../types/Module';
 import type Pointer from '../../types/Pointer';
 import type Operation from '../../types/Operation';
 import { Role } from '../auth/auth';
@@ -26,6 +27,7 @@ export class DefaultDataManager implements DataManager {
         refreshToken: response.data.refresh_token,
         role: response.data.role,
         operationToken: response.data.operation,
+        modules: response.data.modules
       };
     } catch (err) {
       throw new Error((err.response && err.response.statusText) ? err.response.statusText : err);
@@ -186,6 +188,24 @@ export class DefaultDataManager implements DataManager {
     }
   }
 
+  async getClients(): Promise<User[]> {
+    try {
+      const { operation_token, role } = sessionStorage;
+
+      if (!operation_token || role !== Role.ADMIN) {
+        return [];
+      }
+
+      const response: any = await this.axios.get('/api/users');
+      let datas = response.data['hydra:member'];
+
+      return datas.filter((user: any) => user.roles.includes("ROLE_ADMIN_CLIENT"));
+
+    } catch (err) {
+      throw new Error((err.response && err.response.statusText) ? err.response.statusText : err);
+    }
+  }
+
   async getUsers(): Promise<User[]> {
     try {
       const { operation_token, role } = sessionStorage;
@@ -206,6 +226,55 @@ export class DefaultDataManager implements DataManager {
         `/api/${operationToken}/users`
       );
       return response.data['hydra:member'];
+    } catch (err) {
+      throw new Error((err.response && err.response.statusText) ? err.response.statusText : err);
+    }
+  }
+
+  async getModules(): Promise<Module[]> {
+    try {
+      const response: any = await this.axios.get(
+        `/api/modules`
+      );
+      return response.data['hydra:member'];
+    } catch (err) {
+      throw new Error((err.response && err.response.statusText) ? err.response.statusText : err);
+    }
+  }
+
+  async createModule(data: any): Promise<boolean> {
+    try {
+      const { name, code } = data;
+      let body: any = {
+        name,
+        code,
+      };
+      let req;
+      req = await this.axios.post('/api/modules', body);
+      return true;
+    } catch (err) {
+      throw new Error((err.response && err.response.statusText) ? err.response.statusText : err);
+    }
+  }
+
+  async updateModule(module: Module, data: any): Promise<boolean> {
+    try {
+      const { name, code } = data;
+      const body = {
+        name,
+        code,
+      };
+      await this.axios.put(`/api/modules/${module.id}`, body);
+      return true;
+    } catch (err) {
+      throw new Error((err.response && err.response.statusText) ? err.response.statusText : err);
+    }
+  }
+
+  async deleteModule(module: Module): Promise<Module> {
+    try {
+      await this.axios.delete(`/api/modules/${module.id}`);
+      return module;
     } catch (err) {
       throw new Error((err.response && err.response.statusText) ? err.response.statusText : err);
     }
@@ -247,6 +316,20 @@ export class DefaultDataManager implements DataManager {
   async createOperation(name: string): Promise<boolean> {
     try {
       await this.axios.post('/api/operations', { name });
+      return true;
+    } catch (err) {
+      throw new Error((err.response && err.response.statusText) ? err.response.statusText : err);
+    }
+  }
+
+  async updateOperation(operation: Operation, data: any): Promise<boolean> {
+    try {
+      const { name, modules } = data;
+      const body = {
+        name,
+        modules,
+      };
+      await this.axios.put(`/api/operations/${operation.id}`, body);
       return true;
     } catch (err) {
       throw new Error((err.response && err.response.statusText) ? err.response.statusText : err);

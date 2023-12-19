@@ -84,7 +84,7 @@ const TableHomeView: FC<TableViewProps> = (props) => {
           trigger={['click']}
         >
           <Button size="small" icon={<PlusOutlined />}>
-            {props.t('new')}
+            Actions
           </Button>
         </Dropdown>
       )}

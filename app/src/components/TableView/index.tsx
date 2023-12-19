@@ -1,6 +1,6 @@
 import React, { FC, ReactNode, useEffect, useState } from 'react';
-import { Button, Dropdown, Table } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import { Button, Dropdown, Empty, Table } from 'antd';
+import { DownloadOutlined, PlusOutlined } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import type { ColumnsType, TablePaginationConfig } from 'antd/lib/table';
 import type { FilterValue, SorterResult } from 'antd/lib/table/interface';
@@ -51,6 +51,12 @@ const TableView: FC<TableViewProps> = (props) => {
     }
   };
 
+  const exportToCSV = () => {
+    console.log("export");
+  }
+
+
+
   return (
     <div className="table-container">
       {props.title ? (
@@ -67,17 +73,46 @@ const TableView: FC<TableViewProps> = (props) => {
         </div>
       ) : null
       }
-      {props.actionsItems && props.actionsItems.length > 0 && (
+
+      {
+        /*
+        props.actionsItems && props.actionsItems.length > 0 && (
+          <Dropdown
+            className="actions-container float-right"
+            menu={{ items: props.actionsItems }}
+            trigger={['click']}
+          >
+            <Button size="small" icon={<PlusOutlined />}>
+              Actions
+            </Button>
+          </Dropdown>
+        )
+      */
+
         <Dropdown
           className="actions-container float-right"
-          menu={{ items: props.actionsItems }}
+          menu={{
+            items: [
+              ...(props.actionsItems || []),
+              {
+                label: (
+                  <>
+                    <DownloadOutlined /> Exporter tableau
+                  </>
+                ),
+                key: 'export',
+                onClick: exportToCSV,
+              }
+            ],
+          }}
           trigger={['click']}
         >
           <Button size="small" icon={<PlusOutlined />}>
             Actions
           </Button>
         </Dropdown>
-      )}
+
+      }
       <Table
         style={{ paddingTop }}
         columns={props.columns}

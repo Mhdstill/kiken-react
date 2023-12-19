@@ -40,6 +40,9 @@ export default {
     roles: 'Role(s)',
     users: 'User(s)',
     operationName: 'Operation name',
+    name: 'Module name',
+    code: 'Module code',
+    modules: 'Module(s)'
   },
   confirm: {
     title: 'Are you sure?',
@@ -67,6 +70,9 @@ export default {
         'The operation {{operation}} has been successfully updated.',
       operationDeleted:
         'The operation {{operation}} has been successfully deleted.',
+      moduleDeleted: 'The module {{module}} has been successfully deleted.',
+      moduleCreated: 'The module {{module}} has been successfully created',
+      moduleUpdated: 'The module {{module}} has been successfully updated.',
       folderAccessUpdated:
         'The access to the directory {{directory}} has been successfully updated.',
       fileAccessUpdated:
@@ -92,11 +98,16 @@ export default {
   operation: {
     new: 'New operation',
   },
+  module: {
+    new: 'New module',
+  },
   welcome: 'Welcome on Kiken.',
   appDescriptionConnected: 'Please scan a QR code to continue.',
   appDescriptionDisconnected: 'Please scan a QR code or login to continue.',
   admin: {
     usersTab: 'Users',
+    clientsTab: 'Clients',
+    modulesTab: 'Modules',
     operationsTab: 'Operations',
     pointersTab: 'Pointers',
   },

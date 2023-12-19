@@ -34,10 +34,11 @@ const LoginPage: FC = ({
 
   const { mutate, isLoading } = useMutation(login, {
     onSuccess: (data) => {
-      const { token, refreshToken, role, operationToken } = data;
+      const { token, refreshToken, role, operationToken, modules } = data;
       sessionStorage.setItem('token', token);
       sessionStorage.setItem('refresh_token', refreshToken);
       sessionStorage.setItem('role', role);
+      sessionStorage.setItem('modules', JSON.stringify(modules));
       if (operationToken) {
         sessionStorage.setItem('operation_token', operationToken);
         navigate(`/${operationToken}`);

@@ -8,8 +8,10 @@ import { LogoutPage } from '../App';
 export const buildAxiosInstance = (config: CreateAxiosDefaults) => {
   const axiosClient = axios.create(config);
 
+  /*
   axiosClient.interceptors.request.use((config) => {
     const token = sessionStorage.getItem('token');
+
     if (token) {
 
       const refreshToken = sessionStorage.getItem('refresh_token');
@@ -24,6 +26,32 @@ export const buildAxiosInstance = (config: CreateAxiosDefaults) => {
     }
     return config;
   }, Promise.reject);
+  */
+
+  axiosClient.interceptors.request.use(async (config: any) => {
+    try {
+      const token = sessionStorage.getItem('token');
+      const refreshToken = sessionStorage.getItem('refresh_token');
+
+      if (token) {
+        const isValid = await checkTokenValidity(token);
+        if (!isValid && refreshToken) {
+          const newToken = await refreshAuthToken(refreshToken);
+          if (newToken) {
+            config.headers.Authorization = `Bearer ${newToken}`;
+          }
+        } else {
+          config.headers.Authorization = `Bearer ${token}`;
+        }
+      }
+
+      return config;
+    } catch (error) {
+      // Gérez l'erreur si nécessaire
+      return Promise.reject(error);
+    }
+  });
+
 
   axiosClient.interceptors.response.use(
     (response) => response,
@@ -87,9 +115,14 @@ export const getUrlWithQueryParams = (baseUrl: string, queryParams = {}) => {
   return url;
 };
 
-export const checkTokenValidity = async () => {
+export const checkTokenValidity = async (token: string) => {
   try {
-    const response = await fetch("/api/token/check", { method: "GET" });
+    const response = await fetch(`${API_URL}/api/token/check`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
     if (!response.ok) {
       throw new Error("Token is expired or invalid");
     }

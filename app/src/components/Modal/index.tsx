@@ -22,8 +22,6 @@ const CustomModal = ({
 }: CustomModalProps) => {
   let footer = [];
 
-  console.log(okText);
-
   if (okText === false) {
     footer = [];
   } else {

@@ -16,6 +16,8 @@ import './App.css'
 import './Fonts.css'
 import PointerSuccessPage from './components/PointerSuccess';
 import OperationsPage from './components/Administration/Operations';
+import OperationUsersPage from './components/Administration/OperationUsers';
+import OperationModulesPage from './components/Administration/OperationModules';
 import UsersPage from './components/Administration/Users';
 import PointersPage from './components/Administration/Pointers';
 import { ThemeProvider } from './contexts/ThemeContext';
@@ -72,6 +74,8 @@ const router = createBrowserRouter([
     ),
     children: [
       { index: true },
+
+      //Operation
       {
         path: 'operations/list',
         element: (
@@ -80,6 +84,26 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+      { index: true },
+      {
+        path: 'operations/clients',
+        element: (
+          <ProtectedRoute rolesAllowed={[Role.ADMIN]}>
+            <OperationUsersPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'operations/modules',
+        element: (
+          <ProtectedRoute rolesAllowed={[Role.ADMIN]}>
+            <OperationModulesPage />
+          </ProtectedRoute>
+        ),
+      },
+
+
+
       {
         path: 'users',
         element: (
@@ -88,6 +112,9 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         )
       },
+
+
+      //Pointers
       {
         path: 'pointers',
         element: (
@@ -104,6 +131,8 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         )
       }
+
+      
     ],
   },
   {
