@@ -45,6 +45,8 @@ export default {
     modules: 'Module(s)',
     pointerFieldName: 'Nom du champs',
     pointerFieldType: 'Type de champs',
+    pointerFieldAllways: 'Toujours afficher lors du pointage',
+    pointerFieldRequired: 'Champs obligatoire',
   },
   confirm: {
     title: 'Êtes-vous sûr?',
@@ -113,6 +115,7 @@ export default {
     usersTab: 'Utilisateurs',
     clientsTab: 'Clients',
     pointerFieldTabs: 'Champs',
+    modulesTab: 'Modules',
     operationsTab: 'Opérations',
     pointersTab: 'Pointeurs',
   },

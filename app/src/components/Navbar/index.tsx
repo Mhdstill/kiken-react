@@ -9,6 +9,7 @@ import { useTheme } from '../../contexts/ThemeContext';
 import withTranslation from '../../hoc/withTranslation';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import './style.less';
+import { useMenuContext } from '../../contexts/MenuContext';
 
 const { Header } = Layout;
 
@@ -17,47 +18,13 @@ const Navbar: React.FC = ({ t }: WithTranslation) => {
   const isMobile = useIsMobile();
   const navRef = useRef<HTMLDivElement>(null);
   const { isDarkMode, toggleTheme } = useTheme();
-
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  useEffect(() => {
-    if (isMenuOpen) {
-      document.body.classList.add('g-sidenav-pinned');
-    } else {
-      document.body.classList.remove('g-sidenav-pinned');
-    }
-  }, [isMenuOpen]);
-
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (navRef.current && !navRef.current.contains(e.target as Node)) {
-        setIsMenuOpen(false);
-      }
-    };
-    if (isMenuOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [setIsMenuOpen, isMenuOpen, navRef]);
+  const { isMenuOpen, setIsMenuOpen } = useMenuContext();
 
   const handleIconClick = (e: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
     e.stopPropagation();
     setIsMenuOpen(!isMenuOpen);
   };
 
-  useEffect(() => {
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.type = 'text/css';
-    link.href = isDarkMode ? '/AppDarkMode.css' : '/AppLightMode.css';
-    document.head.appendChild(link);
-
-    return () => {
-      document.head.removeChild(link);
-    };
-  }, [isDarkMode]);
-  
   return (
     <>
       <Header>

@@ -30,10 +30,18 @@ export interface DataManager {
   updateModule(module: Module, data: any): Promise<any>;
   deleteModule(module: Module): Promise<any>;
   
-  createPointerField(data: any): Promise<any>;
-  getPointerFields(): Promise<any[]>;
-  updatePointerField(module: PointerField, data: any): Promise<any>;
-  deletePointerField(module: PointerField): Promise<any>;
+  // Fields
+  createField(data: any, operation_token?: string|null): Promise<any>;
+  getFields(operation_token?: string|null): Promise<any[]>;
+  updateField(module: PointerField, data: any): Promise<any>;
+  deleteField(module: PointerField): Promise<any>;
+  createFieldValue(operationToken: string, data: any): Promise<any>;
+
+  // ClockIns
+  createClockInEmployee(operationToken: string, identifierValue: string, data: any): Promise<any>;
+  getClockInEmployeeByIdentifier(operationToken: string, identifierValue: string): Promise<any>;
+  makeClockIn(operationToken: string, clockInEmployeeID: string, fieldValues: any): Promise<any>;
+  getClockIns(): Promise<any[]>;
 
   updateUser(user: User, data: any): Promise<any>;
   deleteUser(user: User): Promise<any>;
@@ -43,8 +51,5 @@ export interface DataManager {
   renameOperation(operation: Operation, newName: string): Promise<any>;
   updateOperation(operation: Operation, data: any): Promise<any>;
   deleteOperation(operation: Operation): Promise<any>;
-  getPersonPointerByEmail(operationToken: string, email: string): Promise<any>;
-  createPersonPointer(operationToken: string, email: string, firstname: string, lastname: string, societe: string) : Promise<any>;
-  makePointer(operationToken: string, email: string): Promise<any[]>;
-  getPointers(): Promise<any[]>;
+
 }

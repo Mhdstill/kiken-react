@@ -22,6 +22,7 @@ import PointerFieldsPage from './components/Administration/PointerFields';
 import UsersPage from './components/Administration/Users';
 import PointersPage from './components/Administration/Pointers';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { MenuProvider } from './contexts/MenuContext';
 
 type ProtectedRouteProps = {
   rolesAllowed: Role[];
@@ -117,14 +118,6 @@ const router = createBrowserRouter([
 
       //Pointers
       {
-        path: 'pointers',
-        element: (
-          <ProtectedRoute rolesAllowed={[Role.ADMIN, Role.CLIENT]}>
-            <PointersPage />
-          </ProtectedRoute>
-        )
-      },
-      {
         path: 'pointers/list',
         element: (
           <ProtectedRoute rolesAllowed={[Role.ADMIN, Role.CLIENT]}>
@@ -141,7 +134,7 @@ const router = createBrowserRouter([
         )
       }
 
-      
+
     ],
   },
   {
@@ -153,7 +146,7 @@ const router = createBrowserRouter([
     element: <LogoutPage />,
   },
   {
-    path: ':operationToken/pointer',
+    path: ':operationToken/form',
     element:
       <PointerPage />
   },
@@ -167,7 +160,9 @@ const router = createBrowserRouter([
 const App: FC = () => {
   return (
     <ThemeProvider>
-      <RouterProvider router={router} />
+      <MenuProvider>
+        <RouterProvider router={router} />
+      </MenuProvider>
     </ThemeProvider>
   );
 };

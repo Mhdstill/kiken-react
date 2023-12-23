@@ -56,10 +56,14 @@ input:valid,
 }
 
 input[type=text],
-input[type=password],
+input[type=number],
+input[type=url],
+input[type=phone],
 input[type=password],
 input[type=email],
-.ant-select-selector {
+.ant-select-selector,
+.custom-datepicker
+{
     width: 100% !important;
     padding: 8px 16px !important;
     margin: 0 !important;
@@ -392,8 +396,14 @@ table .anticon {
 .input-with-value[value],
 .input-with-value:focus,
 .input-with-value input[type="text"][value],
+.input-with-value input[type="number"][value],
+.input-with-value input[type="phone"][value],
+.input-with-value input[type="url"][value],
 .input-with-value input[type="password"][value],
 .input-with-value input[type="text"]:focus,
+.input-with-value input[type="number"]:focus,
+.input-with-value input[type="phone"]:focus,
+.input-with-value input[type="url"]:focus,
 .input-with-value input[type="password"]:focus,
 .ant-input-suffix,
 .ant-input-suffix svg,
@@ -479,4 +489,38 @@ table .anticon {
 
 .menu-icon:hover {
     color: var(--main-color) !important;
+}
+
+.custom-datepicker input {
+    border: none !important;
+    box-shadow: none !important;
+    font-size: 1rem !important;
+}
+
+.ant-form-item-label label {
+    font-size: 1rem !important;
+    font-weight: bold !important;
+}
+
+.dropdown-animation-enter {
+    max-height: 0;
+    overflow: hidden;
+}
+
+.dropdown-animation-enter-active {
+    max-height: 500px;
+    /* ajustez cette valeur selon la hauteur maximale attendue */
+    transition: max-height 600ms ease-in;
+    overflow: hidden;
+}
+
+.dropdown-animation-exit {
+    max-height: 500px;
+    overflow: hidden;
+}
+
+.dropdown-animation-exit-active {
+    max-height: 0;
+    transition: max-height 600ms ease-in;
+    overflow: hidden;
 }

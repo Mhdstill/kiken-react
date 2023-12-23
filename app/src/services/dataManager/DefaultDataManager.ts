@@ -286,31 +286,56 @@ export class DefaultDataManager implements DataManager {
 
 
 
-/** Pointer Fields */
-  async getPointerFields(): Promise<PointerField[]> {
+  /** Pointer Fields */
+  async getFields(operation_token: string | null = null): Promise<PointerField[]> {
     try {
-      const { operation_token } = sessionStorage;
-      const response: any = await this.axios.get(
-        `/api/${operation_token}/fields`
-      );
-      return response.data['hydra:member'];
+      if (!operation_token) {
+        operation_token = sessionStorage.getItem('operation_token');
+        if (!operation_token) {
+          throw new Error("No operation token provided and none found in sessionStorage.");
+        }
+      }
+
+      const response: any = await this.axios.get(`/api/${operation_token}/fields`);
+      const datas = response.data['hydra:member'];
+
+      datas.sort((a: any, b: any) => {
+        if (a.isUnique && !b.isUnique) {
+          return -1; // Place a avant b
+        }
+        if (!a.isUnique && b.isUnique) {
+          return 1; // Place b avant a
+        }
+        return 0; // Conserve l'ordre initial si les deux ont la même valeur pour isUnique
+      });
+
+
+      return datas;
     } catch (err) {
-      throw new Error((err.response && err.response.statusText) ? err.response.statusText : err);
+      throw new Error((err.response && err.response.statusText) ? err.response.statusText : err.message || err.toString());
     }
   }
 
-  async createPointerField(data: any): Promise<boolean> {
+
+  async createField(data: any, operation_token: string | null = null): Promise<boolean> {
     try {
-      const { operation_token } = sessionStorage;
-      const { label, type } = data;
+      if (!operation_token) {
+        operation_token = sessionStorage.getItem('operation_token');
+        if (!operation_token) {
+          throw new Error("No operation token provided and none found in sessionStorage.");
+        }
+      }
+      const { label, type, isUnique, allwaysFill, isRequired } = data;
       let body: any = {
         label,
         type,
+        isUnique,
+        allwaysFill,
+        isRequired
       };
 
-      let operationIRI = `/api/operations/${operation_token}`
-      body = { ...body, operation: operationIRI };
-      
+      body = { ...body, operation: `/api/operations/${operation_token}` };
+
       let req;
       req = await this.axios.post('/api/fields', body);
       return true;
@@ -319,12 +344,14 @@ export class DefaultDataManager implements DataManager {
     }
   }
 
-  async updatePointerField(field: PointerField, data: any): Promise<boolean> {
+  async updateField(field: PointerField, data: any): Promise<boolean> {
     try {
-      const { label, type } = data;
+      const { label, type, allwaysFill, isRequired } = data;
       const body = {
         label,
         type,
+        allwaysFill,
+        isRequired
       };
       await this.axios.put(`/api/fields/${field.id}`, body);
       return true;
@@ -333,7 +360,7 @@ export class DefaultDataManager implements DataManager {
     }
   }
 
-  async deletePointerField(field: PointerField): Promise<PointerField> {
+  async deleteField(field: PointerField): Promise<PointerField> {
     try {
       await this.axios.delete(`/api/fields/${field.id}`);
       return field;
@@ -343,7 +370,7 @@ export class DefaultDataManager implements DataManager {
   }
 
 
-  
+
   async updateUser(user: User, data: any): Promise<boolean> {
     try {
       const { email, password } = data;
@@ -379,7 +406,9 @@ export class DefaultDataManager implements DataManager {
 
   async createOperation(name: string): Promise<boolean> {
     try {
-      await this.axios.post('/api/operations', { name });
+      const op = await this.axios.post('/api/operations', { name });
+      const opID = op.data['id'];
+      this.createField({ "label": "Email", "type": 3, "isUnique": true }, opID)
       return true;
     } catch (err) {
       throw new Error((err.response && err.response.statusText) ? err.response.statusText : err);
@@ -441,13 +470,14 @@ export class DefaultDataManager implements DataManager {
     }
   }
 
-  async getPersonPointerByEmail(operationToken: string, email: string): Promise<any> {
+  async getClockInEmployeeByIdentifier(operationToken: string, identifierValue: string): Promise<any> {
     try {
       const response: any = await this.axios.get(
-        `/api/${operationToken}/person_pointers/get_by_email`,
+        `/api/clock_in_employees/get_by_identifier`,
         {
           params: {
-            email: email,
+            op: operationToken,
+            v: identifierValue,
           },
         }
       );
@@ -456,53 +486,88 @@ export class DefaultDataManager implements DataManager {
       throw new Error((err.response && err.response.statusText) ? err.response.statusText : err);
     }
   }
-
-  async createPersonPointer(operationToken: string, email: string, firstname: string, lastname: string, societe: string): Promise<boolean> {
+  async createFieldValue(operationToken: string, data: any): Promise<any> {
     try {
-      let personPointer = await this.getPersonPointerByEmail(operationToken, email);
+      const { value, customField } = data;
+      const body = {
+        value,
+        customField: `/api/${operationToken}/fields/${customField}`,
+      };
+
+      // Utilisation de await pour attendre la réponse de la requête POST
+      const response = await this.axios.post('/api/field_values', body);
+      return response.data; // Retourne les données de la réponse
+    } catch (err) {
+      // Gestion des erreurs
+      const errorMsg = (err.response && err.response.statusText) ? err.response.statusText : err.toString();
+      throw new Error(errorMsg);
+    }
+  }
+
+
+  async createClockInEmployee(operationToken: string, identifierValue: string, data: any): Promise<boolean> {
+    try {
+      let personPointer = await this.getClockInEmployeeByIdentifier(operationToken, identifierValue);
       if (personPointer !== null && personPointer !== undefined) {
-        throw new Error('Email déjà existant');
+        throw new Error('Employé déjà existant');
       }
 
-      await this.axios.post('/api/person_pointers', {
+      const fieldValues = [];
+      for (const [cle, valeur] of Object.entries(data)) {
+        const fieldValue = await this.createFieldValue(operationToken, { customField: cle, value: valeur });
+        fieldValues.push(fieldValue['@id']);
+      }
+
+      const response = await this.axios.post('/api/clock_in_employees', {
         operation: `/api/operations/${operationToken}`,
-        email: email,
-        firstname: firstname,
-        lastname: lastname,
-        societe: societe
+        fieldValues: fieldValues
       });
+      return response.data;
 
-      return true;
     } catch (err) {
-      throw new Error((err.response && err.response.statusText) ? err.response.statusText : err);
+      const errorMsg = (err.response && err.response.statusText) ? err.response.statusText : err.toString();
+      throw new Error(errorMsg);
     }
   }
 
-  async makePointer(operationToken: string, email: string): Promise<any> {
+  async makeClockIn(operationToken: string, employeeIdentifierValue: string, fieldValues: any): Promise<any> {
     try {
-      let personPointer = await this.getPersonPointerByEmail(operationToken, email);
-      if (personPointer === null || personPointer === undefined) {
-        throw new Error('Email Not found');
+      const filteredEntries = Object.entries(fieldValues).filter(([key, value]) => value !== employeeIdentifierValue);
+      const fieldValuesFiltered = Object.fromEntries(filteredEntries);
+
+      let employee = await this.getClockInEmployeeByIdentifier(operationToken, employeeIdentifierValue);
+      if (employee === null || employee === undefined) {
+        throw new Error('Employé non trouvé');
       }
-      await this.axios.post('/api/pointers', {
-        operation: operationToken,
-        person: personPointer['id']
+
+      const fieldValuesIris = []
+      for (const [cle, valeur] of Object.entries(fieldValuesFiltered)) {
+        const fieldValue = await this.createFieldValue(operationToken, { customField: cle, value: valeur });
+        fieldValuesIris.push(fieldValue['@id']);
+      }
+
+      await this.axios.post('/api/clock_ins', {
+        operation: `/api/operations/${operationToken}`,
+        clockInEmployee: `/api/${operationToken}/clock_in_employees/${employee.id}`,
+        fieldValues: fieldValuesIris,
       });
+
       return true;
     } catch (err) {
       throw new Error((err.response && err.response.statusText) ? err.response.statusText : err);
     }
   }
 
-  async getPointers(): Promise<Pointer[]> {
+  async getClockIns(): Promise<Pointer[]> {
     try {
       const { operation_token } = sessionStorage;
       const response: any = await this.axios.get(
-        `/api/${operation_token}/pointers`
+        `/api/${operation_token}/clock_ins`
       );
       return response.data['hydra:member'];
     } catch (err) {
       throw new Error((err.response && err.response.statusText) ? err.response.statusText : err);
     }
   }
+
 }

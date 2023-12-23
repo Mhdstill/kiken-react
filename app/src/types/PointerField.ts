@@ -1,23 +1,28 @@
+import FieldValue from "./FieldValue";
+import Operation from "./Operation";
+
 export enum FieldType {
   TEXT = 1,
   PASSWORD = 2,
   EMAIL = 3,
   NUMBER = 4,
   DATE = 5,
-  CHECKBOX = 6,
-  RADIO = 7,
-  RANGE = 8,
-  TEL = 9,
-  URL = 10,
-  TEXTAREA = 11
+  DATETIME = 6,
+  CHECKBOX = 7,
+  RADIO = 8,
+  RANGE = 9,
+  TEL = 10,
+  URL = 11,
+  TEXTAREA = 12,
 }
 
-export const FieldTypeMapping: Record<FieldType, string> = {
+export const FieldTypeStringMapping: Record<FieldType, string> = {
   [FieldType.TEXT]: "Texte",
   [FieldType.PASSWORD]: "Mot de passe",
   [FieldType.EMAIL]: "Email",
   [FieldType.NUMBER]: "Nombre",
   [FieldType.DATE]: "Date",
+  [FieldType.DATETIME]: "Date avec heure",
   [FieldType.CHECKBOX]: "Case à cocher",
   [FieldType.RADIO]: "Bouton radio",
   [FieldType.RANGE]: "Plage",
@@ -26,23 +31,40 @@ export const FieldTypeMapping: Record<FieldType, string> = {
   [FieldType.TEXTAREA]: "Zone de texte"
 };
 
+export const FieldTypeMapping: Record<FieldType, string> = {
+  [FieldType.TEXT]: "text",
+  [FieldType.PASSWORD]: "password",
+  [FieldType.EMAIL]: "email",
+  [FieldType.NUMBER]: "number",
+  [FieldType.DATE]: "date",
+  [FieldType.DATETIME]: "datetime",
+  [FieldType.CHECKBOX]: "checkbox",
+  [FieldType.RADIO]: "radio",
+  [FieldType.RANGE]: "range",
+  [FieldType.TEL]: "phone",
+  [FieldType.URL]: "url",
+  [FieldType.TEXTAREA]: "textarea"
+};
+
 // Définition du type PointerField
 export type PointerField = {
   '@id': string;
   id: string;
   label: string;
-  type: FieldType; // Utilisation de l'énumération FieldType ici
+  type: FieldType;
+  isUnique: boolean;
+  allwaysFill: boolean;
+  isRequired: boolean;
+  fieldValues: FieldValue[];
+  operation: Operation;
 };
 
-// Fonction pour obtenir la chaîne correspondante
 export function getTypeString(type: FieldType): string {
-  return FieldTypeMapping[type];
-}
-export function getFieldTypeFromLabel(label: string): FieldType | undefined {
-  const entry = Object.entries(FieldTypeMapping).find(([key, value]) => value === label);
-  const fieldType = entry ? Number(entry[0]) as FieldType : undefined;
-  return fieldType;
+  return FieldTypeStringMapping[type];
 }
 
+export function getType(type: FieldType): string {
+  return FieldTypeMapping[type];
+}
 
 export default PointerField;

@@ -4,7 +4,7 @@ import { FormInstance, MenuProps, Popconfirm, Tooltip } from 'antd';
 import { DeleteOutlined, EditOutlined, QrcodeOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/lib/table';
 import type { WithTranslation } from 'react-i18next';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import TableView from '../TableView';
 import ModalForm from '../Modal/ModalForm';
 import withDataManager, {
@@ -27,6 +27,7 @@ import type Pointer from '../../types/Pointer';
 
 import '../../style.less';
 import { QRCodeCanvas } from 'qrcode.react';
+import ClockIn from '../../types/ClockIn';
 
 interface PointerType extends Pointer {
     key: React.Key;
@@ -34,43 +35,118 @@ interface PointerType extends Pointer {
 const PointersPage: FC<
     WithTranslation & WithDataManagerProps & { inTab?: boolean }
 > = ({ dataManager, t, inTab }) => {
-    const getPointers = async () => {
-        const ops = await dataManager.getPointers();
+
+
+    const [modalFormData, setModalFormData] = useState<any | null>(null);
+    const params = useParams();
+    const { operation_token } = sessionStorage;
+    const clockInURL = `${window.location.origin}/${operation_token}/form`;
+
+
+
+
+    // Fill Table Datas
+    const getClockIns = async () => {
+        const ops: ClockIn[] = await dataManager.getClockIns();
         return ops.map((op, i) => {
-            op.email = op.person.email;
-            op.societe = op.person.societe;
-            return Object.assign(op, { key: i });
+            const opWithAdditionalFields: any = { ...op };
+
+            if (op.fieldValues && op.fieldValues.length >= 1) {
+                op.fieldValues.forEach(fieldValue => {
+                    const label = fieldValue.custom_field.label;
+                    const value = fieldValue.value;
+                    opWithAdditionalFields[label] = value;
+                });
+            }
+
+            if (op.clockInEmployee && op.clockInEmployee.fieldValues.length >= 1) {
+                op.clockInEmployee.fieldValues.forEach(employeeFieldValue => {
+                    const label = employeeFieldValue.custom_field.label;
+                    const value = employeeFieldValue.value;
+                    opWithAdditionalFields[label] = value;
+                });
+            }
+
+            return { ...opWithAdditionalFields, key: i };
         });
     };
-
     const {
-        data: pointers,
+        data: clockIns,
         isFetching,
         refetch,
-    } = useQuery(['pointers'], getPointers, {
+    } = useQuery(['clockIns'], getClockIns, {
         onError: (e) => {
             console.error(e);
         },
         refetchOnWindowFocus: false,
     });
 
-    const [modalFormData, setModalFormData] = useState<any | null>(null);
-    const params = useParams();
-    const { operation_token } = sessionStorage;
-    const handleFormValues = (changedValues: any, allValues: any) => {
-        setModalFormData(allValues);
+
+
+
+
+
+
+    // Columns
+    const buildDynamicColumns = (clockInsData: ClockIn[]) => {
+        const dynamicColumns = new Set<string>();
+        clockInsData.forEach(clockIn => {
+            // Vérifiez si fieldValues existe avant de les itérer
+            console.log(clockIn);
+            if (clockIn.fieldValues) {
+                clockIn.fieldValues.forEach(fieldValue => {
+                    dynamicColumns.add(fieldValue.custom_field.label);
+                });
+            }
+
+            // Vérifiez également pour clockInEmployee et ses fieldValues
+            if (clockIn.clockInEmployee && clockIn.clockInEmployee.fieldValues) {
+                clockIn.clockInEmployee.fieldValues.forEach(employeeFieldValue => {
+                    dynamicColumns.add(employeeFieldValue.custom_field.label);
+                });
+            }
+        });
+        console.log(dynamicColumns);
+        
+        return Array.from(dynamicColumns).map(label => ({
+            key: label,
+            title: label,
+            dataIndex: label,
+            render: (value: any) => <Tooltip placement="bottomLeft" title={value}>{value}</Tooltip>
+        }));
     };
 
+    const baseColumns: ColumnsType<any> = [
+        {
+            key: 'start',
+            title: 'Date',
+            dataIndex: 'start',
+            responsive: ['md'],
+            sorter: (a, b) =>
+                new Date(a.start).getTime() - new Date(b.start).getTime(),
+            defaultSortOrder: 'descend',
+            render: getFormattedDate,
+        },
+    ];
+    const dynamicColumns = buildDynamicColumns(clockIns || []);
+    const columns = [...dynamicColumns, ...baseColumns];
+
+
+
+
+    // Actions
     const modalReducer = (prevState: any, action: any) => {
         switch (action.type) {
             case Action.SHOW_POINTER_QR:
                 return {
                     action: Action.SHOW_POINTER_QR,
                     content: (
-                        <QRCodeCanvas
-                            id="qrcode"
-                            value={action.qrCodeValue}
-                        />
+                        <a href={clockInURL} target="_blank" rel="noopener noreferrer">
+                            <QRCodeCanvas
+                                id="qrcode"
+                                value={action.qrCodeValue}
+                            />
+                        </a>
                     ),
                     showModal: true,
                     onOk: action.onOk,
@@ -85,97 +161,24 @@ const PointersPage: FC<
                 };
         }
     };
-
     const [modalState, modalDispatch] = useReducer(modalReducer, {
         content: null,
         showModal: false,
     });
-
-    const columns: ColumnsType<Pointer> = [
-        {
-            key: 'email',
-            title: 'Email',
-            dataIndex: 'email',
-            render: (value) => (
-                <Tooltip placement="bottomLeft" title={value}>
-                    {value}
-                </Tooltip>
-            ),
-        },
-        {
-            key: 'societe',
-            title: t('society'),
-            dataIndex: 'societe',
-            render: (value) => (
-                <Tooltip placement="bottomLeft" title={value}>
-                    {value}
-                </Tooltip>
-            ),
-        },
-        {
-            key: 'start',
-            title: t('start'),
-            dataIndex: 'start',
-            responsive: ['md'],
-            sorter: (a, b) =>
-                new Date(a.start).getTime() - new Date(b.start).getTime(),
-            defaultSortOrder: 'descend',
-            render: getFormattedDate,
-        },
-        {
-            key: 'end',
-            title: t('end'),
-            dataIndex: 'end',
-            responsive: ['md'],
-            sorter: (a, b) => {
-                if (a.end && b.end) {
-                    return new Date(a.end).getTime() - new Date(b.end).getTime();
-                }
-                return 0;
-            },
-            defaultSortOrder: 'descend',
-            render: (value) => {
-                if (value) {
-                    return getFormattedDate(value);
-                }
-                return '-';
-            },
-        },
-    ];
-
     const hideModal = () => {
         modalDispatch({
             type: ModalAction.CLOSE_MODAL,
         });
     };
-
-    const createOperation = useMutation(
-        (): any => {
-            return dataManager.createOperation(modalFormData.operationName);
-        },
-        {
-            onSuccess: () => {
-                showSuccesNotification('operationCreated', t, {
-                    operation: modalFormData.operationName,
-                });
-                refetch();
-            },
-            onError: (e) => {
-                console.error(e);
-                showErrorNotification(e, t);
-            },
-        }
-    );
-
     const items: MenuProps['items'] = [];
-    if (isAuthorized(UserAction.CREATE_USER)) {
+    if (isAuthorized(Action.SHOW_POINTER_QR)) {
         items.push({
             label: (
                 <div
                     onClick={() => {
                         modalDispatch({
                             type: Action.SHOW_POINTER_QR,
-                            qrCodeValue: `${window.location.origin}/${operation_token}/pointer`,
+                            qrCodeValue: clockInURL,
                             onOk: () => {
                                 const canvas = document.getElementById('qrcode') as HTMLCanvasElement;
                                 if (canvas) {
@@ -198,10 +201,13 @@ const PointersPage: FC<
         });
     }
 
+
+
+
     return (
         <TableView
             title={t('admin.pointersTab')}
-            data={pointers}
+            data={clockIns}
             isFetching={isFetching}
             actionsItems={items}
             columns={columns}

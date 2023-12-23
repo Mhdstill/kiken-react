@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, FormInstance, Input, Select } from 'antd';
+import { Checkbox, Form, FormInstance, Input, Select } from 'antd';
 import type { WithTranslation } from 'react-i18next';
 import { useKeyPressEvent } from 'react-use';
 
@@ -8,6 +8,7 @@ import withTranslation from '../../hoc/withTranslation';
 import './ModalForm.less';
 
 type Input = {
+  type?: string;
   name: string;
   value?: string;
   possibleValues?: any[];
@@ -76,6 +77,9 @@ const ModalForm = ({
         } else if (input.name === 'email') {
           component = <Input key={index} placeholder={t('email.label')} />;
           rules.type = 'email';
+        } else if (input.type === 'checkbox') {
+          component = <Checkbox key={index}>{t(`form.${input.name}`)}</Checkbox>
+          rules.type = 'checkbox';
         } else {
           component = (
             <Input key={index} placeholder={t(`form.${input.name}`)} />
@@ -88,6 +92,7 @@ const ModalForm = ({
             name={input.name}
             rules={[{ required: true, ...rules }]}
             initialValue={input.values ? input.values : input.value}
+            valuePropName={input.type && input.type === "checkbox" ? "checked" : undefined}
           >
             {component}
           </Form.Item>

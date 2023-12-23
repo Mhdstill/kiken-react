@@ -5,6 +5,7 @@ import {
     AppstoreAddOutlined,
     DeleteOutlined,
     EditOutlined,
+    StarOutlined,
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import type { ColumnsType } from 'antd/lib/table';
@@ -29,7 +30,7 @@ import {
 import { PointerAction as Action } from '../../services/auth/auth';
 
 import '../../style.less';
-import PointerField, { FieldType, FieldTypeMapping, getFieldTypeFromLabel, getTypeString } from '../../types/PointerField';
+import PointerField, { FieldType, FieldTypeMapping, FieldTypeStringMapping, getTypeString } from '../../types/PointerField';
 
 interface PointerFieldType extends PointerField {
     key: React.Key;
@@ -38,8 +39,8 @@ interface PointerFieldType extends PointerField {
 const PointerFieldsPage: FC<
     WithTranslation & WithDataManagerProps & { inTab?: boolean }
 > = ({ dataManager, t, inTab }) => {
-    const getPointerFields = async () => {
-        const fields = await dataManager.getPointerFields();
+    const getFields = async () => {
+        const fields = await dataManager.getFields();
         return fields.map((field, i) => {
             return Object.assign(field, { key: i });
         });
@@ -49,14 +50,14 @@ const PointerFieldsPage: FC<
         .filter(([key, value]) => !isNaN(Number(value))) // Filtrer pour obtenir uniquement les clés numériques
         .map(([key, value]) => ({
             id: value as FieldType, // Utiliser la valeur numérique
-            label: FieldTypeMapping[value as FieldType] // Utiliser cette valeur pour obtenir l'étiquette en français
+            label: FieldTypeStringMapping[value as FieldType] // Utiliser cette valeur pour obtenir l'étiquette en français
         }));
 
     const {
         data: fields,
         isFetching,
         refetch,
-    } = useQuery(['fields'], getPointerFields, {
+    } = useQuery(['fields'], getFields, {
         onError: (e) => {
             console.error(e);
         },
@@ -65,6 +66,8 @@ const PointerFieldsPage: FC<
 
     const [modalFormData, setModalFormData] = useState<any | null>(null);
     const handleFormValues = (changedValues: any, allValues: any) => {
+        console.log("Form Values Changed:", changedValues);
+        console.log("All Form Values:", allValues);
         setModalFormData(allValues);
     };
 
@@ -73,7 +76,7 @@ const PointerFieldsPage: FC<
         if (modalState.action && (modalFormData || formData)) {
             switch (modalState.action) {
                 case Action.CREATE_POINTER_FIELD:
-                    createPointerField.mutate();
+                    createField.mutate();
                     refetch();
                     break;
                 case Action.MODIFY_POINTER_FIELD:
@@ -94,7 +97,15 @@ const PointerFieldsPage: FC<
                         name: 'pointerFieldType',
                         possibleValues: FieldTypeOptions,
                         multiple: false,
-                    }
+                    },
+                    {
+                        name: 'pointerFieldAllways',
+                        type: 'checkbox',
+                    },
+                    {
+                        name: 'pointerFieldRequired',
+                        type: 'checkbox',
+                    },
                 ];
                 return {
                     action: Action.CREATE_POINTER_FIELD,
@@ -109,20 +120,37 @@ const PointerFieldsPage: FC<
                 };
             case Action.MODIFY_POINTER_FIELD:
                 console.log(action);
+
+                const modifyInputs: any = [
+                    { name: 'pointerFieldName', value: action.field.label },
+                    {
+                        name: 'pointerFieldType',
+                        possibleValues: FieldTypeOptions,
+                        multiple: false,
+                        value: action.field.type
+                    }
+                ];
+
+                if (!action.field.isUnique) {
+                    modifyInputs.push(
+                        {
+                            name: 'pointerFieldAllways',
+                            type: 'checkbox',
+                            value: action.field.allwaysFill
+                        },
+                        {
+                            name: 'pointerFieldRequired',
+                            type: 'checkbox',
+                            value: action.field.isRequired
+                        }
+                    );
+                }
                 return {
                     action: Action.MODIFY_POINTER_FIELD,
                     selectedPointerField: action.field,
                     content: (
                         <ModalForm
-                            inputs={[
-                                { name: 'pointerFieldName', value: action.field.label },
-                                {
-                                    name: 'pointerFieldType',
-                                    possibleValues: FieldTypeOptions,
-                                    multiple: false,
-                                    value: action.field.type
-                                }
-                            ]}
+                            inputs={modifyInputs}
                             onFormValueChange={handleFormValues}
                             submit={modalOnOk}
                         />
@@ -144,13 +172,13 @@ const PointerFieldsPage: FC<
         showModal: false,
     });
 
-    const deletePointerField = useMutation(
+    const deleteField = useMutation(
         (field: PointerField): any => {
-            return dataManager.deletePointerField(field);
+            return dataManager.deleteField(field);
         },
         {
             onSuccess: (field: PointerField) => {
-                showSuccesNotification('pointerFieldCreated', t, { field: field.label });
+                showSuccesNotification('pointerFieldDeleted', t, { field: field.label });
                 refetch();
             },
             onError: (e) => {
@@ -169,8 +197,11 @@ const PointerFieldsPage: FC<
                 showTitle: false,
             },
             sorter: (a, b) => a.label.localeCompare(b.label),
-            render: (value) => (
+            render: (value, record) => (
                 <Tooltip placement="bottomLeft" title={value}>
+                    {record.isUnique && (
+                        <StarOutlined className="me-2" style={{ position: "relative", top: "-3px" }} />
+                    )}
                     {value}
                 </Tooltip>
             ),
@@ -189,6 +220,32 @@ const PointerFieldsPage: FC<
             ),
         },
         {
+            key: 'allwaysFill',
+            title: t('form.pointerFieldAllways'),
+            dataIndex: 'allwaysFill',
+            ellipsis: {
+                showTitle: false,
+            },
+            render: (value) => (
+                <Tooltip placement="bottomLeft" title={value}>
+                    {value ? "Oui" : "Non"}
+                </Tooltip>
+            ),
+        },
+        {
+            key: 'isRequired',
+            title: t('form.pointerFieldRequired'),
+            dataIndex: 'isRequired',
+            ellipsis: {
+                showTitle: false,
+            },
+            render: (value) => (
+                <Tooltip placement="bottomLeft" title={value}>
+                    {value ? "Oui" : "Non"}
+                </Tooltip>
+            ),
+        },
+        {
             key: 'actions',
             title: 'Actions',
             render: (value, record) => (
@@ -202,14 +259,16 @@ const PointerFieldsPage: FC<
                             });
                         }}
                     />
-                    <Popconfirm
-                        title={t('confirm.title')}
-                        okText={t('confirm.ok')}
-                        cancelText={t('confirm.cancel')}
-                        onConfirm={() => deletePointerField.mutate(record)}
-                    >
-                        <DeleteOutlined className="delete" />
-                    </Popconfirm>
+                    {!record.isUnique && (
+                        <Popconfirm
+                            title={t('confirm.title')}
+                            okText={t('confirm.ok')}
+                            cancelText={t('confirm.cancel')}
+                            onConfirm={() => deleteField.mutate(record)}
+                        >
+                            <DeleteOutlined className="delete" />
+                        </Popconfirm>
+                    )}
                 </>
             ),
         },
@@ -221,12 +280,14 @@ const PointerFieldsPage: FC<
         });
     };
 
-    const createPointerField = useMutation(
+    const createField = useMutation(
         (): any => {
-            const { pointerFieldName, pointerFieldType } = modalFormData;
-            return dataManager.createPointerField({
+            const { pointerFieldName, pointerFieldType, pointerFieldAllways, pointerFieldRequired } = modalFormData;
+            return dataManager.createField({
                 'label': pointerFieldName,
                 'type': pointerFieldType,
+                'allwaysFill': pointerFieldAllways,
+                'isRequired': pointerFieldRequired
             });
         },
         {
@@ -243,10 +304,13 @@ const PointerFieldsPage: FC<
 
     const editPointerField = useMutation(
         (): any => {
-            const { pointerFieldName, pointerFieldType } = modalFormData;
-            return dataManager.updatePointerField(modalState.selectedPointerField, {
+            const { pointerFieldName, pointerFieldType, pointerFieldAllways, pointerFieldRequired } = modalFormData;
+            console.log(pointerFieldAllways);
+            return dataManager.updateField(modalState.selectedPointerField, {
                 'label': pointerFieldName,
                 'type': pointerFieldType,
+                'allwaysFill': pointerFieldAllways,
+                'isRequired': pointerFieldRequired
             });
         },
         {

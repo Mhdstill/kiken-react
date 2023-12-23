@@ -4,6 +4,7 @@ import NavIcon from './NavIcon';
 import NavDropdown from './NavDropdown';
 import NavDropdownIcon from './NavDropdownIcon';
 import { CSSTransition } from 'react-transition-group';
+import { useMenuContext } from '../../contexts/MenuContext';
 
 interface NavItemProps {
     title: string;
@@ -16,6 +17,7 @@ const NavItem: React.FC<NavItemProps> = ({ title, icon, dropdownItems, path }) =
     const location = useLocation();
     const navigate = useNavigate();
     const [isHovered, setIsHovered] = useState(location.pathname.includes(path));
+    const { isMenuOpen, setIsMenuOpen } = useMenuContext();
 
     const handleMouseOver = () => {
         setIsHovered(true);
@@ -26,11 +28,9 @@ const NavItem: React.FC<NavItemProps> = ({ title, icon, dropdownItems, path }) =
     };
 
     const handleClick = (event: React.MouseEvent) => {
-        // Empêcher le comportement par défaut si dropdownItems est présent
-        if (dropdownItems && dropdownItems.length > 0) {
-            event.preventDefault();
-        } else {
-            navigate(path); // Redirection si pas de dropdownItems
+        if (!dropdownItems || dropdownItems.length <= 0) {
+       //     event.stopPropagation();
+            navigate(path);
         }
     };
 
@@ -52,7 +52,7 @@ const NavItem: React.FC<NavItemProps> = ({ title, icon, dropdownItems, path }) =
                 )}
             </div>
             {dropdownItems && dropdownItems.length > 0 && (
-                <CSSTransition in={isHovered} timeout={600} classNames="dropdown-animation" unmountOnExit> 
+                <CSSTransition in={isHovered} timeout={600} classNames="dropdown-animation" unmountOnExit>
                     <NavDropdown
                         isExpanded={isHovered}
                         items={dropdownItems}

@@ -70,11 +70,6 @@ const Sidebar = () => {
             path: "/admin/pointers/list"
         },
         {
-            title: "Adresses",
-            icon: faBuilding,
-            path: "/admin/pointers/addresses"
-        },
-        {
             title: "Champs",
             icon: faClipboardList,
             path: "/admin/pointers/fields"
