@@ -14,6 +14,7 @@ import withDataManager, {
 import './style.less';
 import { getType, getTypeString } from '../../types/PointerField';
 import TextArea from 'antd/lib/input/TextArea';
+import { checkUserProximity, getCoordinatesFromAddress } from '../../services/utils';
 
 const PointerPage: FC = ({
   dataManager,
@@ -52,8 +53,6 @@ const PointerPage: FC = ({
     },
   };
 
-
-
   //DataManager Handles
   const handleGetEmployeeByIdentifier = async (identifierValue: string): Promise<Pointer | null> => {
     try {
@@ -86,9 +85,32 @@ const PointerPage: FC = ({
   // Form validation
   const handleFirstStep = async (values: any) => {
     const identifierFields = fields?.filter((field: any) => field.isUnique);
-    if (!identifierFields || identifierFields.length !== 1) {
+    if (!identifierFields || identifierFields.length !== 1 || !identifierFields[0]) {
       handleErrorResponse(new Error("Problème de définition des champs."), 'error_description');
       return;
+    }
+
+    const currentOperation = identifierFields[0].operation;
+    console.log(currentOperation);
+    if (currentOperation.useClockInGeolocation && currentOperation.address) {
+      try {
+        const coordinates = await getCoordinatesFromAddress({ street: currentOperation.address.street, zip: currentOperation.address.city, city: currentOperation.address.zip });
+        if (coordinates) {
+          const hasProximity = await checkUserProximity(coordinates, (currentOperation.distance) ? currentOperation.distance * 1000 : 0);
+          if (!hasProximity) {
+            throw new Error('Vous devez être présent sur le lieu du QR Code pour pouvoir valider ce formulaire.')
+          }
+        } else {
+          throw new Error("Impossible d'obtenir les coordonnées de l'adresse de l'opération");
+        }
+      } catch (error) {
+        notification.error({
+          message: 'Erreur',
+          description: error.message,
+          placement: 'topLeft',
+        });
+        return;
+      }
     }
 
     const newIdentifierValue = values[identifierFields[0].id];
@@ -264,7 +286,6 @@ const PointerPage: FC = ({
         return (
           <Form.Item name={field['id']} label={field.label} key={index} rules={[{ required: field.isRequired, type: field.type }]}>
             <Input
-              //defaultValue={"a@gmail.com"}
               placeholder={field.label}
               className='form-control form-control-lg focused bg-white mb-3 input-with-value'
               type={field.type}

@@ -80,6 +80,7 @@ export default {
         'Les accès au dossier {{directory}} ont été mis à jour avec succès',
       fileAccessUpdated:
         'Les accès au fichier {{file}} ont été mis à jour avec succès',
+        settingsUpdated: "Les paramètres ont bien été mis à jour avec succès",
     },
     error: {
       title: 'Erreur',

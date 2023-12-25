@@ -415,14 +415,34 @@ export class DefaultDataManager implements DataManager {
     }
   }
 
-  async updateOperation(operation: Operation, data: any): Promise<boolean> {
+  async updateOperation(operationToken: string, data: any): Promise<boolean> {
     try {
-      const { name, modules } = data;
-      const body = {
+      const { name, modules, useClockInGeolocation, distance, street, zip, city } = data;
+
+      let addressIRI = null;
+      if (street && zip && city) {
+        const address = await this.createAddress({ street, zip, city })
+        addressIRI = (address) ? address['@id'] : '';
+      }
+
+      const body: {
+        name: any;
+        modules: any;
+        useClockInGeolocation: any;
+        distance: any;
+        address?: string; // Déclare 'address' comme optionnel
+      } = {
         name,
         modules,
+        useClockInGeolocation,
+        distance
       };
-      await this.axios.put(`/api/operations/${operation.id}`, body);
+
+      if (addressIRI) {
+        body.address = addressIRI;
+      }
+
+      await this.axios.put(`/api/operations/${operationToken}`, body);
       return true;
     } catch (err) {
       throw new Error((err.response && err.response.statusText) ? err.response.statusText : err);
@@ -432,7 +452,7 @@ export class DefaultDataManager implements DataManager {
   async getOperation(operationToken: string): Promise<Operation> {
     try {
       const response: any = await this.axios.get(`/api/operations/${operationToken}`);
-      return response.data['hydra:member'];
+      return response.data;
     } catch (err) {
       throw new Error((err.response && err.response.statusText) ? err.response.statusText : err);
     }
@@ -565,6 +585,21 @@ export class DefaultDataManager implements DataManager {
         `/api/${operation_token}/clock_ins`
       );
       return response.data['hydra:member'];
+    } catch (err) {
+      throw new Error((err.response && err.response.statusText) ? err.response.statusText : err);
+    }
+  }
+
+  async createAddress(data: any): Promise<any> {
+    try {
+      const { street, zip, city } = data;
+      const body = {
+        street,
+        zip,
+        city,
+      };
+      const response = await this.axios.post('/api/addresses', body);
+      return response.data;
     } catch (err) {
       throw new Error((err.response && err.response.statusText) ? err.response.statusText : err);
     }

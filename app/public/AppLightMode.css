@@ -568,3 +568,85 @@ table .anticon {
 .form-come-back:hover {
     text-decoration: underline;
 }
+
+
+
+
+
+
+
+
+
+
+.ant-radius {
+    border-radius: 18px;
+}
+
+.ant-shadow {
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
+}
+
+.form-section .section-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+.form-section .section-subtitle {
+    color: gray;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+.form-section hr {
+    background-color: rgb(226, 232, 240) !important;
+    opacity: 1;
+}
+
+.form-section .ant-form-item-label {
+    width: 25% !important;
+    text-align: left !important;
+    padding-right: 2%;
+}
+
+.form-section input,
+.form-section textarea,
+.form-section select,
+.form-section .ant-slider {
+    width: 50% !important;
+}
+
+.form-section .ant-form-item {
+    padding: 20px 0 !important;
+    border-top: solid 1px rgb(226, 232, 240);
+    margin-bottom: 0 !important;
+}
+
+.form-section .ant-form-item label {
+    overflow: hidden;
+    word-break: break-word;
+    white-space: normal;
+    height: 100% !important;
+}
+
+.form-section .ant-form-item-label>label::after {
+    margin: 0 8px 0 10px !important;
+}
+
+.form-section .ant-checkbox-wrapper span {
+    word-break: break-word;
+}
+
+@media (max-width: 576px) {
+    .form-section .ant-form-item-label {
+        width: 25% !important;
+        text-align: left !important;
+        padding-right: 0%;
+    }
+
+    .form-section input,
+    .form-section textarea,
+    .form-section select,
+    .form-section .ant-slider {
+        width: 100% !important;
+    }
+}

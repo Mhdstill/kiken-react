@@ -42,7 +42,7 @@ export default {
     operationName: 'Operation name',
     name: 'Module name',
     code: 'Module code',
-    modules: 'Module(s)'
+    modules: 'Module(s)',
   },
   confirm: {
     title: 'Are you sure?',

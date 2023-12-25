@@ -524,3 +524,12 @@ table .anticon {
     transition: max-height 600ms ease-in;
     overflow: hidden;
 }
+
+
+.ant-radius {
+    border-radius: 18px;
+}
+
+.ant-shadow {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}

@@ -262,9 +262,9 @@ const OperationsPage: FC<
 
   const editOperation = useMutation(
     (): any => {
-      const { name, modules } = modalFormData;
-      return dataManager.updateOperation(modalState.selectedOperation, {
-        name,
+      const { operationName, modules } = modalFormData;
+      return dataManager.updateOperation(modalState.selectedOperation.id, {
+        name: operationName,
         modules,
       });
     },

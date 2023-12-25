@@ -4,6 +4,7 @@ import jwtDecode, { JwtPayload } from 'jwt-decode';
 import { TFunction } from 'react-i18next';
 
 import { LogoutPage } from '../App';
+import Address from '../types/Address';
 
 export const buildAxiosInstance = (config: CreateAxiosDefaults) => {
   const axiosClient = axios.create(config);
@@ -158,5 +159,86 @@ export const refreshAuthToken = async (refreshToken: string) => {
     return false;
   }
 };
+
+
+//Geolocation functions
+interface GeolocationCoordinates {
+  latitude: number;
+  longitude: number;
+}
+
+export async function getCoordinatesFromAddress(address: Address) {
+  const addressEncoded = encodeURIComponent(`${address.street}, ${address.zip} ${address.city}`);
+  const url = `https://nominatim.openstreetmap.org/search?format=json&q=${addressEncoded}`;
+
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Erreur HTTP ! Statut : ${response.status}`);
+    }
+    const data = await response.json();
+
+    if (data.length === 0) {
+      throw new Error('Adresse non trouvée.');
+    }
+
+    const coordinates = {
+      latitude: parseFloat(data[0].lat),
+      longitude: parseFloat(data[0].lon)
+    };
+    return coordinates;
+  } catch (error) {
+    throw new Error(error);
+  }
+}
+
+export const getUserLocation = (): Promise<GeolocationCoordinates> => {
+  return new Promise((resolve, reject) => {
+    if (!navigator.geolocation) {
+      throw new Error('La géolocalisation n\'est pas prise en charge par votre navigateur.');
+    } else {
+      navigator.geolocation.getCurrentPosition(
+        position => {
+          resolve(position.coords);
+        },
+        error => {
+          reject('Vous devez accepter de donner votre position pour pouvoir valider ce formulaire.');
+        }
+      );
+    }
+  });
+};
+export const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
+  const R = 6371e3; // Rayon de la Terre en mètres
+  const φ1 = lat1 * Math.PI / 180;
+  const φ2 = lat2 * Math.PI / 180;
+  const Δφ = (lat2 - lat1) * Math.PI / 180;
+  const Δλ = (lon2 - lon1) * Math.PI / 180;
+
+  const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+    Math.cos(φ1) * Math.cos(φ2) *
+    Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  return R * c; // Distance en mètres
+};
+
+export const checkUserProximity = async (operationLocation: GeolocationCoordinates, distance: number = 0) => {
+  try {
+    const userLocation = await getUserLocation();
+    const differenceMeters = calculateDistance(
+      userLocation.latitude,
+      userLocation.longitude,
+      operationLocation.latitude,
+      operationLocation.longitude
+    );
+
+    return differenceMeters <= distance;
+  } catch (error) {
+    console.error("Erreur lors de la vérification de la proximité : ", error);
+    throw error;
+  }
+};
+
 
 export const API_URL = 'https://api.qr4you.fr';

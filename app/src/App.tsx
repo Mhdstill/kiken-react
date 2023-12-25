@@ -20,6 +20,7 @@ import OperationUsersPage from './components/Administration/OperationUsers';
 import OperationModulesPage from './components/Administration/OperationModules';
 import PointerFieldsPage from './components/Administration/PointerFields';
 import UsersPage from './components/Administration/Users';
+import SettingsPage from './components/Administration/Settings';
 import PointersPage from './components/Administration/Pointers';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { MenuProvider } from './contexts/MenuContext';
@@ -130,6 +131,14 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute rolesAllowed={[Role.ADMIN, Role.CLIENT]}>
             <PointerFieldsPage />
+          </ProtectedRoute>
+        )
+      },
+      {
+        path: 'settings',
+        element: (
+          <ProtectedRoute rolesAllowed={[Role.ADMIN, Role.CLIENT]}>
+            <SettingsPage />
           </ProtectedRoute>
         )
       }

@@ -7,6 +7,8 @@ import PointerField from '../../types/PointerField';
 
 export interface DataManager {
   login(email: string, password: string): Promise<any>;
+
+  // Folder & File
   getRootFolder(operationToken: string): Promise<any[]>;
   getFolder(operationToken: string, folderId: string | null): Promise<any>;
   downloadFile(operationToken: string, fileId: string): Promise<any>;
@@ -20,19 +22,24 @@ export interface DataManager {
     file: File,
     users: string[]
   ): Promise<any>;
+
+  // Users
   createUser(data: any): Promise<any>;
   getUsers(): Promise<any[]>;
   getClients(): Promise<any[]>;
   getUsersByOperationToken(operationToken: string): Promise<any[]>;
+  updateUser(user: User, data: any): Promise<any>;
+  deleteUser(user: User): Promise<any>;
 
+  // Modules
   createModule(data: any): Promise<any>;
   getModules(): Promise<any[]>;
   updateModule(module: Module, data: any): Promise<any>;
   deleteModule(module: Module): Promise<any>;
-  
+
   // Fields
-  createField(data: any, operation_token?: string|null): Promise<any>;
-  getFields(operation_token?: string|null): Promise<any[]>;
+  createField(data: any, operation_token?: string | null): Promise<any>;
+  getFields(operation_token?: string | null): Promise<any[]>;
   updateField(module: PointerField, data: any): Promise<any>;
   deleteField(module: PointerField): Promise<any>;
   createFieldValue(operationToken: string, data: any): Promise<any>;
@@ -43,13 +50,14 @@ export interface DataManager {
   makeClockIn(operationToken: string, clockInEmployeeID: string, fieldValues: any): Promise<any>;
   getClockIns(): Promise<any[]>;
 
-  updateUser(user: User, data: any): Promise<any>;
-  deleteUser(user: User): Promise<any>;
+  // Operation
   createOperation(name: string): Promise<any>;
   getOperations(): Promise<any[]>;
   getOperation(operationToken: string): Promise<any>;
   renameOperation(operation: Operation, newName: string): Promise<any>;
-  updateOperation(operation: Operation, data: any): Promise<any>;
+  updateOperation(operationToken: string, data: any): Promise<any>;
   deleteOperation(operation: Operation): Promise<any>;
 
+  // Address
+  createAddress(data: any): Promise<any>;
 }

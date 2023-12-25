@@ -128,7 +128,12 @@ const Sidebar = () => {
                     }
 
                     {isOnline ?
-                        (<NavItem title="Déconnexion" icon={faRightFromBracket} path={"/logout"} />)
+                        (
+                            <>
+                                <NavItem title="Réglages" icon={faGear} path={"/admin/settings"} />
+                                <NavItem title="Déconnexion" icon={faRightFromBracket} path={"/logout"} />
+                            </>
+                        )
                         :
                         (<NavItem title="Connexion" icon={faUser} path={"/"} />)
                     }
