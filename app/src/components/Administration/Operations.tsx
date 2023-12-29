@@ -1,4 +1,4 @@
-import React, { FC, useReducer, useState } from 'react';
+import React, { FC, useEffect, useReducer, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { FormInstance, MenuProps, Popconfirm, Tooltip } from 'antd';
 import { AppstoreAddOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
@@ -49,6 +49,8 @@ const OperationsPage: FC<
       console.error(e);
     },
     refetchOnWindowFocus: false,
+    refetchInterval: 1000,
+    refetchIntervalInBackground: true,
   });
 
   const [modalFormData, setModalFormData] = useState<any | null>(null);
@@ -301,11 +303,18 @@ const OperationsPage: FC<
     });
   }
 
+  const [isLoadingInitialData, setIsLoadingInitialData] = useState(true)
+  useEffect(() => {
+    if (operations) {
+      setIsLoadingInitialData(false);
+    }
+  }, [operations]);
+
   return (
     <TableView
       title={t('admin.operationsTab')}
       data={operations}
-      isFetching={isFetching}
+      isFetching={isLoadingInitialData}
       actionsItems={items}
       columns={columns}
       formData={modalFormData}

@@ -9,6 +9,7 @@ import type Pointer from '../../types/Pointer';
 import type Operation from '../../types/Operation';
 import { Role } from '../auth/auth';
 import PointerField from '../../types/PointerField';
+import moment from 'moment';
 
 export class DefaultDataManager implements DataManager {
   private readonly axios: AxiosInstance;
@@ -417,7 +418,7 @@ export class DefaultDataManager implements DataManager {
 
   async updateOperation(operationToken: string, data: any): Promise<boolean> {
     try {
-      const { name, modules, useClockInGeolocation, distance, street, zip, city } = data;
+      const { name, modules, useClockInGeolocation, distance, street, zip, city, isDarkMode } = data;
 
       let addressIRI = null;
       if (street && zip && city) {
@@ -430,12 +431,14 @@ export class DefaultDataManager implements DataManager {
         modules: any;
         useClockInGeolocation: any;
         distance: any;
-        address?: string; // Déclare 'address' comme optionnel
+        isDarkMode: any;
+        address?: string; 
       } = {
         name,
         modules,
         useClockInGeolocation,
-        distance
+        distance,
+        isDarkMode
       };
 
       if (addressIRI) {
@@ -509,10 +512,23 @@ export class DefaultDataManager implements DataManager {
   async createFieldValue(operationToken: string, data: any): Promise<any> {
     try {
       const { value, customField } = data;
+
+      let formattedValue = value;
+      if (typeof value === 'boolean') {
+        formattedValue = value ? "Oui" : "Non"
+      } else if (moment.isMoment(value)) { 
+        if (value.hours() === 0 && value.minutes() === 0 && value.seconds() === 0) {
+          formattedValue = value.format('DD/MM/YYYY');
+        } else {
+          formattedValue = value.format('DD/MM/YYYY HH:mm');
+        }
+      }
+
       const body = {
-        value,
+        value: formattedValue,
         customField: `/api/${operationToken}/fields/${customField}`,
       };
+
 
       // Utilisation de await pour attendre la réponse de la requête POST
       const response = await this.axios.post('/api/field_values', body);

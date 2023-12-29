@@ -1,6 +1,6 @@
 import React, { FC, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { Button, Card, Checkbox, DatePicker, Form, Input, notification, Radio, Row, Slider } from 'antd';
+import { Button, Card, Checkbox, DatePicker, Form, Input, notification, Radio, Row, Slider, Spin } from 'antd';
 import { useNavigate, useParams } from 'react-router-dom';
 import type { WithTranslation } from 'react-i18next';
 import { EyeInvisibleOutlined, EyeOutlined, LeftOutlined } from '@ant-design/icons';
@@ -15,6 +15,8 @@ import './style.less';
 import { getType, getTypeString } from '../../types/PointerField';
 import TextArea from 'antd/lib/input/TextArea';
 import { checkUserProximity, getCoordinatesFromAddress } from '../../services/utils';
+import FormItem from '../FormItem';
+import Operation from '../../types/Operation';
 
 const PointerPage: FC = ({
   dataManager,
@@ -28,12 +30,13 @@ const PointerPage: FC = ({
   const [step, setStep] = useState(1);
   const [identifierValue, setIdentifierValue] = useState("");
   const [firstStepValues, setFirstStepValues] = useState([]);
+  const [operation, setOperation] = useState<Operation | null>(null);
 
-
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const link = document.createElement('link');
   link.rel = 'stylesheet';
   link.type = 'text/css';
-  link.href = '/AppLightMode.css';
+  link.href = isDarkMode ? '/AppDarkMode.css' : '/AppLightMode.css';
   document.head.appendChild(link);
 
 
@@ -90,13 +93,11 @@ const PointerPage: FC = ({
       return;
     }
 
-    const currentOperation = identifierFields[0].operation;
-    console.log(currentOperation);
-    if (currentOperation.useClockInGeolocation && currentOperation.address) {
+    if (operation && operation.useClockInGeolocation && operation.address) {
       try {
-        const coordinates = await getCoordinatesFromAddress({ street: currentOperation.address.street, zip: currentOperation.address.city, city: currentOperation.address.zip });
+        const coordinates = await getCoordinatesFromAddress({ street: operation.address.street, zip: operation.address.city, city: operation.address.zip });
         if (coordinates) {
-          const hasProximity = await checkUserProximity(coordinates, (currentOperation.distance) ? currentOperation.distance * 1000 : 0);
+          const hasProximity = await checkUserProximity(coordinates, (operation.distance) ? operation.distance * 1000 : 0);
           if (!hasProximity) {
             throw new Error('Vous devez être présent sur le lieu du QR Code pour pouvoir valider ce formulaire.')
           }
@@ -115,6 +116,7 @@ const PointerPage: FC = ({
 
     const newIdentifierValue = values[identifierFields[0].id];
     setIdentifierValue(newIdentifierValue);
+    console.log(values);
     setFirstStepValues(values);
 
     try {
@@ -170,34 +172,76 @@ const PointerPage: FC = ({
 
   // Render Input Fields
   const getFields = async () => {
-    const fields = await dataManager.getFields(operationToken);
+    const operation = await dataManager.getOperation(operationToken);
+    setIsDarkMode(operation.isDarkMode);
+    setOperation(operation);
+    const fields = operation.clockInFields;
 
-    return fields.map((field, i) => {
+    return fields.map((field: any, i: any) => {
       return Object.assign(field, { required: true, type: getType(field.type), key: i });
     });
   };
+  const [isLoadingInitialData, setIsLoadingInitialData] = useState(true);
   const {
     data: fields,
     isFetching,
     refetch,
   } = useQuery(['operations'], getFields, {
+    onSuccess: () => {
+      if (isLoadingInitialData) {
+        setIsLoadingInitialData(false);
+      }
+    },
     onError: (e) => {
       console.error(e);
     },
     refetchOnWindowFocus: false,
+    refetchInterval: 5000,
+    refetchIntervalInBackground: true,
   });
 
-  if (isFetching) {
-    return <div>Loading...</div>;
+
+  if (isFetching && isLoadingInitialData) {
+    return (
+      <div className="loading-container">
+        <Spin size="large" />
+        <p>Chargement en cours...</p>
+      </div>
+    );
   }
 
+  var initialValues: any = {};
+  const renderFormFields = (fields: any[], alwaysFill: boolean) => {
+    const handleCheckboxChange = (e: any) => {
+      return e.target.checked ? 'Oui' : 'Non';
+    };
+    const handleRangeChange = (value: number) => {
+      return value.toString();
+    };
+
+    return fields
+      .filter((field: any) => field.allwaysFill === alwaysFill)
+      .map((field: any) => {
+        let options = {};
+        if (field.type === 'checkbox') {
+          options = { content: field.label, getValueFromEvent: handleCheckboxChange };
+          initialValues[field['id']] = false;
+        } else if (field.type === 'range') {
+          options = { getValueFromEvent: handleRangeChange };
+          initialValues[field['id']] = '0';
+        }
+
+        const label = (field.type !== 'checkbox') ? field.label : '';
+        return <FormItem name={field['id']} type={field.type} label={label} isRequired={field.isRequired} options={options} />;
+      });
+  };
   const renderFields = (fields: any, step: number) => {
+
     if (step === 1) {
       return (
         <>
-          {fields
-            .filter((field: any) => field.allwaysFill === true)
-            .map(renderFormField)}
+
+          {renderFormFields(fields, true)}
 
           <Button
             type="primary"
@@ -211,10 +255,8 @@ const PointerPage: FC = ({
     } else if (step === 2) {
       return (
         <>
-          <p>Vous ne devrez remplir ce second formulaire qu'une seule fois. Lors de votre prochaine visite, cette étape sera déjà prise en charge.</p>
-          {fields
-            .filter((field: any) => field.allwaysFill === false)
-            .map(renderFormField)}
+          <p className='qr-form-subtitle'>Remplissez ce formulaire une seule fois. Vos informations seront sauvegardées pour les prochaines interactions.</p>
+          {renderFormFields(fields, false)}
           <Button
             type="primary"
             htmlType="submit"
@@ -229,7 +271,7 @@ const PointerPage: FC = ({
     } else {
       return (
         <>
-          <p>Votre pointage a été enregistré avec succès. Merci pour votre présence et votre implication. </p>
+          <p className='qr-form-subtitle'>Vos informations ont été enregistrées avec succès. Nous vous remercions pour votre participation. </p>
           <Button
             onClick={() => window.location.reload()}
             type="primary"
@@ -240,65 +282,8 @@ const PointerPage: FC = ({
       );
     }
   };
-  const renderFormField = (field: any, index: any) => {
-    switch (field.type) {
-      case 'checkbox':
-        return (
-          <Form.Item name={field['id']} style={{ textAlign: 'left' }} key={index} label={field.label} valuePropName="checked" rules={[{ required: field.isRequired, type: field.type }]}>
-            <Checkbox>{field.label}</Checkbox>
-          </Form.Item>
-        );
-      case 'radio':
-        return (
-          <Form.Item name={field['id']} label={field.label} key={index} rules={[{ required: field.isRequired, type: field.type }]}>
-            <Radio.Group>
-              {field.options.map((option: any, idx: any) => (
-                <Radio key={idx} value={option.value}>{option.label}</Radio>
-              ))}
-            </Radio.Group>
-          </Form.Item>
-        );
-      case 'textarea':
-        return (
-          <Form.Item name={field['id']} label={field.label} key={index} rules={[{ required: field.isRequired, type: field.type }]}>
-            <TextArea rows={4} placeholder={field.label} />
-          </Form.Item>
-        );
-      case 'date':
-        return (
-          <Form.Item name={field['id']} label={field.label} key={index} rules={[{ required: field.isRequired, type: field.type }]}>
-            <DatePicker format="DD/MM/YYYY" className='custom-datepicker' placeholder={field.label} />
-          </Form.Item>
-        );
-      case 'datetime':
-        return (
-          <Form.Item name={field['id']} label={field.label} key={index} rules={[{ required: field.isRequired, type: field.type }]}>
-            <DatePicker showTime showMinute format="DD/MM/YYYY HH:mm" className='custom-datepicker' placeholder={field.label} />
-          </Form.Item>
-        );
-      case 'range':
-        return (
-          <Form.Item name={field['id']} label={field.label} key={index} rules={[{ required: field.isRequired, type: field.type }]}>
-            <Slider className='custom-datepicker' />
-          </Form.Item>
-        );
-      default:
-        return (
-          <Form.Item name={field['id']} label={field.label} key={index} rules={[{ required: field.isRequired, type: field.type }]}>
-            <Input
-              placeholder={field.label}
-              className='form-control form-control-lg focused bg-white mb-3 input-with-value'
-              type={field.type}
-            />
-          </Form.Item>
-        );
-    }
-  };
 
-
-
-
-
+  console.log(initialValues);
   return (
     <section className="vh-100 login" style={{ backgroundColor: '#1E1C22 !important' }}>
       <div className="container py-5 h-100">
@@ -313,12 +298,12 @@ const PointerPage: FC = ({
                   </div>
                 )}
 
-                <img style={{ height: '60px' }} src="/images/logo.svg" alt="Logo de QR4You"></img>
+                <img style={{ height: '60px' }} src={!isDarkMode ? "/images/logo-black.svg" :"/images/logo.svg"} alt="Logo de QR4You"></img>
 
                 <h3 className='mt-2 title-txt'>
-                  {step === 1 && 'Pointage'}
-                  {step === 2 && 'Enregistrement'}
-                  {step === 3 && 'Pointage effectué'}
+                  {step === 1 && 'Formulaire'}
+                  {step === 2 && 'Complément'}
+                  {step === 3 && 'Confirmation'}
                 </h3>
                 <Card>
                   <Form
@@ -328,6 +313,7 @@ const PointerPage: FC = ({
                     }}
                     validateMessages={validateMessages}
                     layout='vertical'
+                    initialValues={initialValues}
                   >
                     {renderFields(fields, step)}
 

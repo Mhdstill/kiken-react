@@ -1,4 +1,4 @@
-import React, { FC, useReducer, useState } from 'react';
+import React, { FC, useEffect, useReducer, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { FormInstance, Popconfirm, Tooltip } from 'antd';
 import {
@@ -55,6 +55,8 @@ const OperationUsersPage: FC<
             console.error(e);
         },
         refetchOnWindowFocus: false,
+        refetchInterval: 1000,
+        refetchIntervalInBackground: true,
     });
 
     const role = sessionStorage.getItem('role');
@@ -306,11 +308,18 @@ const OperationUsersPage: FC<
         });
     }
 
+    const [isLoadingInitialData, setIsLoadingInitialData] = useState(true)
+    useEffect(() => {
+      if (users) {
+        setIsLoadingInitialData(false);
+      }
+    }, [users]);
+
     return (
         <TableView
             title={t('admin.clientsTab')}
             data={users}
-            isFetching={isFetching}
+            isFetching={isLoadingInitialData}
             actionsItems={items}
             columns={columns}
             formData={modalFormData}

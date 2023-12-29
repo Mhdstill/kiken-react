@@ -1,4 +1,4 @@
-import React, { FC, useReducer, useState } from 'react';
+import React, { FC, useEffect, useReducer, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { FormInstance, Popconfirm, Tooltip } from 'antd';
 import {
@@ -31,6 +31,7 @@ import { PointerAction as Action } from '../../services/auth/auth';
 
 import '../../style.less';
 import PointerField, { FieldType, FieldTypeMapping, FieldTypeStringMapping, getTypeString } from '../../types/PointerField';
+import { CustomColumnsType } from '../../types/CustomColumnsType';
 
 interface PointerFieldType extends PointerField {
     key: React.Key;
@@ -62,6 +63,8 @@ const PointerFieldsPage: FC<
             console.error(e);
         },
         refetchOnWindowFocus: false,
+        refetchInterval: 1000,
+        refetchIntervalInBackground: true,
     });
 
     const [modalFormData, setModalFormData] = useState<any | null>(null);
@@ -188,7 +191,7 @@ const PointerFieldsPage: FC<
         }
     );
 
-    const columns: ColumnsType<PointerFieldType> = [
+    const columns: CustomColumnsType<PointerFieldType> = [
         {
             key: 'label',
             title: 'Nom du champs',
@@ -205,6 +208,7 @@ const PointerFieldsPage: FC<
                     {value}
                 </Tooltip>
             ),
+            useFilter: true
         },
         {
             key: 'type',
@@ -218,6 +222,7 @@ const PointerFieldsPage: FC<
                     {getTypeString(value)}
                 </Tooltip>
             ),
+            useFilter: true,
         },
         {
             key: 'allwaysFill',
@@ -342,11 +347,19 @@ const PointerFieldsPage: FC<
         key: 'new_pointer_field',
     });
 
+    //Reload data
+    const [isLoadingInitialData, setIsLoadingInitialData] = useState(true)
+    useEffect(() => {
+        if (fields) {
+            setIsLoadingInitialData(false);
+        }
+    }, [fields]);
+
     return (
         <TableView
             title={t('admin.pointerFieldTabs')}
             data={fields}
-            isFetching={isFetching}
+            isFetching={isLoadingInitialData}
             actionsItems={items}
             columns={columns}
             formData={modalFormData}

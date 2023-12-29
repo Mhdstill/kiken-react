@@ -68,18 +68,6 @@ const LoginPage: FC = ({
     },
   };
 
-  useEffect(() => {
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.type = 'text/css';
-    link.href = isDarkMode ? '/AppDarkMode.css' : '/AppLightMode.css';
-    document.head.appendChild(link);
-
-    return () => {
-      document.head.removeChild(link);
-    };
-  }, [isDarkMode]);
-
   return (
     <section className="vh-100 login" style={{ backgroundColor: '#1E1C22 !important' }}>
       <div className="container py-5 h-100">
@@ -88,7 +76,7 @@ const LoginPage: FC = ({
             <div className="card shadow-2-strong" style={{ borderRadius: '1rem' }}>
               <div className="card-body p-5 text-center">
 
-                <img style={{ height: '60px' }} src="/images/logo.svg" alt="Logo de QR4You"></img>
+                <img style={{ height: '60px' }} src={!isDarkMode ? "/images/logo-black.svg" :"/images/logo.svg"} alt="Logo de QR4You"></img>
 
                 <h3 className='mt-2 title-txt'>Connexion</h3>
                 <Card>

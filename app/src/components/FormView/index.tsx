@@ -49,6 +49,7 @@ const SectionForm: FC<{ section: FormViewSection }> = ({ section }) => {
                     label={input.label}
                     isRequired={input.isRequired}
                     options={input.options}
+                    choices={input.choices}
                 />
             ))}
             {section.onSubmit && (

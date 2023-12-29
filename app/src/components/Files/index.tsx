@@ -208,6 +208,8 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
       console.error(e);
     },
     refetchOnWindowFocus: false,
+    refetchInterval: 5000,
+    refetchIntervalInBackground: true,
   });
 
   useEffect(() => {
@@ -535,28 +537,7 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
         new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime(),
       render: getFormattedDate,
     },
-    /*
-    {
-      key: 'type',
-      title: 'Type',
-      dataIndex: 'type',
-      responsive: ['md'],
-      filters: [
-        {
-          text: t(`type.${Type.FOLDER.toLowerCase()}`),
-          value: Type.FOLDER,
-        },
-        {
-          text: t(`type.${Type.FILE.toLowerCase()}`),
-          value: Type.FILE,
-        },
-      ],
-      filteredValue: filteredInfo.type || null,
-      onFilter: (value: string, record) => value === record.type,
-      render: (value) => (
-        <Tag>{t(`type.${value.toLowerCase()}`, value.toLowerCase())}</Tag>
-      ),
-    }, */
+ 
   ];
 
   const deleteFile = useMutation(
@@ -720,12 +701,21 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
     });
   };
 
+
+  const [isLoadingInitialData, setIsLoadingInitialData] = useState(true)
+  useEffect(() => {
+    if (folders && folders?.data) {
+      setIsLoadingInitialData(false);
+    }
+  }, [folders]);
+
+
   return (
     <>
       <TableView
         data={folders?.data}
         tree={folders?.tree}
-        isFetching={isFetching}
+        isFetching={isLoadingInitialData}
         actionsItems={items}
         columns={columns}
         formData={modalFormData}

@@ -118,7 +118,7 @@ export default {
     pointerFieldTabs: 'Champs',
     modulesTab: 'Modules',
     operationsTab: 'Opérations',
-    pointersTab: 'Pointeurs',
+    pointersTab: 'Liste',
   },
   pointer: {
     form: {

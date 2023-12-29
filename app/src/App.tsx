@@ -14,7 +14,6 @@ import PointerPage from './components/Pointer';
 import { Role } from './services/auth/auth';
 import './App.css'
 import './Fonts.css'
-import PointerSuccessPage from './components/PointerSuccess';
 import OperationsPage from './components/Administration/Operations';
 import OperationUsersPage from './components/Administration/OperationUsers';
 import OperationModulesPage from './components/Administration/OperationModules';
@@ -159,11 +158,6 @@ const router = createBrowserRouter([
     element:
       <PointerPage />
   },
-  {
-    path: ':operationToken/pointer/success',
-    element:
-      <PointerSuccessPage />
-  }
 ]);
 
 const App: FC = () => {

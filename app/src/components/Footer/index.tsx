@@ -5,7 +5,7 @@ const { Footer: BaseFooter } = Layout;
 const Footer = () => {
   return (
     <BaseFooter style={{ textAlign: 'center', fontSize: '1rem' }}>
-      ©2023 QR4YOU
+      ©2024 QR4YOU
     </BaseFooter>
   );
 };

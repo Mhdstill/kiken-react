@@ -41,6 +41,8 @@ const SettingsPage: FC = ({
         },
         refetchOnWindowFocus: false,
         enabled: !!operationToken, // N'exécutez la requête que si operationToken existe
+        refetchInterval: 1000, // Mise à jour toutes les 5 secondes
+        refetchIntervalInBackground: true,
     });
 
 
@@ -67,7 +69,8 @@ const SettingsPage: FC = ({
         try {
             const datas = await dataManager.updateOperation(operationToken, {
                 useClockInGeolocation: values.useClockInGeolocation,
-                distance: values.distance
+                distance: values.distance,
+                isDarkMode: values.theme === '2' ? true : false
             })
             showSuccesNotification('settingsUpdated', t);
             return datas;
@@ -83,7 +86,7 @@ const SettingsPage: FC = ({
         const newSections: FormViewSection[] = [
             {
                 title: 'General',
-                subtitle: 'Veuillez entrer les informations générales au projet',
+                subtitle: 'Configurez les éléments fondamentaux et les réglages principaux de votre opération pour un contrôle optimal.',
                 inputs: [
                     {
                         name: 'street',
@@ -112,8 +115,8 @@ const SettingsPage: FC = ({
 
         if (ptAuth) {
             newSections.push({
-                title: 'Pointer',
-                subtitle: 'Veuilelz',
+                title: 'QR Form',
+                subtitle: 'Déterminez la structure, la gestion et les interactions utilisateur de vos formulaires pour une expérience personnalisée.',
                 inputs: [
                     {
                         name: 'useClockInGeolocation',
@@ -132,10 +135,27 @@ const SettingsPage: FC = ({
                             'max': 10
                         },
                     },
+
+                    {
+                        name: 'theme',
+                        type: 'radio',
+                        label: 'Couleur',
+                        choices: [
+                            {
+                                value: "1",
+                                label: "Thème Clair"
+                            },
+                            {
+                                value: "2",
+                                label: "Thème Sombre"
+                            },
+                        ]
+                    },
                 ],
                 initialValues: {
                     useClockInGeolocation: operation ? operation.useClockInGeolocation : false,
-                    distance: operation ? operation.distance : 0
+                    distance: operation ? operation.distance : 0,
+                    theme: operation && operation.isDarkMode ? "2" : "1"
                 },
                 onSubmit: handleSubmitClockInForm
             });

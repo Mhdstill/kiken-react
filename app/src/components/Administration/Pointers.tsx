@@ -1,4 +1,4 @@
-import React, { FC, useReducer, useState } from 'react';
+import React, { FC, useEffect, useReducer, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { FormInstance, MenuProps, Popconfirm, Tooltip } from 'antd';
 import { DeleteOutlined, EditOutlined, QrcodeOutlined } from '@ant-design/icons';
@@ -41,9 +41,7 @@ const PointersPage: FC<
     const params = useParams();
     const { operation_token } = sessionStorage;
     const clockInURL = `${window.location.origin}/${operation_token}/form`;
-
-
-
+      
 
     // Fill Table Datas
     const getClockIns = async () => {
@@ -79,6 +77,8 @@ const PointersPage: FC<
             console.error(e);
         },
         refetchOnWindowFocus: false,
+        refetchInterval: 1000,
+        refetchIntervalInBackground: true,
     });
 
 
@@ -107,7 +107,7 @@ const PointersPage: FC<
             }
         });
         console.log(dynamicColumns);
-        
+
         return Array.from(dynamicColumns).map(label => ({
             key: label,
             title: label,
@@ -201,14 +201,20 @@ const PointersPage: FC<
         });
     }
 
-
+    //Reload data
+    const [isLoadingInitialData, setIsLoadingInitialData] = useState(true)
+    useEffect(() => {
+        if (clockIns) {
+          setIsLoadingInitialData(false);
+        }
+      }, [clockIns]);
 
 
     return (
         <TableView
             title={t('admin.pointersTab')}
             data={clockIns}
-            isFetching={isFetching}
+            isFetching={isLoadingInitialData}
             actionsItems={items}
             columns={columns}
             formData={modalFormData}

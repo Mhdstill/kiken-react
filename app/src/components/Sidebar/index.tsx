@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { faUser, faClipboardList, faHome, faRightFromBracket, faSignature, faBuilding, faChevronRight, faChevronDown, faTable, faList, faUserTie, faGear, faGears, faFolder } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faClipboardList, faHome, faRightFromBracket, faSignature, faBuilding, faChevronRight, faChevronDown, faTable, faList, faUserTie, faGear, faGears, faFolder, faShop } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     FileAction,
@@ -102,7 +102,7 @@ const Sidebar = () => {
 
                     {opAuth ? (
                         <>
-                            <NavItem title="Opérations" icon={faClipboardList} path="/admin/operations" dropdownItems={operationItems} />
+                            <NavItem title="Opérations" icon={faShop} path="/admin/operations" dropdownItems={operationItems} />
                         </>
                     )
                         :
@@ -111,7 +111,7 @@ const Sidebar = () => {
 
                     {ptAuth ? (
                         <>
-                            <NavItem title="Pointages" icon={faSignature} path="/admin/pointers" dropdownItems={pointerItems} />
+                            <NavItem title="QR Form" icon={faClipboardList} path="/admin/pointers" dropdownItems={pointerItems} />
                         </>
                     )
                         :
@@ -130,7 +130,7 @@ const Sidebar = () => {
                     {isOnline ?
                         (
                             <>
-                                <NavItem title="Réglages" icon={faGear} path={"/admin/settings"} />
+                                <NavItem title="Paramètres" icon={faGear} path={"/admin/settings"} />
                                 <NavItem title="Déconnexion" icon={faRightFromBracket} path={"/logout"} />
                             </>
                         )

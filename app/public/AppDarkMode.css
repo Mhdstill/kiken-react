@@ -45,8 +45,7 @@ input,
 input:focus,
 input:valid,
 .ant-select-selector,
-.ant-input-password
-{
+.ant-input-password {
     background-color: var(--dark-gray-color) !important;
     border: solid 1px rgb(73, 80, 87) !important;
 }
@@ -62,8 +61,7 @@ input[type=phone],
 input[type=password],
 input[type=email],
 .ant-select-selector,
-.custom-datepicker
-{
+.custom-datepicker {
     width: 100% !important;
     padding: 8px 16px !important;
     margin: 0 !important;
@@ -209,6 +207,11 @@ table .anticon {
     border: solid 2px var(--main-color) !important;
     color: var(--main-color) !important;
     background: transparent !important;
+}
+
+.ant-pagination .ant-pagination-item:hover,
+.ant-pagination .ant-pagination-item:hover a {
+    color: var(--main-color) !important;
 }
 
 
@@ -391,7 +394,6 @@ table .anticon {
     transform: translateY(-50%) !important;
 }
 
-
 .input-with-value,
 .input-with-value[value],
 .input-with-value:focus,
@@ -467,7 +469,8 @@ table .anticon {
     font-family: 'Saira-medium' !important;
     color: var(--third-color) !important;
 }
-.ant-dropdown-menu-title-content .anticon{
+
+.ant-dropdown-menu-title-content .anticon {
     margin-right: 5px !important;
 }
 
@@ -479,11 +482,11 @@ table .anticon {
     color: var(--main-color) !important;
 }
 
-.ant-upload-drag:hover{
+.ant-upload-drag:hover {
     border: 1px dashed var(--main-color) !important;
 }
 
-.ant-upload.ant-upload-drag.ant-upload-drag-hover:not(.ant-upload-disabled){
+.ant-upload.ant-upload-drag.ant-upload-drag-hover:not(.ant-upload-disabled) {
     border-color: var(--main-color) !important;
 }
 
@@ -532,4 +535,139 @@ table .anticon {
 
 .ant-shadow {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.ant-card {
+    background-color: var(--dark-gray-color) !important;
+    color: white;
+    border: solid 1px var(--dark-gray-color) !important;
+}
+
+.ant-slider-rail {
+    background-color: rgb(73, 80, 87) !important;
+}
+
+.ant-slider-track {
+    background-color: var(--main-color) !important;
+}
+
+.ant-slider-handle {
+    background-color: var(--main-color);
+    border-color: transparent;
+}
+
+
+.ant-checkbox .ant-checkbox-inner {
+    background-color: unset !important;
+}
+
+.ant-checkbox-wrapper:hover .ant-checkbox-inner,
+.ant-checkbox:hover .ant-checkbox-inner,
+.ant-checkbox-input:focus+.ant-checkbox-inner {
+    border-color: var(--main-color) !important;
+}
+
+.ant-checkbox-checked .ant-checkbox-inner {
+    background-color: var(--main-color) !important;
+    border-color: var(--main-color) !important;
+}
+
+.ant-checkbox-checked .ant-checkbox-inner::after {
+    border-color: var(--third-color) !important;
+}
+
+/** Form Section **/
+.form-section .section-title {
+    color: var(--main-color);
+    font-size: 1.4rem;
+    font-weight: bold;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+.form-section .section-subtitle {
+    color: lightgray;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+.form-section .ant-form-item-label {
+    width: 25% !important;
+    text-align: left !important;
+    padding-right: 2%;
+}
+
+.form-section input,
+.form-section textarea,
+.form-section select,
+.form-section .ant-slider {
+    width: 50% !important;
+}
+
+.form-section .ant-form-item {
+    padding: 20px 0 !important;
+    border-top: solid 1px var(--dark-gray-color);
+    margin-bottom: 0 !important;
+}
+
+.form-section .ant-form-item label {
+    overflow: hidden;
+    word-break: break-word;
+    white-space: normal;
+    height: 100% !important;
+    color: white !important;
+}
+
+.form-section .ant-form-item-label>label::after {
+    margin: 0 8px 0 10px !important;
+}
+
+.form-section .ant-checkbox-wrapper span {
+    word-break: break-word;
+}
+
+@media (max-width: 576px) {
+    .form-section .ant-form-item-label {
+        width: 25% !important;
+        text-align: left !important;
+        padding-right: 0%;
+    }
+
+    .form-section input,
+    .form-section textarea,
+    .form-section select,
+    .form-section .ant-slider {
+        width: 100% !important;
+    }
+}
+
+.ant-modal-body label {
+    color: white !important;
+    opacity: 0.9 !important;
+}
+
+.ant-radio-checked .ant-radio-inner {
+    border-color: var(--main-color) !important;
+}
+
+.ant-radio-inner::after {
+    background-color: var(--main-color) !important;
+}
+
+.ant-form-item-label>label,
+.qr-form-subtitle {
+    color: var(--fourth-color) !important;
+}
+
+.loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    /* Prend toute la hauteur de la fenêtre */
+    flex-direction: column;
+}
+
+.loading-container p {
+    margin-top: 10px;
+    font-size: 16px;
+    color: #555;
 }

@@ -1,4 +1,4 @@
-import React, { FC, useReducer, useState } from 'react';
+import React, { FC, useEffect, useReducer, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { FormInstance, Popconfirm, Tooltip } from 'antd';
 import {
@@ -54,6 +54,8 @@ const OperationModulesPage: FC<
             console.error(e);
         },
         refetchOnWindowFocus: false,
+        refetchInterval: 1000,
+        refetchIntervalInBackground: true,
     });
 
     const [modalFormData, setModalFormData] = useState<any | null>(null);
@@ -259,11 +261,18 @@ const OperationModulesPage: FC<
         key: 'new_module',
     });
 
+    const [isLoadingInitialData, setIsLoadingInitialData] = useState(true)
+    useEffect(() => {
+      if (modules) {
+        setIsLoadingInitialData(false);
+      }
+    }, [modules]);
+
     return (
         <TableView
             title={t('admin.modulesTab')}
             data={modules}
-            isFetching={isFetching}
+            isFetching={isLoadingInitialData}
             actionsItems={items}
             columns={columns}
             formData={modalFormData}
