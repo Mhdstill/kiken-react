@@ -32,6 +32,12 @@ export enum ModuleAction {
   MODIFY_MODULE = 'MODIFY_MODULE',
 }
 
+export enum UpdateAction {
+  CREATE_UPDATE = 'CREATE_UPDATE',
+  DELETE_UPDATE = 'DELETE_UPDATE',
+  MODIFY_UPDATE = 'MODIFY_UPDATE',
+}
+
 export enum PointerAction {
   SHOW_POINTER_QR = 'SHOW_POINTER_QR',
   CREATE_POINTER_FIELD = 'CREATE_POINTER_FIELD',
@@ -43,10 +49,10 @@ export enum ModalAction {
   CLOSE_MODAL = 'CLOSE_MODAL',
 }
 
-export type Action = FileAction | OperationAction | UserAction | PointerAction | ModalAction;
+export type Action = FileAction | OperationAction | UserAction | PointerAction | ModalAction | UpdateAction;
 
 const userPermissions: {
-  [key in FileAction | OperationAction | UserAction | ModalAction | ModuleAction | PointerAction]:
+  [key in FileAction | OperationAction | UserAction | ModalAction | ModuleAction | PointerAction | UpdateAction]:
   | Role[]
   | null;
 } = {
@@ -62,6 +68,10 @@ const userPermissions: {
   [OperationAction.CREATE_OPERATION]: [Role.ADMIN],
   [OperationAction.DELETE_OPERATION]: [Role.ADMIN],
   [OperationAction.MODIFY_OPERATION]: [Role.ADMIN],
+
+  [UpdateAction.CREATE_UPDATE]: [Role.ADMIN],
+  [UpdateAction.DELETE_UPDATE]: [Role.ADMIN],
+  [UpdateAction.MODIFY_UPDATE]: [Role.ADMIN],
 
   [UserAction.CREATE_USER]: [Role.CLIENT],
   [UserAction.DELETE_USER]: [Role.CLIENT],
@@ -81,7 +91,7 @@ const userPermissions: {
 };
 
 const operationPermissions: {
-  [key in FileAction | OperationAction | UserAction | ModalAction | ModuleAction | PointerAction]:
+  [key in FileAction | OperationAction | UserAction | ModalAction | ModuleAction | PointerAction | UpdateAction]:
   | string
   | null;
 } = {
@@ -101,6 +111,10 @@ const operationPermissions: {
   [OperationAction.CREATE_OPERATION]: null,
   [OperationAction.DELETE_OPERATION]: null,
   [OperationAction.MODIFY_OPERATION]: null,
+
+  [UpdateAction.CREATE_UPDATE]: null,
+  [UpdateAction.DELETE_UPDATE]: null,
+  [UpdateAction.MODIFY_UPDATE]: null,
 
   [UserAction.CREATE_USER]: null,
   [UserAction.DELETE_USER]: null,

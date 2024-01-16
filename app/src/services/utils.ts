@@ -5,6 +5,7 @@ import { TFunction } from 'react-i18next';
 
 import { LogoutPage } from '../App';
 import Address from '../types/Address';
+import { faClipboardList, faFile, faFolder, faSign, faTrash, faTriangleExclamation, faUser } from '@fortawesome/free-solid-svg-icons';
 
 export const buildAxiosInstance = (config: CreateAxiosDefaults) => {
   const axiosClient = axios.create(config);
@@ -76,8 +77,16 @@ export const buildAxiosInstance = (config: CreateAxiosDefaults) => {
 export const getFormattedDate = (value: string) => {
   return new Intl.DateTimeFormat('fr', {
     dateStyle: 'short',
-    timeStyle: 'medium',
+    timeStyle: 'short',
   }).format(new Date(value));
+};
+
+export const showSpecificErrorNotification = (description: any, t: TFunction) => {
+  notification.error({
+    message: t('notification.error.title'),
+    description: description.replace("Error:", ""),
+    placement: 'topLeft'
+  });
 };
 
 export const showErrorNotification = (error: Error | any, t: TFunction) => {
@@ -118,7 +127,7 @@ export const getUrlWithQueryParams = (baseUrl: string, queryParams = {}) => {
 
 export const checkTokenValidity = async (token: string) => {
   try {
-    const response = await fetch(`${API_URL}/api/token/check`, {
+    const response = await fetch(`${API_URL}/token/check`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`
@@ -153,6 +162,8 @@ export const refreshAuthToken = async (refreshToken: string) => {
     const data = await response.json();
     localStorage.setItem("token", data.token);
     localStorage.setItem("refresh_token", data.refresh_token);
+    sessionStorage.setItem("token", data.token);
+    sessionStorage.setItem("refresh_token", data.refresh_token);
     return data.token;
   } catch (error) {
     console.error(error);
@@ -240,5 +251,24 @@ export const checkUserProximity = async (operationLocation: GeolocationCoordinat
   }
 };
 
+export type IconKey = 'fa-folder' | 'fa-file' | 'fa-user';
+export const getIcon = (iconName: IconKey) => {
+  const icons = {
+    'fa-folder': faFolder,
+    'fa-file': faFile,
+    'fa-user': faUser,
+    'fa-form': faClipboardList,
+    'fa-warning': faTriangleExclamation,
+    'fa-trash': faTrash,
+    'fa-sign': faSign
+  };
+  return icons[iconName] || faFolder;
+};
+
+export const getExtension = (path: string) => {
+  const split = path.split('.');
+  return split[split.length - 1];
+};
 
 export const API_URL = 'https://api.qr4you.fr';
+export const QR4YOU_ID = '7e5cdd75-d1cc-4aea-94be-a7bb9e2a1896';

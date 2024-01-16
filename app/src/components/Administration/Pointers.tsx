@@ -77,7 +77,7 @@ const PointersPage: FC<
             console.error(e);
         },
         refetchOnWindowFocus: false,
-        refetchInterval: 1000,
+        refetchInterval: 4000,
         refetchIntervalInBackground: true,
     });
 

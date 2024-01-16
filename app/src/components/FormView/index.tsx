@@ -35,7 +35,6 @@ const SectionForm: FC<{ section: FormViewSection }> = ({ section }) => {
             form={form}
             onFinish={async (values) => {
                 if (section.onSubmit) {
-                    console.log("Appel de onSubmit de la section: ", section.title);
                     await section.onSubmit(values);
                 }
             }}

@@ -76,6 +76,7 @@ input[type=url],
 input[type=phone],
 input[type=password],
 input[type=email],
+input[type=file],
 .ant-select-selector,
 .custom-datepicker {
     width: 100% !important;
@@ -103,9 +104,13 @@ td a {
     font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
     font-size: 1rem;
     line-height: 2rem;
-    text-align: center !important;
+    text-align: center;
     vertical-align: middle !important;
     color: rgb(33, 37, 41) !important;
+}
+
+th {
+    text-align: center !important;
 }
 
 table .anticon {
@@ -132,6 +137,7 @@ table .anticon {
 
 /** Ant Button **/
 .ant-btn-primary,
+input[type="file"]::file-selector-button,
 .ant-btn-default {
     padding: 0.375rem 0.75rem !important;
     font-size: 1rem !important;
@@ -164,7 +170,9 @@ table .anticon {
 }
 
 .ant-btn-default:hover,
-.ant-btn-primary:hover {
+.ant-btn-primary:hover,
+input[type="file"]::file-selector-button:hover
+{
     background-color: rgb(76, 145, 208) !important;
     border-color: rgb(76, 145, 208) !important;
 }
@@ -322,7 +330,7 @@ table .anticon {
 }
 
 .ant-table-row-level-0 td:first-child {
-    text-align: left !important;
+   /* text-align: left !important; */
 }
 
 .ant-layout-header {
@@ -576,7 +584,9 @@ table .anticon {
 
 
 
-
+.ant-card {
+    word-break: break-word !important;
+}
 
 .ant-radius {
     border-radius: 18px;
@@ -661,4 +671,26 @@ table .anticon {
     margin-top: 10px;
     font-size: 16px;
     color: #555;
+}
+
+input[type="file"]::file-selector-button{
+    background-color: var(--third-color) !important;
+    border: solid 2px var(--third-color) !important;
+    color: white !important;
+    margin-bottom: 0 !important;
+}
+
+.ant-list-item-meta {
+    justify-content: center !important;
+    vertical-align: middle !important;
+    align-items: center !important;
+}
+
+.ant-avatar-circle {
+    background-color: var(--main-color) !important;
+}
+
+
+.home-left .section-title {
+    color: var(--third-color);
 }

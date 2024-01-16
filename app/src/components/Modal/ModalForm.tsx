@@ -6,6 +6,7 @@ import { useKeyPressEvent } from 'react-use';
 import withTranslation from '../../hoc/withTranslation';
 
 import './ModalForm.less';
+import TextArea from 'antd/lib/input/TextArea';
 
 type Input = {
   type?: string;
@@ -40,6 +41,15 @@ const ModalForm = ({
   const [form] = Form.useForm();
 
   useKeyPressEvent('Enter', () => submit(form));
+
+  const handleKeyDown = (e: any) => {
+    console.log("keydown");
+    if (e.key === 'Enter' && !e.shiftKey) {
+      console.log("enter");
+      e.stopPropagation();
+    }
+  };
+
 
   return (
     <Form
@@ -80,6 +90,8 @@ const ModalForm = ({
         } else if (input.type === 'checkbox') {
           component = <Checkbox key={index}>{t(`form.${input.name}`)}</Checkbox>
           rules.type = 'checkbox';
+        } else if (input.type === 'text') {
+          component = <TextArea key={index} placeholder={t(`form.${input.name}`)} rows={6} onKeyDown={handleKeyDown} />
         } else {
           component = (
             <Input key={index} placeholder={t(`form.${input.name}`)} />

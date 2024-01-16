@@ -37,6 +37,7 @@ import {
   getFormattedDate,
   getUrlWithQueryParams,
   showErrorNotification,
+  showSpecificErrorNotification,
   showSuccesNotification,
 } from '../../services/utils';
 import {
@@ -44,7 +45,7 @@ import {
   isAuthorized,
   ModalAction,
 } from '../../services/auth/auth';
-import { Type } from '../../types/File';
+import { Type, getSize } from '../../types/File';
 import type File from '../../types/File';
 import type User from '../../types/User';
 
@@ -55,6 +56,7 @@ interface FileType extends File {
   key: React.Key;
   path: string;
   type: string;
+  size?: number;
   extension?: string;
 }
 
@@ -83,6 +85,7 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
       data.set('folderID', folders?.root.id);
       data.set('file', options.file, options.file.name);
       data.set('name', options.file.name);
+      data.set('size', options.file.size);
       return dataManager.uploadFile(data);
     },
     {
@@ -92,9 +95,8 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
         hideModal();
         refetch();
       },
-      onError: (e) => {
-        console.error(e);
-        showErrorNotification(e, t);
+      onError: (e: any) => {
+        showSpecificErrorNotification(e.message, t);
       },
     }
   );
@@ -505,6 +507,7 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
     return <a onClick={() => downloadFile(record)}>{record.name}</a>;
   };
 
+
   const columns: ColumnsType<FileType> = [
     {
       key: 'name',
@@ -512,10 +515,26 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
       ellipsis: {
         showTitle: false,
       },
+      align: 'left',
       sorter: (a, b) => a.name.localeCompare(b.name),
       render: (value, record) => (
         <Tooltip placement="bottomLeft" title={record.name}>
-          {getFileIcon(record)} {getNameComponent(record)}
+          <span style={{textAlign: 'left'}}>
+            {getFileIcon(record)} {getNameComponent(record)}
+          </span>
+        </Tooltip>
+      ),
+    },
+    {
+      key: 'size',
+      title: 'Taille',
+      ellipsis: {
+        showTitle: false,
+      },
+      sorter: (a, b) => a.name.localeCompare(b.name),
+      render: (value, record) => (
+        <Tooltip placement="bottomLeft" title={record.name}>
+          {getSize(record)}
         </Tooltip>
       ),
     },
@@ -537,7 +556,7 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
         new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime(),
       render: getFormattedDate,
     },
- 
+
   ];
 
   const deleteFile = useMutation(
@@ -683,7 +702,7 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
           onClick={() => {
             modalDispatch({
               type: Action.UPLOAD_FILE,
-              onOk: () => {},
+              onOk: () => { },
               okText: false
             });
           }}

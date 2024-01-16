@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Form, Input, Checkbox, Radio, DatePicker, Slider } from 'antd';
 import { Key } from 'antd/lib/table/interface';
 
@@ -14,16 +14,18 @@ export interface FormItemProps {
         content?: string | null,
         min?: number | undefined,
         max?: number | undefined,
-        getValueFromEvent?: any | undefined
+        getValueFromEvent?: any | undefined,
+        onChange?: any | undefined,
+        initialFile?: any | undefined
     }
 }
 
 const FormItem: React.FC<FormItemProps> = ({ name, type, label, isRequired, choices, options }) => {
 
-    const key = 1;
+
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
     const renderFormField = () => {
-        console.log(choices);
         switch (type) {
             case 'checkbox':
                 return (
@@ -31,7 +33,6 @@ const FormItem: React.FC<FormItemProps> = ({ name, type, label, isRequired, choi
                         {...(options && options.getValueFromEvent ? { getValueFromEvent: options.getValueFromEvent } : {})}
                         name={name}
                         style={{ textAlign: 'left' }}
-                        key={key}
                         label={label}
                         valuePropName="checked">
                         <Checkbox>{options && options.content ? options.content : label}</Checkbox>
@@ -39,7 +40,7 @@ const FormItem: React.FC<FormItemProps> = ({ name, type, label, isRequired, choi
                 );
             case 'radio':
                 return (
-                    <Form.Item name={name} label={label} key={key} rules={[{ required: isRequired ? isRequired : false, type: type }]}>
+                    <Form.Item name={name} label={label} rules={[{ required: isRequired ? isRequired : false, type: type }]}>
                         <Radio.Group>
                             {choices && choices.map((choice: any, idx: any) => (
                                 <Radio key={idx} value={choice.value}>{choice.label}</Radio>
@@ -49,19 +50,19 @@ const FormItem: React.FC<FormItemProps> = ({ name, type, label, isRequired, choi
                 );
             case 'textarea':
                 return (
-                    <Form.Item name={name} label={label} key={key} rules={[{ required: isRequired ? isRequired : false, message: 'Ce champ est obligatoire', type: type }]}>
+                    <Form.Item name={name} label={label} rules={[{ required: isRequired ? isRequired : false, message: 'Ce champ est obligatoire', type: type }]}>
                         <TextArea required={isRequired ? isRequired : false} rows={4} placeholder={label ? label : ''} />
                     </Form.Item>
                 );
             case 'date':
                 return (
-                    <Form.Item name={name} label={label} key={key} rules={[{ required: isRequired ? isRequired : false }]}>
+                    <Form.Item name={name} label={label} rules={[{ required: isRequired ? isRequired : false }]}>
                         <DatePicker format="DD/MM/YYYY" className='custom-datepicker' placeholder={label ? label : ''} />
                     </Form.Item>
                 );
             case 'datetime':
                 return (
-                    <Form.Item name={name} label={label} key={key} rules={[{ required: isRequired ? isRequired : false }]}>
+                    <Form.Item name={name} label={label} rules={[{ required: isRequired ? isRequired : false }]}>
                         <DatePicker showTime showMinute format="DD/MM/YYYY HH:mm" className='custom-datepicker' placeholder={label ? label : ''} />
                     </Form.Item>
                 );
@@ -71,13 +72,13 @@ const FormItem: React.FC<FormItemProps> = ({ name, type, label, isRequired, choi
                         {...(options && options.getValueFromEvent ? { getValueFromEvent: options.getValueFromEvent } : {})}
                         name={name}
                         label={label}
-                        key={key}>
+                    >
                         <Slider className='custom-datepicker' min={options && options.min ? options.min : undefined} max={options && options.max ? options.max : undefined} />
                     </Form.Item>
                 );
             case 'number':
                 return (
-                    <Form.Item name={name} label={label} key={key} rules={[{ required: isRequired ? isRequired : false }]}>
+                    <Form.Item name={name} label={label} rules={[{ required: isRequired ? isRequired : false }]}>
                         <Input
                             placeholder={label ? label : ''}
                             className='form-control form-control-lg focused bg-white mb-3 input-with-value'
@@ -96,12 +97,31 @@ const FormItem: React.FC<FormItemProps> = ({ name, type, label, isRequired, choi
                         />
                     </Form.Item>
                 );
+            case 'file': // Nouveau cas pour le type 'file'
+                return (
+                    <Form.Item
+
+                        label={label}
+                    >
+                        <input
+                            name={name}
+                            type="file"
+                         //   accept=".svg" // Spécifiez les types de fichiers acceptés si nécessaire
+                            onChange={(e) => {
+                                const selected = e.target.files?.[0] || null; // Utilisez null si undefined
+                                setSelectedFile(selected);
+                                options?.onChange?.(name, selected)
+                            }}
+                        />
+                        {options && options.initialFile && <>{options.initialFile}</>}
+                    </Form.Item>
+                );
             case 'phone':
                 return (
                     <Form.Item
                         name={name}
                         label={label}
-                        key={key}
+
                         rules={[{
                             required: isRequired ? isRequired : false,
                             pattern: new RegExp(/(^[\d]+$)|(^\+[\d]+$)/), // Regex pour valider le format
@@ -130,7 +150,7 @@ const FormItem: React.FC<FormItemProps> = ({ name, type, label, isRequired, choi
 
             default:
                 return (
-                    <Form.Item name={name} label={label} key={key} rules={[{ required: isRequired ? isRequired : false }]}>
+                    <Form.Item name={name} label={label} rules={[{ required: isRequired ? isRequired : false }]}>
                         <Input
                             placeholder={label ? label : ''}
                             className='form-control form-control-lg focused bg-white mb-3 input-with-value'

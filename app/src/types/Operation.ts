@@ -10,6 +10,9 @@ type Operation = {
   updatedAt: string;
   address?: Address | undefined;
   distance?: number | undefined;
+  logo?: any | undefined;
+  size?: number | undefined;
+  limitDrive?: number | undefined;
 };
 
 export default Operation;

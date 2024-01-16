@@ -75,6 +75,9 @@ const TableHomeView: FC<TableViewProps> = (props) => {
     setFilteredData(filtered);
   };
 
+  console.log(filteredData);
+
+
   return (
     <div className="table-container">
       {props.actionsItems && props.actionsItems.length > 0 && (

@@ -26,37 +26,41 @@ import {
     showErrorNotification,
     showSuccesNotification,
 } from '../../services/utils';
-import { ModuleAction as Action } from '../../services/auth/auth';
-import type Module from '../../types/Module';
+import { UpdateAction as Action } from '../../services/auth/auth';
+import type Update from '../../types/Update';
 
 import '../../style.less';
 
-interface ModuleType extends Module {
+interface UpdateType extends Update {
     key: React.Key;
 }
 
-const OperationModulesPage: FC<
+const UpdatePage: FC<
     WithTranslation & WithDataManagerProps & { inTab?: boolean }
 > = ({ dataManager, t, inTab }) => {
-    const getModules = async () => {
-        const modules = await dataManager.getModules();
-        return modules.map((module, i) => {
-            return Object.assign(module, { key: i });
+    const getUpdates = async () => {
+        const updates = await dataManager.getUpdates();
+        return updates.map((updates, i) => {
+            return Object.assign(updates, { key: i });
         });
     };
 
     const {
-        data: modules,
+        data: updates,
         isFetching,
         refetch,
-    } = useQuery(['modules'], getModules, {
+    } = useQuery(['updates'], getUpdates, {
         onError: (e) => {
             console.error(e);
         },
         refetchOnWindowFocus: false,
-        refetchInterval: 4000,
+        refetchInterval: 5000,
         refetchIntervalInBackground: true,
     });
+
+    const formatTextAreaContent = (text: any) => {
+        return text.split('\n').map((line: any, index: any) => <span key={index}>{line}<br /></span>);
+    }
 
     const [modalFormData, setModalFormData] = useState<any | null>(null);
     const handleFormValues = (changedValues: any, allValues: any) => {
@@ -67,12 +71,12 @@ const OperationModulesPage: FC<
         const formData = form?.getFieldsValue();
         if (modalState.action && (modalFormData || formData)) {
             switch (modalState.action) {
-                case Action.CREATE_MODULE:
-                    createModule.mutate();
+                case Action.CREATE_UPDATE:
+                    createUpdate.mutate();
                     refetch();
                     break;
-                case Action.MODIFY_MODULE:
-                    editModule.mutate();
+                case Action.MODIFY_UPDATE:
+                    editUpdate.mutate();
                     refetch();
                     break;
             }
@@ -82,10 +86,10 @@ const OperationModulesPage: FC<
 
     const modalReducer = (prevState: any, action: any) => {
         switch (action.type) {
-            case Action.CREATE_MODULE:
-                const inputs: any[] = [{ name: 'name' }, { name: 'code' }];
+            case Action.CREATE_UPDATE:
+                const inputs: any[] = [{ name: 'version' }, { name: 'content', type: 'text' }];
                 return {
-                    action: Action.CREATE_MODULE,
+                    action: Action.CREATE_UPDATE,
                     content: (
                         <ModalForm
                             inputs={inputs}
@@ -95,15 +99,15 @@ const OperationModulesPage: FC<
                     ),
                     showModal: true,
                 };
-            case Action.MODIFY_MODULE:
+            case Action.MODIFY_UPDATE:
                 return {
-                    action: Action.MODIFY_MODULE,
-                    selectedModule: action.module,
+                    action: Action.MODIFY_UPDATE,
+                    selectedUpdate: action.update,
                     content: (
                         <ModalForm
                             inputs={[
-                                { name: 'name', value: action.module.name },
-                                { name: 'code', value: action.module.code },
+                                { name: 'version', value: action.update.version },
+                                { name: 'content', type: 'text', value: action.update.content },
                             ]}
                             onFormValueChange={handleFormValues}
                             submit={modalOnOk}
@@ -126,13 +130,13 @@ const OperationModulesPage: FC<
         showModal: false,
     });
 
-    const deleteModule = useMutation(
-        (module: Module): any => {
-            return dataManager.deleteModule(module);
+    const deleteUpdate = useMutation(
+        (update: Update): any => {
+            return dataManager.deleteUpdate(update);
         },
         {
-            onSuccess: (module: Module) => {
-                showSuccesNotification('moduleDeleted', t, { module: module.name });
+            onSuccess: (update: Update) => {
+                showSuccesNotification('updateDeleted', t, { update: update.version });
                 refetch();
             },
             onError: (e) => {
@@ -142,15 +146,16 @@ const OperationModulesPage: FC<
         }
     );
 
-    const columns: ColumnsType<ModuleType> = [
+    const columns: ColumnsType<UpdateType> = [
         {
-            key: 'name',
-            title: 'Name',
-            dataIndex: 'name',
+            key: 'version',
+            title: 'Version',
+            dataIndex: 'version',
             ellipsis: {
                 showTitle: false,
             },
-            sorter: (a, b) => a.name.localeCompare(b.name),
+            align: 'center',
+            sorter: (a, b) => a.version.localeCompare(b.version),
             render: (value) => (
                 <Tooltip placement="bottomLeft" title={value}>
                     {value}
@@ -158,16 +163,16 @@ const OperationModulesPage: FC<
             ),
         },
         {
-            key: 'code',
-            title: 'Code',
-            dataIndex: 'code',
+            key: 'content',
+            title: 'Contenu',
+            dataIndex: 'content',
             ellipsis: {
                 showTitle: false,
             },
-            sorter: (a, b) => a.code.localeCompare(b.code),
+            sorter: (a, b) => a.content.localeCompare(b.content),
             render: (value) => (
                 <Tooltip placement="bottomLeft" title={value}>
-                    {value}
+                    {formatTextAreaContent(value)}
                 </Tooltip>
             ),
         },
@@ -180,8 +185,8 @@ const OperationModulesPage: FC<
                         className="edit"
                         onClick={() => {
                             modalDispatch({
-                                type: Action.MODIFY_MODULE,
-                                module: record,
+                                type: Action.MODIFY_UPDATE,
+                                update: record,
                             });
                         }}
                     />
@@ -189,7 +194,7 @@ const OperationModulesPage: FC<
                         title={t('confirm.title')}
                         okText={t('confirm.ok')}
                         cancelText={t('confirm.cancel')}
-                        onConfirm={() => deleteModule.mutate(record)}
+                        onConfirm={() => deleteUpdate.mutate(record)}
                     >
                         <DeleteOutlined className="delete" />
                     </Popconfirm>
@@ -204,17 +209,17 @@ const OperationModulesPage: FC<
         });
     };
 
-    const createModule = useMutation(
+    const createUpdate = useMutation(
         (): any => {
-            const { name, code } = modalFormData;
-            return dataManager.createModule({
-                name,
-                code,
+            const { version, content } = modalFormData;
+            return dataManager.createUpdate({
+                version,
+                content,
             });
         },
         {
             onSuccess: () => {
-                showSuccesNotification('moduleCreated', t, { module: modalFormData.name });
+                showSuccesNotification('updateCreated', t, { update: modalFormData.version });
                 refetch();
             },
             onError: (e) => {
@@ -224,17 +229,17 @@ const OperationModulesPage: FC<
         }
     );
 
-    const editModule = useMutation(
+    const editUpdate = useMutation(
         (): any => {
-            const { name, code } = modalFormData;
-            return dataManager.updateModule(modalState.selectedModule, {
-                name,
-                code,
+            const { version, content } = modalFormData;
+            return dataManager.updateUpdate(modalState.selectedUpdate, {
+                version,
+                content,
             });
         },
         {
             onSuccess: () => {
-                showSuccesNotification('moduleUpdated', t, { module: modalFormData.name });
+                showSuccesNotification('updateUpdated', t, { update: modalFormData.version });
                 refetch();
             },
             onError: (e) => {
@@ -250,28 +255,31 @@ const OperationModulesPage: FC<
             <div
                 onClick={() => {
                     modalDispatch({
-                        type: Action.CREATE_MODULE,
+                        type: Action.CREATE_UPDATE,
                     });
                 }}
             >
                 <AppstoreAddOutlined />
-                {t('module.new')}
+                Nouvelle mise à jour
             </div>
         ),
-        key: 'new_module',
+        key: 'new_update',
     });
 
     const [isLoadingInitialData, setIsLoadingInitialData] = useState(true)
     useEffect(() => {
-      if (modules) {
-        setIsLoadingInitialData(false);
-      }
-    }, [modules]);
+        if (updates) {
+            setIsLoadingInitialData(false);
+        }
+    }, [updates]);
+
+
+
 
     return (
         <TableView
-            title={t('admin.modulesTab')}
-            data={modules}
+            title={t('admin.updateTab')}
+            data={updates}
             isFetching={isLoadingInitialData}
             actionsItems={items}
             columns={columns}
@@ -286,4 +294,4 @@ const OperationModulesPage: FC<
     );
 };
 
-export default withTranslation(withDataManager(OperationModulesPage));
+export default withTranslation(withDataManager(UpdatePage));

@@ -55,7 +55,7 @@ const UsersPage: FC<
       console.error(e);
     },
     refetchOnWindowFocus: false,
-    refetchInterval: 1000,
+    refetchInterval: 4000,
     refetchIntervalInBackground: true,
   });
 
@@ -77,6 +77,7 @@ const UsersPage: FC<
     },
     refetchOnWindowFocus: false,
   });
+  console.log(operations);
 
   const [modalFormData, setModalFormData] = useState<any | null>(null);
 

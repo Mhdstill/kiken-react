@@ -15,14 +15,17 @@ import { Role } from './services/auth/auth';
 import './App.css'
 import './Fonts.css'
 import OperationsPage from './components/Administration/Operations';
+import UpdatePage from './components/Administration/Update';
 import OperationUsersPage from './components/Administration/OperationUsers';
 import OperationModulesPage from './components/Administration/OperationModules';
 import PointerFieldsPage from './components/Administration/PointerFields';
 import UsersPage from './components/Administration/Users';
 import SettingsPage from './components/Administration/Settings';
+import AdminHomePage from './components/Administration/Home';
 import PointersPage from './components/Administration/Pointers';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { MenuProvider } from './contexts/MenuContext';
+import { OperationProvider } from './contexts/OperationContext';
 
 type ProtectedRouteProps = {
   rolesAllowed: Role[];
@@ -33,7 +36,7 @@ export const LogoutPage = () => {
   const navigate = useNavigate();
   useEffect(() => {
     sessionStorage.clear();
-    navigate('/');
+    navigate('/login');
   }, []);
   return null;
 };
@@ -75,7 +78,16 @@ const router = createBrowserRouter([
       </ProtectedRoute>
     ),
     children: [
-      { index: true },
+
+      //Home
+      {
+        index: true,
+        element: (
+          <ProtectedRoute rolesAllowed={[Role.ADMIN, Role.CLIENT]}>
+            <AdminHomePage />
+          </ProtectedRoute>
+        ),
+      },
 
       //Operation
       {
@@ -86,7 +98,6 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
-      { index: true },
       {
         path: 'operations/clients',
         element: (
@@ -104,7 +115,15 @@ const router = createBrowserRouter([
         ),
       },
 
-
+      //Updates
+      {
+        path: 'updates',
+        element: (
+          <ProtectedRoute rolesAllowed={[Role.ADMIN]}>
+            <UpdatePage />
+          </ProtectedRoute>
+        ),
+      },
 
       {
         path: 'users',
@@ -162,11 +181,13 @@ const router = createBrowserRouter([
 
 const App: FC = () => {
   return (
-    <ThemeProvider>
-      <MenuProvider>
-        <RouterProvider router={router} />
-      </MenuProvider>
-    </ThemeProvider>
+    <OperationProvider>
+      <ThemeProvider>
+        <MenuProvider>
+          <RouterProvider router={router} />
+        </MenuProvider>
+      </ThemeProvider>
+    </OperationProvider>
   );
 };
 

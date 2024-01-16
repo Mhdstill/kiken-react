@@ -63,7 +63,7 @@ const PointerFieldsPage: FC<
             console.error(e);
         },
         refetchOnWindowFocus: false,
-        refetchInterval: 1000,
+        refetchInterval: 4000,
         refetchIntervalInBackground: true,
     });
 
@@ -208,7 +208,7 @@ const PointerFieldsPage: FC<
                     {value}
                 </Tooltip>
             ),
-            useFilter: true
+        //    useFilter: true
         },
         {
             key: 'type',
@@ -222,7 +222,7 @@ const PointerFieldsPage: FC<
                     {getTypeString(value)}
                 </Tooltip>
             ),
-            useFilter: true,
+        //    useFilter: true,
         },
         {
             key: 'allwaysFill',

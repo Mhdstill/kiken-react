@@ -10,6 +10,7 @@ import withDataManager, {
 } from '../../hoc/withDataManager';
 import { useTheme } from '../../contexts/ThemeContext';
 import './style.less';
+import { useOperation } from '../../contexts/OperationContext';
 
 const LoginPage: FC = ({
   dataManager,
@@ -18,14 +19,11 @@ const LoginPage: FC = ({
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const { isDarkMode, toggleTheme } = useTheme();
+  const { setOperations, setOperationToken } = useOperation();
 
   if (sessionStorage.getItem('token')) {
     const operationToken = sessionStorage.getItem('operation_token');
-    if (operationToken) {
-      navigate(`/${operationToken}`);
-    } else {
-      navigate('/');
-    }
+    navigate('/admin');
   }
 
   const login = async (values: any) => {
@@ -34,14 +32,20 @@ const LoginPage: FC = ({
 
   const { mutate, isLoading } = useMutation(login, {
     onSuccess: (data) => {
-      const { token, refreshToken, role, operationToken, modules } = data;
+      const { token, refreshToken, role, operationToken, modules, operations } = data;
       sessionStorage.setItem('token', token);
       sessionStorage.setItem('refresh_token', refreshToken);
       sessionStorage.setItem('role', role);
       sessionStorage.setItem('modules', JSON.stringify(modules));
+      sessionStorage.setItem('operations', JSON.stringify(operations));
+      sessionStorage.setItem('operations', JSON.stringify(operations));
       if (operationToken) {
         sessionStorage.setItem('operation_token', operationToken);
-        navigate(`/${operationToken}`);
+        setOperationToken(operationToken); // Mise à jour du contexte pour operationToken
+      }
+      if (operations && operations.length >= 1) {
+        setOperations(operations); // Mise à jour du contexte pour la liste des opérations
+        navigate('/admin');
       } else {
         navigate(-1);
       }
@@ -76,7 +80,7 @@ const LoginPage: FC = ({
             <div className="card shadow-2-strong" style={{ borderRadius: '1rem' }}>
               <div className="card-body p-5 text-center">
 
-                <img style={{ height: '60px' }} src={!isDarkMode ? "/images/logo-black.svg" :"/images/logo.svg"} alt="Logo de QR4You"></img>
+                <img style={{ height: '60px' }} src={!isDarkMode ? "/images/logo-black.svg" : "/images/logo.svg"} alt="Logo de QR4You"></img>
 
                 <h3 className='mt-2 title-txt'>Connexion</h3>
                 <Card>

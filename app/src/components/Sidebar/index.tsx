@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { faUser, faClipboardList, faHome, faRightFromBracket, faSignature, faBuilding, faChevronRight, faChevronDown, faTable, faList, faUserTie, faGear, faGears, faFolder, faShop } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faClipboardList, faHome, faRightFromBracket, faSignature, faBuilding, faChevronRight, faChevronDown, faTable, faList, faUserTie, faGear, faGears, faFolder, faShop, faCircle, faArrowsRotate } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     FileAction,
@@ -10,15 +10,26 @@ import {
 } from '../../services/auth/auth';
 import { useNavigate } from 'react-router-dom';
 import NavItem from '../NavbarList/NavItem';
+import { useOperation } from '../../contexts/OperationContext';
+import { Select } from 'antd';
 
 const Sidebar = () => {
 
     /* const { Footer: BaseFooter } = Layout; */
     const navigate = useNavigate();
     const [isHovered, setIsHovered] = useState(false);
+    const { Option } = Select;
+
+    const { operations, setOperationToken, operationToken } = useOperation();
+    const [selectedOperation, setSelectedOperation] = useState(sessionStorage.getItem('operation_token'));
+
+    const handleOperationChange = (value: string) => {
+        setSelectedOperation(value);
+        setOperationToken(value);
+        sessionStorage.setItem('operation_token', value);
+    };
 
     var isOnline = false;
-    var operationToken = null;
     if (sessionStorage.getItem('token')) {
         var opAuth = Object.values(OperationAction).find((action) =>
             isAuthorized(action)
@@ -32,7 +43,6 @@ const Sidebar = () => {
         var qrdAuth = Object.values(FileAction).find((action) =>
             isAuthorized(action)
         );
-        operationToken = sessionStorage.getItem('operation_token');
         isOnline = true;
     }
 
@@ -75,7 +85,8 @@ const Sidebar = () => {
             path: "/admin/pointers/fields"
         },
     ]
-
+    console.log(operationToken);
+    console.log(operations);
     return (
         <aside className="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3 bg-gradient-dark" id="sidenav-main">
             <div className="sidenav-header">
@@ -90,6 +101,10 @@ const Sidebar = () => {
                         <h6 className="ps-4 ms-2 text-uppercase text-white font-weight-bolder opacity-8" style={{ fontSize: '1rem !important' }} >Pages</h6>
                     </li>
 
+                    <>
+                        <NavItem title="Accueil" icon={faHome} path={`/admin`} />
+                    </>
+
                     {qrdAuth ? (
                         <>
                             <NavItem title="QR Drive" icon={faFolder} path={`/${operationToken}`} />
@@ -103,6 +118,7 @@ const Sidebar = () => {
                     {opAuth ? (
                         <>
                             <NavItem title="Opérations" icon={faShop} path="/admin/operations" dropdownItems={operationItems} />
+                            <NavItem title="Mises à jour" icon={faArrowsRotate} path="/admin/updates" />
                         </>
                     )
                         :
@@ -127,16 +143,32 @@ const Sidebar = () => {
                         (<></>)
                     }
 
+
                     {isOnline ?
                         (
                             <>
                                 <NavItem title="Paramètres" icon={faGear} path={"/admin/settings"} />
                                 <NavItem title="Déconnexion" icon={faRightFromBracket} path={"/logout"} />
+
+
+                                <h6 className="ps-4 mt-4 ms-2 text-uppercase text-white font-weight-bolder opacity-8" style={{ fontSize: '1rem !important' }} >Operation</h6>
+                                <div className='px-4'>
+                                    <Select
+                                        value={selectedOperation}
+                                        onChange={handleOperationChange}
+                                        style={{ width: '100%' }}
+                                    >
+                                        {operations.map(op => (
+                                            <Option key={op.id} value={op.id} selected={(op.id === operationToken)}>{op.name}</Option>
+                                        ))}
+                                    </Select>
+                                </div>
                             </>
                         )
                         :
                         (<NavItem title="Connexion" icon={faUser} path={"/"} />)
                     }
+
                 </ul>
             </div>
         </aside >

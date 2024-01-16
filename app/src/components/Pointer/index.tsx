@@ -14,7 +14,7 @@ import withDataManager, {
 import './style.less';
 import { getType, getTypeString } from '../../types/PointerField';
 import TextArea from 'antd/lib/input/TextArea';
-import { checkUserProximity, getCoordinatesFromAddress } from '../../services/utils';
+import { API_URL, checkUserProximity, getCoordinatesFromAddress } from '../../services/utils';
 import FormItem from '../FormItem';
 import Operation from '../../types/Operation';
 
@@ -211,6 +211,21 @@ const PointerPage: FC = ({
   }
 
   var initialValues: any = {};
+  const renderLogo = () => {
+    if (operation && operation.logo) {
+      return (
+        <img style={{ height: '60px' }} src={API_URL + "/images/" + operation.logo.path} alt="Logo"></img>
+      )
+    } else if (isDarkMode) {
+      return (
+        <img style={{ height: '60px' }} src={"/images/logo-black.svg"} alt="Logo"></img>
+      )
+    } else {
+      return (
+        <img style={{ height: '60px' }} src={"/images/logo.svg"} alt="Logo"></img>
+      )
+    }
+  }
   const renderFormFields = (fields: any[], alwaysFill: boolean) => {
     const handleCheckboxChange = (e: any) => {
       return e.target.checked ? 'Oui' : 'Non';
@@ -283,7 +298,6 @@ const PointerPage: FC = ({
     }
   };
 
-  console.log(initialValues);
   return (
     <section className="vh-100 login" style={{ backgroundColor: '#1E1C22 !important' }}>
       <div className="container py-5 h-100">
@@ -298,7 +312,7 @@ const PointerPage: FC = ({
                   </div>
                 )}
 
-                <img style={{ height: '60px' }} src={!isDarkMode ? "/images/logo-black.svg" :"/images/logo.svg"} alt="Logo de QR4You"></img>
+                {renderLogo()}
 
                 <h3 className='mt-2 title-txt'>
                   {step === 1 && 'Formulaire'}

@@ -30,6 +30,7 @@ import {
 import type User from '../../types/User';
 import { UserAction as Action } from '../../services/auth/auth';
 import '../../style.less';
+import Operation from '../../types/Operation';
 
 interface UserType extends User {
     key: React.Key;
@@ -41,7 +42,7 @@ const OperationUsersPage: FC<
     const getClients = async () => {
         const users = await dataManager.getClients();
         return users.map((user, i) => {
-            user.operation = user.operation.name;
+            user.operation = user.operations.map((op: Operation) => (<> {op.name} <br /> </>))
             return Object.assign(user, { key: i });
         });
     };
@@ -55,7 +56,7 @@ const OperationUsersPage: FC<
             console.error(e);
         },
         refetchOnWindowFocus: false,
-        refetchInterval: 1000,
+        refetchInterval: 4000,
         refetchIntervalInBackground: true,
     });
 
@@ -104,14 +105,14 @@ const OperationUsersPage: FC<
             case Action.CREATE_USER:
                 const inputs: any[] = [{ name: 'email' }, { name: 'password' }];
                 inputs.push({
-                    name: 'operationName',
+                    name: 'userOperations',
                     possibleValues: operations
                         ? operations.map((op) => ({
                             id: op['@id'],
                             label: op.name,
                         }))
                         : [],
-                    multiple: false,
+                    multiple: true,
                 });
                 return {
                     action: Action.CREATE_USER,
@@ -248,14 +249,12 @@ const OperationUsersPage: FC<
 
     const createUser = useMutation(
         (): any => {
-            const { email, password, operationName } = modalFormData;
+            const { email, password, userOperations } = modalFormData;
+            console.log(userOperations);
             return dataManager.createUser({
                 email,
                 password,
-                operation:
-                    (operations as any[]).find((op) => op['@id'] === operationName)[
-                    '@id'
-                    ]
+                operations: userOperations
             });
         },
         {
@@ -310,9 +309,9 @@ const OperationUsersPage: FC<
 
     const [isLoadingInitialData, setIsLoadingInitialData] = useState(true)
     useEffect(() => {
-      if (users) {
-        setIsLoadingInitialData(false);
-      }
+        if (users) {
+            setIsLoadingInitialData(false);
+        }
     }, [users]);
 
     return (

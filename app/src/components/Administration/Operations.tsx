@@ -4,6 +4,7 @@ import { FormInstance, MenuProps, Popconfirm, Tooltip } from 'antd';
 import { AppstoreAddOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/lib/table';
 import type { WithTranslation } from 'react-i18next';
+import Module from '../../types/Module';
 
 import TableView from '../TableView';
 import ModalForm from '../Modal/ModalForm';
@@ -25,6 +26,7 @@ import { OperationAction as Action } from '../../services/auth/auth';
 import type Operation from '../../types/Operation';
 
 import '../../style.less';
+import { getGeneralSize, getSize } from '../../types/File';
 
 interface OperationType extends Operation {
   key: React.Key;
@@ -49,7 +51,7 @@ const OperationsPage: FC<
       console.error(e);
     },
     refetchOnWindowFocus: false,
-    refetchInterval: 1000,
+    refetchInterval: 4000,
     refetchIntervalInBackground: true,
   });
 
@@ -75,9 +77,25 @@ const OperationsPage: FC<
     );
   }
 
-  const handleFormValues = (changedValues: any, allValues: any) => {
-    setModalFormData(allValues);
+  const handleFormValues = (changedValues: any, allValues: any, defaultModules: any) => {
+    const undefinedCount = allValues.modules.filter((moduleID: string) => moduleID === 'undefined' || !moduleID).length;
+    let moduleIDs: string[] = [];
+    if (defaultModules && Array.isArray(defaultModules)) {
+      moduleIDs = defaultModules
+        .map(module => module['@id'])
+        .slice(0, undefinedCount)
+    }
+    const validModuleIDs = allValues.modules.filter((moduleID: string) => moduleID && moduleID !== 'undefined');
+
+    // Extraire seulement les IRI pour les modules
+    const values = {
+      ...allValues,
+      modules: [...moduleIDs, ...validModuleIDs.map((module: Module) => module.id || module)], // S'assurer de n'obtenir que les IRI
+    };
+
+    setModalFormData(values);
   };
+
 
   const modalOnOk = async (form?: FormInstance) => {
     const formData = form?.getFieldsValue();
@@ -97,14 +115,31 @@ const OperationsPage: FC<
   };
 
   const modalReducer = (prevState: any, action: any) => {
+    let defaultModules = (action && action.operation && action.operation.modules) ? action.operation.modules : [];
+    console.log(defaultModules);
     switch (action.type) {
       case Action.CREATE_OPERATION:
         return {
           action: Action.CREATE_OPERATION,
           content: (
             <ModalForm
-              inputs={[{ name: 'operationName' }]}
-              onFormValueChange={handleFormValues}
+              inputs={[
+                { name: 'operationName' },
+                {
+                  name: 'modules',
+                  possibleValues: modules,
+                },
+                {
+                  name: 'limitDrive',
+                },
+                {
+                  name: 'limitUser',
+                },
+                {
+                  name: 'limitOperation',
+                }
+              ]}
+              onFormValueChange={function (changedValues, allValues) { setModalFormData(allValues) }}
               submit={modalOnOk}
             />
           ),
@@ -126,8 +161,20 @@ const OperationsPage: FC<
                     label: module.name,
                   })),
                 },
+                {
+                  name: 'limitDrive',
+                  value: action.operation.limitDrive
+                },
+                {
+                  name: 'limitUser',
+                  value: action.operation.limitUser
+                },
+                {
+                  name: 'limitOperation',
+                  value: action.operation.limitOperation
+                }
               ]}
-              onFormValueChange={handleFormValues}
+              onFormValueChange={function (changedValues, allValues) { handleFormValues(changedValues, allValues, defaultModules) }}
               submit={modalOnOk}
             />
           ),
@@ -181,6 +228,39 @@ const OperationsPage: FC<
       title: t('name'),
       dataIndex: 'name',
       sorter: (a, b) => a.name.localeCompare(b.name),
+      render: (value) => (
+        <Tooltip placement="bottomLeft" title={value}>
+          {value}
+        </Tooltip>
+      ),
+    },
+    {
+      key: 'limitDrive',
+      title: 'Limit QR Drive',
+      dataIndex: 'limitDrive',
+      sorter: (a: any, b: any) => a.limitDrive.localeCompare(b.limitDrive),
+      render: (value) => (
+        <Tooltip placement="bottomLeft" title={value}>
+          {getGeneralSize(value)}
+        </Tooltip>
+      ),
+    },
+    {
+      key: 'limitUser',
+      title: 'Limit Utilisateurs',
+      dataIndex: 'limitUser',
+      sorter: (a: any, b: any) => a.limitUser.localeCompare(b.limitUser),
+      render: (value) => (
+        <Tooltip placement="bottomLeft" title={value}>
+          {value}
+        </Tooltip>
+      ),
+    },
+    {
+      key: 'limitOperation',
+      title: 'Limit Operations',
+      dataIndex: 'limitOperation',
+      sorter: (a: any, b: any) => a.limitOperation.localeCompare(b.limitOperation),
       render: (value) => (
         <Tooltip placement="bottomLeft" title={value}>
           {value}
@@ -246,7 +326,13 @@ const OperationsPage: FC<
 
   const createOperation = useMutation(
     (): any => {
-      return dataManager.createOperation(modalFormData.operationName);
+      return dataManager.createOperation({
+        name: modalFormData.operationName,
+        modules: modalFormData.modules,
+        limitDrive: modalFormData.limitDrive,
+        limitUser: modalFormData.limitUser,
+        limitOperation: modalFormData.limitOperation,
+      });
     },
     {
       onSuccess: () => {
@@ -264,10 +350,13 @@ const OperationsPage: FC<
 
   const editOperation = useMutation(
     (): any => {
-      const { operationName, modules } = modalFormData;
+      const { operationName, modules, limitDrive, limitOperation, limitUser } = modalFormData;
       return dataManager.updateOperation(modalState.selectedOperation.id, {
         name: operationName,
         modules,
+        limitDrive,
+        limitOperation,
+        limitUser,
       });
     },
     {

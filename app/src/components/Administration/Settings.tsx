@@ -9,6 +9,7 @@ import './style.less';
 import FormView, { FormViewSection } from '../FormView';
 import { FileAction, PointerAction, isAuthorized } from '../../services/auth/auth';
 import { showSuccesNotification } from '../../services/utils';
+import { API_URL } from '../../services/utils';
 
 const SettingsPage: FC = ({
     dataManager,
@@ -41,24 +42,33 @@ const SettingsPage: FC = ({
         },
         refetchOnWindowFocus: false,
         enabled: !!operationToken, // N'exécutez la requête que si operationToken existe
-        refetchInterval: 1000, // Mise à jour toutes les 5 secondes
+        refetchInterval: 4000, // Mise à jour toutes les 5 secondes
         refetchIntervalInBackground: true,
     });
 
 
 
     // Form Events
+    const [sections, setSections] = useState<FormViewSection[]>([]);
+    const [file, setFile] = useState<File | null>(null);
+
     const handleSubmitGeneralForm = async (values: any) => {
         if (!operationToken) {
             return;
         }
-        const datas = await dataManager.updateOperation(operationToken, {
+
+        const operation = await dataManager.updateOperation(operationToken, {
             street: values.street,
             zip: parseInt(values.zip),
-            city: values.city
+            city: values.city,
+            logo: file
         })
+        if(!file){
+        //    await dataManager.deleteGeneralFile(operation.id,  operation.logo)
+        }
+
         showSuccesNotification('settingsUpdated', t);
-        return datas;
+        return operation;
     };
 
     const handleSubmitClockInForm = async (values: any) => {
@@ -81,7 +91,10 @@ const SettingsPage: FC = ({
 
 
     // Sections Render
-    const [sections, setSections] = useState<FormViewSection[]>([]);
+
+    const handleFileChange = (fieldName: string, file: File | null) => {
+        setFile(file);
+    };
     useEffect(() => {
         const newSections: FormViewSection[] = [
             {
@@ -103,12 +116,22 @@ const SettingsPage: FC = ({
                         type: 'text',
                         label: 'Ville',
                     },
+                    {
+                        name: 'file',
+                        type: 'file',
+                        label: 'Logo',
+                        options: {
+                            onChange: handleFileChange,
+                            initialFile: operation && operation.logo ? <img className='mt-4' style={{maxHeight: "200px"}} src={API_URL + "/images/" + operation.logo.path} /> : <></>
+                        }
+                    },
                 ],
-                onSubmit: handleSubmitGeneralForm,
+                onSubmit: (values) => handleSubmitGeneralForm(values),
                 initialValues: {
                     street: operation && operation.address ? operation.address.street : undefined,
                     zip: operation && operation.address ? operation.address.zip : undefined,
                     city: operation && operation.address ? operation.address.city : undefined,
+                    file: operation ? operation.logo : undefined
                 },
             },
         ];
@@ -162,7 +185,7 @@ const SettingsPage: FC = ({
         }
 
         setSections(newSections);
-    }, [operation, ptAuth]);
+    }, [operation, ptAuth, file]);
 
 
     return (

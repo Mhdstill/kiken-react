@@ -43,6 +43,8 @@ export default {
     name: 'Module name',
     code: 'Module code',
     modules: 'Module(s)',
+    version: 'Version',
+    content: 'Content'
   },
   confirm: {
     title: 'Are you sure?',
@@ -73,6 +75,9 @@ export default {
       moduleDeleted: 'The module {{module}} has been successfully deleted.',
       moduleCreated: 'The module {{module}} has been successfully created',
       moduleUpdated: 'The module {{module}} has been successfully updated.',
+      updateDeleted: "La mise à jour {{update}} a été supprimé avec succès.",
+      updateUpdated: "La mise à jour {{update}} a été mis à jour avec succès.",
+      updateCreated: "La mise à jour {{update}} a été créé avec succès.",
       pointerFieldDeleted: 'The field {{field}} has been successfully deleted.',
       pointerFieldCreated: 'The field {{field}} has been successfully created',
       pointerFieldUpdated: 'The field {{field}} has been successfully updated.',
@@ -114,6 +119,7 @@ export default {
     usersTab: 'Users',
     clientsTab: 'Clients',
     modulesTab: 'Modules',
+    updateTab: 'Updates',
     pointerFieldTabs: 'Fields',
     operationsTab: 'Operations',
     pointersTab: 'Pointers',
