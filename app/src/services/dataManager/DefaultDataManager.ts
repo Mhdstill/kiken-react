@@ -88,7 +88,8 @@ export class DefaultDataManager implements DataManager {
       }
 
       const fileSize = data.get('size');
-      if (!fileSize || !op.size || !op.limitDrive) {
+      console.log(fileSize, op.size, op.limitDrive);
+      if (!fileSize || (!op.size && op.size !== 0) || !op.limitDrive) {
         throw new Error('Taille du fichier requise');
       }
       const fileSizeInt = parseInt(fileSize.toString());

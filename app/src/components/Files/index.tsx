@@ -118,16 +118,16 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
       .downloadFile(operationToken, file.id)
       .then((blob) => {
         const url = URL.createObjectURL(blob);
-        if (blob.type.indexOf('image') > -1 || blob.type === 'application/pdf') {
+       /* if (blob.type.indexOf('image') > -1 || blob.type === 'application/pdf') {
           modalDispatch({
             type: Action.SHOW_FILE,
             imageFile: url,
             onOk: () => triggerDownload(file.name, url),
             okText: t('modal.download'),
           });
-        } else {
+        } else { */
           triggerDownload(file.name, url);
-        }
+       // }
       })
       .catch(console.error);
   };
@@ -270,6 +270,7 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
     useQuery(
       ['users'],
       async () => {
+        console.log(operationToken);
         return await dataManager.getUsersByOperationToken(operationToken);
       },
       {
@@ -452,7 +453,7 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
           content: (
             <QRCodeCanvas
               id="qrcode"
-              // onClick={() => window.open(action.qrCodeValue, '_blank')}
+              onClick={() => window.open(action.qrCodeValue, '_blank')}
               value={action.qrCodeValue}
             />
           ),
