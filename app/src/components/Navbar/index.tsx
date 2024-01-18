@@ -38,7 +38,7 @@ const Navbar: React.FC = ({ t }: WithTranslation) => {
 
           <span onClick={toggleTheme} className='toggle-mode'>
             <FontAwesomeIcon icon={faPaintBrush} className='toggle-mode-i me-2' />
-            {isDarkMode ? 'Mode Sombre' : 'Mode Clair'}
+            <span id="theme-name"> {isDarkMode ? 'Mode Sombre' : 'Mode Clair'} </span>
           </span>
         </nav>
       </Header>

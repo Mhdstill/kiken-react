@@ -656,6 +656,10 @@ input[type="file"]::file-selector-button:hover
     .form-section .ant-slider {
         width: 100% !important;
     }
+
+    #theme-name {
+        display: none;
+    }
 }
 
 .loading-container {

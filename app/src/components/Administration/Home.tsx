@@ -17,7 +17,7 @@ import { Link } from 'react-router-dom';
 import { FileType, Type, getGeneralSize, getSize } from '../../types/File';
 import Notification from '../../types/Notification';
 import { ColumnsType } from 'antd/lib/table';
-import { faEnvelope, faFile, faFilePdf, faFileWord, faFolder, faImage } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faEnvelope, faFile, faFilePdf, faFileWord, faFolder, faImage } from '@fortawesome/free-solid-svg-icons';
 import { useOperation } from '../../contexts/OperationContext';
 
 const AdminHomePage: FC = ({
@@ -25,8 +25,8 @@ const AdminHomePage: FC = ({
     t,
 }: WithTranslation & WithDataManagerProps) => {
 
+    const [folderId, setFolderId] = useState<string | null>(null);
     const { operations, operationToken } = useOperation();
-    console.log(operationToken);
     const formatTextAreaContent = (text: any) => {
         return text.split('\n').map((line: any, index: any) => <span key={index}>{line}<br /></span>);
     }
@@ -84,11 +84,19 @@ const AdminHomePage: FC = ({
     }
 
     const getQR4YOUFolder = async () => {
+        if (!operationToken) {
+            return;
+        }
+
         let folder;
         try {
-            folder = (await getRootFolder(QR4YOU_ID))[0];
-            console.log(folder);
+            if (folderId) {
+                folder = await dataManager.getFolder(operationToken, folderId);
+            } else {
+                folder = (await getRootFolder(QR4YOU_ID))[0];
+            }
             let i = 1;
+            console.log(folder);
             const getParentTree = async (folder: any, tree: any[] = []): Promise<any[]> => {
                 if (tree.length == 0) {
                     tree.unshift(folder);
@@ -131,42 +139,91 @@ const AdminHomePage: FC = ({
         refetchInterval: 40000,
         refetchIntervalInBackground: true,
     });
-    console.log(QR4YOUFolder);
-
     const notifications = (operation && operation.notifications) ? operation.notifications : [];
 
-    const getFileIcon = (record: any) => {
-        let defaultReturn = <FontAwesomeIcon icon={faFile} style={{ fontSize: "22px", color: "var(--main-color)", position: "relative", top: "4px" }} className='me-2' />;
+    // Table handles
+    const downloadFile = (file: FileType) => {
+        if (!operationToken) {
+            return;
+        }
+        dataManager
+            .downloadFile(operationToken, file.id)
+            .then((blob) => {
+                const url = URL.createObjectURL(blob);
+                triggerDownload(file.name, url);
+            })
+            .catch(console.error);
+    };
+
+    const triggerDownload = (filename: string, data: string) => {
+        const a = document.createElement('a');
+        a.href = data;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => {
+            window.URL.revokeObjectURL(data); // Delay revoking the ObjectURL for Firefox
+        }, 100);
+    };
+    useEffect(() => {
+        refetchQR4YOUFolder();
+    }, [folderId]);
+
+    const getDocument = (record: any) => {
+
 
         const type = record['@type'];
         if (type === Type.FOLDER) {
-            defaultReturn = <FontAwesomeIcon icon={faFolder} style={{ fontSize: "22px", color: "orange", position: "relative", top: "4px", }} className='me-2' />;
-        } else if (type === Type.FILE) {
+            return (
+                <a onClick={() => { setFolderId(record.id); }}>
+                    <FontAwesomeIcon icon={faFolder} style={{ fontSize: "22px", color: "orange", position: "relative", top: "4px", }} className='me-2' />
+                    {record.name}
+                </a>
+            );
+        } else {
+
+            let documentIcon = <FontAwesomeIcon icon={faFile} style={{ fontSize: "22px", color: "var(--main-color)", position: "relative", top: "4px" }} className='me-2' />;
+
             const extension = record['extension'];
             if (extension === 'png' || extension === 'jpg' || extension === 'jpeg') {
-                defaultReturn = <FontAwesomeIcon icon={faImage} style={{ fontSize: "22px", color: "var(--main-color)", position: "relative", top: "4px" }} className='me-2' />;
+                documentIcon = <FontAwesomeIcon icon={faImage} style={{ fontSize: "22px", color: "var(--main-color)", position: "relative", top: "4px" }} className='me-2' />;
             } else if (extension === 'pdf') {
-                defaultReturn = <FontAwesomeIcon icon={faFilePdf} style={{ fontSize: "22px", color: "var(--main-color)", position: "relative", top: "4px" }} className='me-2' />;
+                documentIcon = <FontAwesomeIcon icon={faFilePdf} style={{ fontSize: "22px", color: "var(--main-color)", position: "relative", top: "4px" }} className='me-2' />;
             } else if (extension === 'eml') {
-                defaultReturn = <FontAwesomeIcon icon={faEnvelope} style={{ fontSize: "22px", color: "var(--main-color)", position: "relative", top: "4px" }} className='me-2' />;
+                documentIcon = <FontAwesomeIcon icon={faEnvelope} style={{ fontSize: "22px", color: "var(--main-color)", position: "relative", top: "4px" }} className='me-2' />;
             } else if (extension === 'docx') {
-                defaultReturn = <FontAwesomeIcon icon={faFileWord} style={{ fontSize: "22px", color: "var(--main-color)", position: "relative", top: "4px" }} className='me-2' />;
+                documentIcon = <FontAwesomeIcon icon={faFileWord} style={{ fontSize: "22px", color: "var(--main-color)", position: "relative", top: "4px" }} className='me-2' />;
             }
+
+            return (
+                <a onClick={() => downloadFile(record)}> {documentIcon} {record.name}</a>
+            );
         }
 
-        return defaultReturn;
     };
+
     const columns: ColumnsType<FileType> = [
         {
             key: 'name',
-            title: t('name'),
+            title: (
+                <>
+                    {folderId && (
+                        <FontAwesomeIcon className='me-4' icon={faArrowLeft} onClick={() => setFolderId(null)} />
+                    )}
+                    {t('name')}
+                </>
+            ),
             ellipsis: {
                 showTitle: false,
             },
             sorter: (a, b) => a.name.localeCompare(b.name),
             render: (value, record: any) => (
                 <Tooltip placement="bottomLeft" title={record.name}>
-                    {getFileIcon(record)} {record.name}
+                    {folderId && (
+                        <></>
+                    )}
+                    {getDocument(record)}
                 </Tooltip>
             ),
         },
@@ -210,7 +267,6 @@ const AdminHomePage: FC = ({
     ) ? (operation.size / operation.limitDrive) * 100 : 0;
     const status = (limitDrivePercent && limitDrivePercent >= 90) ? "exception" : "success"
 
-    console.log(QR4YOUFolder?.data);
     return (
         <>
             <div className='row mb-3'>
@@ -270,7 +326,7 @@ const AdminHomePage: FC = ({
                         <h3 className="section-title">Notifications</h3>
                         <List
                             itemLayout="horizontal"
-                            dataSource={notifications.slice(0,3)}
+                            dataSource={notifications.slice(0, 3)}
                             renderItem={(notification: Notification) => (
                                 <List.Item>
                                     <List.Item.Meta
@@ -287,7 +343,7 @@ const AdminHomePage: FC = ({
                         <h3 className="section-title">Mises à jour</h3>
                         <List
                             itemLayout="horizontal"
-                            dataSource={updates?.slice(0,3)}
+                            dataSource={updates?.slice(0, 3)}
                             renderItem={(update) => (
                                 <List.Item>
                                     <List.Item.Meta

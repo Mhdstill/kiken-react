@@ -32,19 +32,18 @@ const LoginPage: FC = ({
 
   const { mutate, isLoading } = useMutation(login, {
     onSuccess: (data) => {
-      const { token, refreshToken, role, operationToken, modules, operations } = data;
+      const { token, refreshToken, role, modules, operations } = data;
       sessionStorage.setItem('token', token);
       sessionStorage.setItem('refresh_token', refreshToken);
       sessionStorage.setItem('role', role);
       sessionStorage.setItem('modules', JSON.stringify(modules));
       sessionStorage.setItem('operations', JSON.stringify(operations));
-      sessionStorage.setItem('operations', JSON.stringify(operations));
-      if (operationToken) {
-        sessionStorage.setItem('operation_token', operationToken);
-        setOperationToken(operationToken); // Mise à jour du contexte pour operationToken
-      }
+
       if (operations && operations.length >= 1) {
-        setOperations(operations); // Mise à jour du contexte pour la liste des opérations
+        const operationToken = operations[0].id;
+        sessionStorage.setItem('operation_token', operationToken);
+        setOperationToken(operationToken);
+        setOperations(operations);
         navigate('/admin');
       } else {
         navigate(-1);

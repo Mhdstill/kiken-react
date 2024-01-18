@@ -24,6 +24,7 @@ const Sidebar = () => {
     const [selectedOperation, setSelectedOperation] = useState(sessionStorage.getItem('operation_token'));
 
     const handleOperationChange = (value: string) => {
+        console.log(sessionStorage.getItem('operation_token'));
         setSelectedOperation(value);
         setOperationToken(value);
         sessionStorage.setItem('operation_token', value);
