@@ -44,7 +44,8 @@ export default {
     code: 'Module code',
     modules: 'Module(s)',
     version: 'Version',
-    content: 'Content'
+    content: 'Content',
+    userOperations: 'Operation'
   },
   confirm: {
     title: 'Are you sure?',

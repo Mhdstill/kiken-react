@@ -209,7 +209,11 @@ const AdminHomePage: FC = ({
             title: (
                 <>
                     {folderId && (
-                        <FontAwesomeIcon className='me-4' icon={faArrowLeft} onClick={() => setFolderId(null)} />
+                        <FontAwesomeIcon
+                            style={{ position: 'absolute', left: '15px', top:'8px' }}
+                            className='me-4' icon={faArrowLeft}
+                            onClick={() => setFolderId(null)}
+                        />
                     )}
                     {t('name')}
                 </>
@@ -277,7 +281,7 @@ const AdminHomePage: FC = ({
                             <Card bordered={false} className='c-card text-center p-1 mb-3'>
                                 <h3 className="section-title">QR Drive</h3>
                                 <Space wrap>
-                                    <Progress type="circle" percent={limitDrivePercent} status={status} />
+                                    <Progress type="circle" percent={limitDrivePercent} status={status} strokeColor={'var(--main-color)'} />
                                 </Space>
                                 <p style={{ fontWeight: 'bold', opacity: 0.8 }}> {operation && getSize(operation)} / {operation && getGeneralSize(operation.limitDrive)}</p>
                             </Card>
@@ -286,7 +290,7 @@ const AdminHomePage: FC = ({
                             <Card bordered={false} className='c-card text-center p-1 mb-3'>
                                 <h3 className="section-title">Opérations</h3>
                                 <Space wrap>
-                                    <Progress type="circle" percent={10} status="success" />
+                                    <Progress type="circle" percent={10} status="success" strokeColor={'var(--main-color)'} />
                                 </Space>
                                 <p style={{ fontWeight: 'bold', opacity: 0.8 }}> {operations && operations.length} / {operation && operation.limitOperation} </p>
                             </Card>
@@ -295,7 +299,7 @@ const AdminHomePage: FC = ({
                             <Card bordered={false} className='c-card text-center p-1 mb-3'>
                                 <h3 className="section-title">Utilisateurs</h3>
                                 <Space wrap>
-                                    <Progress type="circle" percent={20} status="success" />
+                                    <Progress type="circle" percent={20} status="success" strokeColor={'var(--main-color)'} />
                                 </Space>
                                 <p style={{ fontWeight: 'bold', opacity: 0.8 }}> {operation && operation.users && operation.users.length} / {operation && operation.limitUser} </p>
                             </Card>

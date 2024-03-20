@@ -51,7 +51,8 @@ export default {
     limitOperation: 'Nombre d\'opérations max',
     limitUser: 'Nombre d\'utilisateurs max',
     version: 'Version',
-    content: 'Contenu'
+    content: 'Contenu',
+    userOperations: 'Operation'
   },
   confirm: {
     title: 'Êtes-vous sûr?',

@@ -527,11 +527,12 @@ export class DefaultDataManager implements DataManager {
 
   async updateUser(user: User, data: any): Promise<boolean> {
     try {
-      const { email, password } = data;
+      const { email, password, operations } = data;
       const { operation_token, role } = sessionStorage;
       const body = {
         email,
         password,
+        operations
       };
       if (operation_token && role === Role.CLIENT) {
         await this.axios.put(`/api/${operation_token}/users/${user.id}`, body);
@@ -566,7 +567,7 @@ export class DefaultDataManager implements DataManager {
       const body = {
         name,
         modules,
-        limitDrive: limitDrive.toString(),
+        limitDrive: (limitDrive) ? limitDrive.toString() : null,
         limitUser: parseInt(limitUser),
         limitOperation: parseInt(limitOperation)
       };
@@ -589,7 +590,7 @@ export class DefaultDataManager implements DataManager {
         addressIRI = (address) ? address['@id'] : '';
       }
 
-      const body: {
+      let body: {
         name: any;
         modules: any;
         useClockInGeolocation: any;
@@ -606,10 +607,19 @@ export class DefaultDataManager implements DataManager {
         useClockInGeolocation,
         distance,
         isDarkMode,
-        limitDrive: limitDrive.toString(),
-        limitOperation: parseInt(limitOperation),
-        limitUser: parseInt(limitUser)
       };
+
+      if (limitDrive) {
+        body = { ...body, limitDrive: limitDrive.toString() };
+      } 
+
+      if (limitOperation) {
+        body = { ...body, limitOperation: parseInt(limitOperation) };
+      } 
+
+      if (limitUser) {
+        body = { ...body, limitUser: parseInt(limitUser) };
+      } 
 
       if (addressIRI) {
         body.address = addressIRI;

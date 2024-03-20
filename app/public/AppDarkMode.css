@@ -727,3 +727,7 @@ input[type="file"]::file-selector-button {
 .home-left .section-title {
     opacity: 0.9;
 }
+
+.home-left .anticon-check svg {
+    color: var(--main-color) !important;
+}

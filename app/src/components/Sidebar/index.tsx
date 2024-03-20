@@ -57,7 +57,7 @@ const Sidebar = () => {
 
     const operationItems = [
         {
-            title: "Liste",
+            title: "Sites",
             icon: faTable,
             path: "/admin/operations/list"
         },

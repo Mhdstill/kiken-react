@@ -79,9 +79,32 @@ const OperationUsersPage: FC<
 
     const [modalFormData, setModalFormData] = useState<any | null>(null);
 
+    /*
     const handleFormValues = (changedValues: any, allValues: any) => {
-        setModalFormData(allValues);
+        console.log(allValues);
+       // setModalFormData(allValues);
     };
+    */
+
+    const handleFormValues = (changedValues: any, allValues: any, defaultOperations: any) => {
+        const undefinedCount = allValues.userOperations.filter((operationID: string) => operationID === 'undefined' || !operationID).length;
+        let operationIDs: string[] = [];
+        if (defaultOperations && Array.isArray(defaultOperations)) {
+            operationIDs = defaultOperations
+            .map(operation => operation['@id'])
+            .slice(0, undefinedCount)
+        }
+        const validModuleIDs = allValues.userOperations.filter((operationID: string) => operationID && operationID !== 'undefined');
+    
+        // Extraire seulement les IRI pour les modules
+        const values = {
+          ...allValues,
+          modules: [...operationIDs, ...validModuleIDs.map((operation: Operation) => operation.id || operation)], // S'assurer de n'obtenir que les IRI
+        };
+    
+        setModalFormData(values);
+      };
+    
 
     const modalOnOk = async (form?: FormInstance) => {
         const formData = form?.getFieldsValue();
@@ -101,6 +124,7 @@ const OperationUsersPage: FC<
     };
 
     const modalReducer = (prevState: any, action: any) => {
+        let defaultOperations = (action && action.user && action.user.operations) ? action.user.operations : [];
         switch (action.type) {
             case Action.CREATE_USER:
                 const inputs: any[] = [{ name: 'email' }, { name: 'password' }];
@@ -119,7 +143,7 @@ const OperationUsersPage: FC<
                     content: (
                         <ModalForm
                             inputs={inputs}
-                            onFormValueChange={handleFormValues}
+                            onFormValueChange={function (changedValues, allValues) { handleFormValues(changedValues, allValues, defaultOperations) }}
                             submit={modalOnOk}
                         />
                     ),
@@ -134,8 +158,22 @@ const OperationUsersPage: FC<
                             inputs={[
                                 { name: 'email', value: action.user.email },
                                 { name: 'password' },
+                                {
+                                    name: 'userOperations',
+                                    possibleValues: operations
+                                        ? operations.map((op) => ({
+                                            id: op['@id'],
+                                            label: op.name,
+                                        }))
+                                        : [],
+                                    multiple: true,
+                                    values: action.user.operations?.map((operation: any) => ({
+                                        id: operation['@id'],
+                                        label: operation.name,
+                                    })),
+                                }
                             ]}
-                            onFormValueChange={handleFormValues}
+                            onFormValueChange={function (changedValues, allValues) { handleFormValues(changedValues, allValues, defaultOperations) }}
                             submit={modalOnOk}
                         />
                     ),
@@ -271,10 +309,11 @@ const OperationUsersPage: FC<
 
     const editUser = useMutation(
         (): any => {
-            const { email, password } = modalFormData;
+            const { email, password, userOperations } = modalFormData;
             return dataManager.updateUser(modalState.selectedUser, {
                 email,
                 password,
+                operations: userOperations
             });
         },
         {

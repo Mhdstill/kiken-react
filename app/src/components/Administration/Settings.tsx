@@ -85,7 +85,7 @@ const SettingsPage: FC = ({
             showSuccesNotification('settingsUpdated', t);
             return datas;
         } catch (error) {
-            throw new Error("Problème lors de la mise à jour de vos paramètres.");
+            throw new Error(error);
         }
     };
 

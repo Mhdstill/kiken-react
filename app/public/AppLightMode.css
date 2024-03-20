@@ -698,3 +698,7 @@ input[type="file"]::file-selector-button{
 .home-left .section-title {
     color: var(--third-color);
 }
+
+.home-left .anticon-check svg {
+    color: var(--main-color) !important;
+}
