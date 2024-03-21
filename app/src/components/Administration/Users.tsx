@@ -67,6 +67,9 @@ const UsersPage: FC<
       return ops.map((op, i) => {
         return Object.assign(op, { key: i });
       });
+    } else {
+      const operationToken = sessionStorage.getItem('operation_token');
+      return [operationToken];
     }
     return null;
   };
@@ -77,7 +80,6 @@ const UsersPage: FC<
     },
     refetchOnWindowFocus: false,
   });
-  console.log(operations);
 
   const [modalFormData, setModalFormData] = useState<any | null>(null);
 
@@ -244,12 +246,12 @@ const UsersPage: FC<
       return dataManager.createUser({
         email,
         password,
-        operation:
+        operations:
           role === Role.ADMIN
-            ? (operations as any[]).find((op) => op['@id'] === operationName)[
+            ? [(operations as any[]).find((op) => op['@id'] === operationName)[
             '@id'
-            ]
-            : sessionStorage.getItem('operation_token'),
+            ]]
+            : [sessionStorage.getItem('operation_token')],
       });
     },
     {

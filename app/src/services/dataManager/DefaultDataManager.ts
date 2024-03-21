@@ -224,9 +224,10 @@ export class DefaultDataManager implements DataManager {
       if (userRole === Role.ADMIN) {
         body = { ...body, operations, roles: [Role.CLIENT] };
         req = await this.axios.post('/api/users', body);
-      } else {
+      } else { 
+        console.log(operations);
         let operationIRI = `/api/operations/${operations[0]}`
-        body = { ...body, operation: operationIRI };
+        body = { ...body, operations: [operationIRI] };
         req = await this.axios.post('/api/users/client', body);
         //req = await this.axios.post(`/api/${operation}/users`, body);
       }
