@@ -271,6 +271,18 @@ const AdminHomePage: FC = ({
     ) ? (operation.size / operation.limitDrive) * 100 : 0;
     const status = (limitDrivePercent && limitDrivePercent >= 90) ? "exception" : "success"
 
+    const limitOperationPercent = (operation
+        && operation.limitOperation && operation.limitOperation > 0
+    ) ? (operations.length / operation.limitOperation) * 100 : 0;
+    const limitOperationStatus = (limitOperationPercent && limitOperationPercent >= 90) ? "exception" : "success"
+
+    const limitUserPercent = (operation
+        && operation.limitUser && operation.limitUser > 0
+        && operation.users && operation.users.length > 0
+    ) ? (operation.users.length / operation.limitUser) * 100 : 0;
+    const limitUserStatus = (limitUserPercent && limitUserPercent >= 90) ? "exception" : "success"
+
+
     return (
         <>
             <div className='row mb-3'>
@@ -290,7 +302,7 @@ const AdminHomePage: FC = ({
                             <Card bordered={false} className='c-card text-center p-1 mb-3'>
                                 <h3 className="section-title">Opérations</h3>
                                 <Space wrap>
-                                    <Progress type="circle" percent={10} status="success" strokeColor={'var(--main-color)'} />
+                                    <Progress type="circle" percent={limitOperationPercent} status={limitOperationStatus} strokeColor={'var(--main-color)'} />
                                 </Space>
                                 <p style={{ fontWeight: 'bold', opacity: 0.8 }}> {operations && operations.length} / {operation && operation.limitOperation} </p>
                             </Card>
@@ -299,7 +311,7 @@ const AdminHomePage: FC = ({
                             <Card bordered={false} className='c-card text-center p-1 mb-3'>
                                 <h3 className="section-title">Utilisateurs</h3>
                                 <Space wrap>
-                                    <Progress type="circle" percent={20} status="success" strokeColor={'var(--main-color)'} />
+                                    <Progress type="circle" percent={limitUserPercent} status={limitUserStatus} strokeColor={'var(--main-color)'} />
                                 </Space>
                                 <p style={{ fontWeight: 'bold', opacity: 0.8 }}> {operation && operation.users && operation.users.length} / {operation && operation.limitUser} </p>
                             </Card>

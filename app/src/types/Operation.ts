@@ -1,4 +1,5 @@
 import Address from "./Address";
+import User from "./User";
 
 type Operation = {
   '@id': string;
@@ -13,6 +14,9 @@ type Operation = {
   logo?: any | undefined;
   size?: number | undefined;
   limitDrive?: number | undefined;
+  limitOperation?: number | undefined;
+  limitUser?: number | undefined;
+  users?: any;
 };
 
 export default Operation;

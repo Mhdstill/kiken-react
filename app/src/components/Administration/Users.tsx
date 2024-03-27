@@ -25,6 +25,7 @@ import {
 import {
   getFormattedDate,
   showErrorNotification,
+  showSpecificErrorNotification,
   showSuccesNotification,
 } from '../../services/utils';
 import { UserAction as Action } from '../../services/auth/auth';
@@ -259,9 +260,9 @@ const UsersPage: FC<
         showSuccesNotification('userCreated', t, { user: modalFormData.email });
         refetch();
       },
-      onError: (e) => {
+      onError: (e: any) => {
         console.error(e);
-        showErrorNotification(e, t);
+        showSpecificErrorNotification(e.message, t);
       },
     }
   );

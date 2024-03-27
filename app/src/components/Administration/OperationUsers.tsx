@@ -99,7 +99,7 @@ const OperationUsersPage: FC<
         // Extraire seulement les IRI pour les modules
         const values = {
           ...allValues,
-          modules: [...operationIDs, ...validModuleIDs.map((operation: Operation) => operation.id || operation)], // S'assurer de n'obtenir que les IRI
+          userOperations: [...operationIDs, ...validModuleIDs.map((operation: Operation) => operation.id || operation)], // S'assurer de n'obtenir que les IRI
         };
     
         setModalFormData(values);

@@ -215,24 +215,35 @@ export class DefaultDataManager implements DataManager {
   async createUser(data: any): Promise<boolean> {
     try {
       const { email, password, operations } = data;
+
+      const { operation_token } = sessionStorage;
+      const operation = await this.getOperation(operation_token);
+      if (!operation) {
+        throw new Error('Une erreur a eu lieu.');
+      }
+      if (operation.limitUser && operation.users && operation.limitUser <= operation.users.length) {
+        await this.createNotification({ title: 'Utilisateur non créé', content: 'L\'utilisateur "' + email + '" n\'a pas été créé pour cause de limite atteinte.', icon: 'fa-warning' }, operation_token);
+        throw new Error('La limite de création d\'utilisateurs pour votre opération a été atteint.');
+      }
+
       let body: any = {
         email,
         password,
       };
       const { role: userRole } = sessionStorage;
       let req;
+
       if (userRole === Role.ADMIN) {
         body = { ...body, operations, roles: [Role.CLIENT] };
         req = await this.axios.post('/api/users', body);
-      } else { 
+      } else {
         console.log(operations);
         let operationIRI = `/api/operations/${operations[0]}`
         body = { ...body, operations: [operationIRI] };
         req = await this.axios.post('/api/users/client', body);
-        //req = await this.axios.post(`/api/${operation}/users`, body);
       }
 
-      //await this.createNotification({ title: 'Utilisateur créé', content: 'L\'utilisateur "' + email + '" a été ajouté à votre opération.', icon: 'fa-user' }, operation.id)
+      await this.createNotification({ title: 'Utilisateur créé', content: 'L\'utilisateur "' + email + '" a été ajouté à votre opération.', icon: 'fa-user' }, operation.id);
       return true;
     } catch (err) {
       throw new Error((err.response && err.response.statusText) ? err.response.statusText : err);
@@ -530,22 +541,29 @@ export class DefaultDataManager implements DataManager {
     try {
       const { email, password, operations } = data;
       const { operation_token, role } = sessionStorage;
-      const body = {
-        email,
-        password,
-        operations
-      };
+
+      let body: { email: any; password?: any; operations: any; };
+
+      if (password && password !== '') {
+        body = { email, password, operations };
+      } else {
+        body = { email, operations };
+      }
+
       if (operation_token && role === Role.CLIENT) {
         await this.axios.put(`/api/${operation_token}/users/${user.id}`, body);
       } else {
         await this.axios.put(`/api/users/${user.id}`, body);
       }
-      await this.createNotification({ title: 'Utilisateur modifié', content: 'L\'utilisateur "' + email + '" a été modifié avec succès.', icon: 'fa-user' }, operation_token)
+
+      await this.createNotification({ title: 'Utilisateur modifié', content: `L'utilisateur "${email}" a été modifié avec succès.`, icon: 'fa-user' }, operation_token);
+
       return true;
     } catch (err) {
       throw new Error((err.response && err.response.statusText) ? err.response.statusText : err);
     }
   }
+
 
   async deleteUser(user: User): Promise<User> {
     try {
@@ -612,15 +630,15 @@ export class DefaultDataManager implements DataManager {
 
       if (limitDrive) {
         body = { ...body, limitDrive: limitDrive.toString() };
-      } 
+      }
 
       if (limitOperation) {
         body = { ...body, limitOperation: parseInt(limitOperation) };
-      } 
+      }
 
       if (limitUser) {
         body = { ...body, limitUser: parseInt(limitUser) };
-      } 
+      }
 
       if (addressIRI) {
         body.address = addressIRI;
