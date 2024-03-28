@@ -45,7 +45,10 @@ export default {
     modules: 'Module(s)',
     version: 'Version',
     content: 'Content',
-    userOperations: 'Operation'
+    userOperations: 'Operation',
+    canCreate: 'Creation access',
+    canEdit: 'Edit access',
+    canDelete: 'Delete access',
   },
   confirm: {
     title: 'Are you sure?',

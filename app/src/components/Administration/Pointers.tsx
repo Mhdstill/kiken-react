@@ -92,7 +92,6 @@ const PointersPage: FC<
         const dynamicColumns = new Set<string>();
         clockInsData.forEach(clockIn => {
             // Vérifiez si fieldValues existe avant de les itérer
-            console.log(clockIn);
             if (clockIn.fieldValues) {
                 clockIn.fieldValues.forEach(fieldValue => {
                     dynamicColumns.add(fieldValue.custom_field.label);
@@ -106,7 +105,6 @@ const PointersPage: FC<
                 });
             }
         });
-        console.log(dynamicColumns);
 
         return Array.from(dynamicColumns).map(label => ({
             key: label,

@@ -69,8 +69,6 @@ const PointerFieldsPage: FC<
 
     const [modalFormData, setModalFormData] = useState<any | null>(null);
     const handleFormValues = (changedValues: any, allValues: any) => {
-        console.log("Form Values Changed:", changedValues);
-        console.log("All Form Values:", allValues);
         setModalFormData(allValues);
     };
 
@@ -122,7 +120,6 @@ const PointerFieldsPage: FC<
                     showModal: true,
                 };
             case Action.MODIFY_POINTER_FIELD:
-                console.log(action);
 
                 const modifyInputs: any = [
                     { name: 'pointerFieldName', value: action.field.label },
@@ -310,7 +307,6 @@ const PointerFieldsPage: FC<
     const editPointerField = useMutation(
         (): any => {
             const { pointerFieldName, pointerFieldType, pointerFieldAllways, pointerFieldRequired } = modalFormData;
-            console.log(pointerFieldAllways);
             return dataManager.updateField(modalState.selectedPointerField, {
                 'label': pointerFieldName,
                 'type': pointerFieldType,

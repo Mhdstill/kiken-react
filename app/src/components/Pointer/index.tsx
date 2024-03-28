@@ -116,7 +116,6 @@ const PointerPage: FC = ({
 
     const newIdentifierValue = values[identifierFields[0].id];
     setIdentifierValue(newIdentifierValue);
-    console.log(values);
     setFirstStepValues(values);
 
     try {

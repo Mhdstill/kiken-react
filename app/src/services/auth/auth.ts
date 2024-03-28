@@ -12,6 +12,7 @@ export enum FileAction {
   EDIT_FILENAME = 'EDIT_FILENAME',
   SHOW_FILE = 'SHOW_FILE',
   SHOW_QRCODE = 'SHOW_QRCODE',
+  SHOW_CONTENT = 'SHOW_CONTENT',
 }
 
 export enum OperationAction {
@@ -63,6 +64,7 @@ const userPermissions: {
   [FileAction.EDIT_ACCESS]: [Role.CLIENT, Role.ADMIN],
   [FileAction.EDIT_FILENAME]: [Role.CLIENT, Role.ADMIN],
   [FileAction.SHOW_FILE]: null,
+  [FileAction.SHOW_CONTENT]: null,
   [FileAction.SHOW_QRCODE]: [Role.CLIENT, Role.ADMIN],
 
   [OperationAction.CREATE_OPERATION]: [Role.ADMIN],
@@ -101,6 +103,7 @@ const operationPermissions: {
   [FileAction.EDIT_ACCESS]: "QRD",
   [FileAction.EDIT_FILENAME]: "QRD",
   [FileAction.SHOW_FILE]: "QRD",
+  [FileAction.SHOW_CONTENT]: "QRD",
   [FileAction.SHOW_QRCODE]: "QRD",
 
   [PointerAction.SHOW_POINTER_QR]: "PT",
@@ -160,4 +163,30 @@ export const operationHasAccess = (action: Action) => {
 
   const modules = JSON.parse(modulesString);
   return modules.includes(perm);
+};
+
+export const userHasDriveAccess = (action: string) => {
+  const role = sessionStorage.getItem('role');
+  if (role == Role.CLIENT || Role.ADMIN) {
+    return true;
+  }
+
+  const driveAccess = sessionStorage.getItem('driveAccess');
+  if (!driveAccess) {
+    return false;
+  }
+
+  console.log(driveAccess);
+  const driveAccesses = JSON.parse(driveAccess);
+  if (action === "create") {
+    return driveAccesses.canCreate;
+  } else if (action === "update") {
+    return driveAccesses.CanUpdate;
+  } else if (action === 'delete') {
+    return driveAccesses.canDelete;
+  } else {
+    return false;
+  }
+
+
 };

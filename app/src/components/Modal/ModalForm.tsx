@@ -43,9 +43,7 @@ const ModalForm = ({
   useKeyPressEvent('Enter', () => submit(form));
 
   const handleKeyDown = (e: any) => {
-    console.log("keydown");
     if (e.key === 'Enter' && !e.shiftKey) {
-      console.log("enter");
       e.stopPropagation();
     }
   };

@@ -272,3 +272,15 @@ export const getExtension = (path: string) => {
 
 export const API_URL = 'https://api.qr4you.fr';
 export const QR4YOU_ID = '7e5cdd75-d1cc-4aea-94be-a7bb9e2a1896';
+
+export const triggerDownload = (filename: string, data: string): void => {
+  const a = document.createElement('a');
+  a.href = data;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => {
+    window.URL.revokeObjectURL(data); // Delay revoking the ObjectURL for Firefox
+  }, 100);
+};

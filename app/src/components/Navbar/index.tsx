@@ -10,6 +10,7 @@ import withTranslation from '../../hoc/withTranslation';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import './style.less';
 import { useMenuContext } from '../../contexts/MenuContext';
+import ToggleSwitch from '../ToggleSwitch';
 
 const { Header } = Layout;
 
@@ -19,6 +20,14 @@ const Navbar: React.FC = ({ t }: WithTranslation) => {
   const navRef = useRef<HTMLDivElement>(null);
   const { isDarkMode, toggleTheme } = useTheme();
   const { isMenuOpen, setIsMenuOpen } = useMenuContext();
+  const [initialThemeSet, setInitialThemeSet] = useState<boolean>(false);
+
+  useEffect(() => {
+    const storedTheme = localStorage.getItem('theme');
+    if (storedTheme !== null) {
+      setInitialThemeSet(true);
+    }
+  }, []);
 
   const handleIconClick = (e: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
     e.stopPropagation();
@@ -36,10 +45,7 @@ const Navbar: React.FC = ({ t }: WithTranslation) => {
           <FontAwesomeIcon icon={faBars} className='menu-icon' style={{ position: 'absolute', left: 0, color: 'white', cursor: 'pointer' }} onClick={handleIconClick} />
           <img style={{ height: '48px', cursor: 'pointer' }} onClick={() => navigate("/admin")} src="/images/logo.svg" alt="Logo de QR4You" />
 
-          <span onClick={toggleTheme} className='toggle-mode'>
-            <FontAwesomeIcon icon={faPaintBrush} className='toggle-mode-i me-2' />
-            <span id="theme-name"> {isDarkMode ? 'Mode Sombre' : 'Mode Clair'} </span>
-          </span>
+          {initialThemeSet && <ToggleSwitch initialValue={isDarkMode} onClick={toggleTheme} />}
         </nav>
       </Header>
     </>

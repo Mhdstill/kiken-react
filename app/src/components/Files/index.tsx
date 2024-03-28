@@ -3,7 +3,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { FormInstance, Popconfirm, Tag, Tooltip, Upload, Modal } from 'antd';
 import type { MenuProps } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFolder, faImage, faFile, faFilePdf, faFileWord, faEnvelope } from '@fortawesome/free-solid-svg-icons';
+import { faFolder, faImage, faFile, faFilePdf, faFileWord, faEnvelope, faFilePowerpoint, faFileExcel } from '@fortawesome/free-solid-svg-icons';
 import {
   DeleteOutlined,
   EditOutlined,
@@ -44,6 +44,7 @@ import {
   FileAction as Action,
   isAuthorized,
   ModalAction,
+  userHasDriveAccess,
 } from '../../services/auth/auth';
 import { Type, getSize } from '../../types/File';
 import type File from '../../types/File';
@@ -51,6 +52,9 @@ import type User from '../../types/User';
 
 import '../../style.less';
 import DragAndDrop from '../DragAndDrop';
+import { renderFileContentFromBlob } from '../../services/file';
+import { triggerDownload } from '../../services/utils';
+import FileContentViewer, { READABLE_EXTENSIONS } from '../FileContentViewer';
 
 interface FileType extends File {
   key: React.Key;
@@ -101,33 +105,22 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
     }
   );
 
-  const triggerDownload = (filename: string, data: string) => {
-    const a = document.createElement('a');
-    a.href = data;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    setTimeout(() => {
-      window.URL.revokeObjectURL(data); // Delay revoking the ObjectURL for Firefox
-    }, 100);
-  };
-
   const downloadFile = (file: FileType) => {
     dataManager
       .downloadFile(operationToken, file.id)
       .then((blob) => {
         const url = URL.createObjectURL(blob);
-       /* if (blob.type.indexOf('image') > -1 || blob.type === 'application/pdf') {
+        if (file.extension && READABLE_EXTENSIONS.includes(file.extension)) {
           modalDispatch({
-            type: Action.SHOW_FILE,
-            imageFile: url,
+            type: Action.SHOW_CONTENT,
             onOk: () => triggerDownload(file.name, url),
             okText: t('modal.download'),
+            content: <FileContentViewer file={file} blob={blob} />
           });
-        } else { */
+        } else {
           triggerDownload(file.name, url);
-       // }
+        }
+
       })
       .catch(console.error);
   };
@@ -234,6 +227,10 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
         defaultReturn = <FontAwesomeIcon icon={faEnvelope} style={{ fontSize: "22px", color: "var(--main-color)", position: "relative", top: "4px" }} className='me-2' />;
       } else if (extension === 'docx') {
         defaultReturn = <FontAwesomeIcon icon={faFileWord} style={{ fontSize: "22px", color: "var(--main-color)", position: "relative", top: "4px" }} className='me-2' />;
+      } else if (extension === 'pptx') {
+        defaultReturn = <FontAwesomeIcon icon={faFilePowerpoint} style={{ fontSize: "22px", color: "var(--main-color)", position: "relative", top: "4px" }} className='me-2' />;
+      } else if (extension === 'xlsx') {
+        defaultReturn = <FontAwesomeIcon icon={faFileExcel} style={{ fontSize: "22px", color: "var(--main-color)", position: "relative", top: "4px" }} className='me-2' />;
       }
     }
 
@@ -266,7 +263,7 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
   };
 
   let [users, setUsers] = useState<any>([]);
-  if (isAuthorized(Action.EDIT_ACCESS)) {
+  if (isAuthorized(Action.EDIT_ACCESS) && userHasDriveAccess('create')) {
     useQuery(
       ['users'],
       async () => {
@@ -476,6 +473,13 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
           onOk: action.onOk,
           okText: action.okText,
         };
+      case Action.SHOW_CONTENT:
+        return {
+          content: action.content,
+          showModal: true,
+          onOk: action.onOk,
+          okText: action.okText,
+        };
       case ModalAction.CLOSE_MODAL:
       default:
         setModalFormData(null);
@@ -520,7 +524,7 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
       sorter: (a, b) => a.name.localeCompare(b.name),
       render: (value, record) => (
         <Tooltip placement="bottomLeft" title={record.name}>
-          <span style={{textAlign: 'left'}}>
+          <span style={{ textAlign: 'left' }}>
             {getFileIcon(record)} {getNameComponent(record)}
           </span>
         </Tooltip>
@@ -639,7 +643,7 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
               }}
             />
           )}
-          {permissions.indexOf(Action.EDIT_ACCESS) > -1 && (
+          {permissions.indexOf(Action.EDIT_ACCESS) > -1 && userHasDriveAccess('update') && (
             <UserOutlined
               className="access"
               onClick={() => {
@@ -650,7 +654,7 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
               }}
             />
           )}
-          {permissions.indexOf(Action.EDIT_FILENAME) > -1 && (
+          {permissions.indexOf(Action.EDIT_FILENAME) > -1 && userHasDriveAccess('update') && (
             <EditOutlined
               className="edit"
               onClick={() => {
@@ -661,7 +665,7 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
               }}
             />
           )}
-          {permissions.indexOf(Action.DELETE_FILE) > -1 && (
+          {permissions.indexOf(Action.DELETE_FILE) > -1 && userHasDriveAccess('delete') && (
             <Popconfirm
               title={t('confirm.title')}
               okText={t('confirm.ok')}
@@ -680,7 +684,7 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
    * New file/folder buttons
    */
   const items: MenuProps['items'] = [];
-  if (isAuthorized(Action.CREATE_FOLDER)) {
+  if (isAuthorized(Action.CREATE_FOLDER) && userHasDriveAccess('create')) {
     items.push({
       label: (
         <div
@@ -696,7 +700,7 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
       key: 'folder',
     });
   }
-  if (isAuthorized(Action.UPLOAD_FILE)) {
+  if (isAuthorized(Action.UPLOAD_FILE) && userHasDriveAccess('create')) {
     items.push({
       label: (
         <div

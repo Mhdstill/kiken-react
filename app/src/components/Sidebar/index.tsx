@@ -24,7 +24,6 @@ const Sidebar = () => {
     const [selectedOperation, setSelectedOperation] = useState(sessionStorage.getItem('operation_token'));
 
     const handleOperationChange = (value: string) => {
-        console.log(sessionStorage.getItem('operation_token'));
         setSelectedOperation(value);
         setOperationToken(value);
         sessionStorage.setItem('operation_token', value);
@@ -86,8 +85,6 @@ const Sidebar = () => {
             path: "/admin/pointers/fields"
         },
     ]
-    console.log(operationToken);
-    console.log(operations);
     return (
         <aside className="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3 bg-gradient-dark" id="sidenav-main">
             <div className="sidenav-header">

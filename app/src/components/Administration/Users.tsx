@@ -108,7 +108,13 @@ const UsersPage: FC<
   const modalReducer = (prevState: any, action: any) => {
     switch (action.type) {
       case Action.CREATE_USER:
-        const inputs: any[] = [{ name: 'email' }, { name: 'password' }];
+        const inputs: any[] = [
+          { name: 'email' },
+          { name: 'password' },
+          { name: 'canCreate', type: 'checkbox' },
+          { name: 'canEdit', type: 'checkbox' },
+          { name: 'canDelete', type: 'checkbox' }
+        ];
         if (role === Role.ADMIN) {
           inputs.push({
             name: 'operationName',
@@ -141,6 +147,9 @@ const UsersPage: FC<
               inputs={[
                 { name: 'email', value: action.user.email },
                 { name: 'password' },
+                { name: 'canCreate', type: 'checkbox', value: action.user.canCreateDrive },
+                { name: 'canEdit', type: 'checkbox', value: action.user.canEditDrive },
+                { name: 'canDelete', type: 'checkbox', value: action.user.canDeleteDrive }
               ]}
               onFormValueChange={handleFormValues}
               submit={modalOnOk}
@@ -243,14 +252,17 @@ const UsersPage: FC<
 
   const createUser = useMutation(
     (): any => {
-      const { email, password, operationName } = modalFormData;
+      const { email, password, operationName, canCreate, canEdit, canDelete } = modalFormData;
       return dataManager.createUser({
         email,
         password,
+        canCreate,
+        canEdit,
+        canDelete,
         operations:
           role === Role.ADMIN
             ? [(operations as any[]).find((op) => op['@id'] === operationName)[
-            '@id'
+              '@id'
             ]]
             : [sessionStorage.getItem('operation_token')],
       });
@@ -269,10 +281,13 @@ const UsersPage: FC<
 
   const editUser = useMutation(
     (): any => {
-      const { email, password } = modalFormData;
+      const { email, password, canEdit, canDelete, canCreate } = modalFormData;
       return dataManager.updateUser(modalState.selectedUser, {
         email,
         password,
+        canCreate,
+        canEdit,
+        canDelete
       });
     },
     {

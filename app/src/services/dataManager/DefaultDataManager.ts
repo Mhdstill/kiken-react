@@ -88,7 +88,6 @@ export class DefaultDataManager implements DataManager {
       }
 
       const fileSize = data.get('size');
-      console.log(fileSize, op.size, op.limitDrive);
       if (!fileSize || (!op.size && op.size !== 0) || !op.limitDrive) {
         throw new Error('Taille du fichier requise');
       }
@@ -214,7 +213,7 @@ export class DefaultDataManager implements DataManager {
 
   async createUser(data: any): Promise<boolean> {
     try {
-      const { email, password, operations } = data;
+      const { email, password, operations, canEdit, canDelete, canCreate } = data;
 
       const { operation_token } = sessionStorage;
       const operation = await this.getOperation(operation_token);
@@ -229,6 +228,9 @@ export class DefaultDataManager implements DataManager {
       let body: any = {
         email,
         password,
+        canEditDrive: canEdit,
+        canDeleteDrive: canDelete,
+        canCreateDrive: canCreate
       };
       const { role: userRole } = sessionStorage;
       let req;
@@ -237,7 +239,6 @@ export class DefaultDataManager implements DataManager {
         body = { ...body, operations, roles: [Role.CLIENT] };
         req = await this.axios.post('/api/users', body);
       } else {
-        console.log(operations);
         let operationIRI = `/api/operations/${operations[0]}`
         body = { ...body, operations: [operationIRI] };
         req = await this.axios.post('/api/users/client', body);
@@ -527,7 +528,6 @@ export class DefaultDataManager implements DataManager {
   async deleteField(field: PointerField): Promise<PointerField> {
     try {
       await this.axios.delete(`/api/fields/${field.id}`);
-      console.log(field);
       await this.createNotification({ title: 'Champs supprimé', content: 'Le champs "' + field.label + '" a été supprimé du QR Form', icon: 'fa-trash' }, field.operation.id)
       return field;
     } catch (err) {
@@ -539,22 +539,19 @@ export class DefaultDataManager implements DataManager {
 
   async updateUser(user: User, data: any): Promise<boolean> {
     try {
-      const { email, password, operations } = data;
+      const { email, password, canCreate, canEdit, canDelete, operations } = data;
       const { operation_token, role } = sessionStorage;
 
-      let body: { email: any; password?: any; operations: any; };
+      let body: { email: any; password?: any; operations: any; canEditDrive?: any; canDeleteDrive?: any; canCreateDrive?: any; };
+      body = { email, password, operations, canCreateDrive: canCreate, canDeleteDrive: canDelete, canEditDrive: canEdit };
 
-      if (password && password !== '') {
-        body = { email, password, operations };
-      } else {
-        body = { email, operations };
-      }
+      await this.axios.put(`/api/users/${user.id}`, body);
 
-      if (operation_token && role === Role.CLIENT) {
-        await this.axios.put(`/api/${operation_token}/users/${user.id}`, body);
-      } else {
-        await this.axios.put(`/api/users/${user.id}`, body);
-      }
+      /* if (operation_token && role === Role.CLIENT) {
+         await this.axios.put(`/api/${operation_token}/users/${user.id}`, body);
+       } else {
+         await this.axios.put(`/api/users/${user.id}`, body);
+       }*/
 
       await this.createNotification({ title: 'Utilisateur modifié', content: `L'utilisateur "${email}" a été modifié avec succès.`, icon: 'fa-user' }, operation_token);
 

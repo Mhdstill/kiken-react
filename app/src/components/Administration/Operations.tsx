@@ -116,7 +116,6 @@ const OperationsPage: FC<
 
   const modalReducer = (prevState: any, action: any) => {
     let defaultModules = (action && action.operation && action.operation.modules) ? action.operation.modules : [];
-    console.log(defaultModules);
     switch (action.type) {
       case Action.CREATE_OPERATION:
         return {

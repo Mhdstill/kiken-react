@@ -81,7 +81,6 @@ const OperationUsersPage: FC<
 
     /*
     const handleFormValues = (changedValues: any, allValues: any) => {
-        console.log(allValues);
        // setModalFormData(allValues);
     };
     */
@@ -288,11 +287,13 @@ const OperationUsersPage: FC<
     const createUser = useMutation(
         (): any => {
             const { email, password, userOperations } = modalFormData;
-            console.log(userOperations);
             return dataManager.createUser({
                 email,
                 password,
-                operations: userOperations
+                operations: userOperations,
+                canEdit: true,
+                canCreate: true,
+                canDelete: true
             });
         },
         {
@@ -313,7 +314,10 @@ const OperationUsersPage: FC<
             return dataManager.updateUser(modalState.selectedUser, {
                 email,
                 password,
-                operations: userOperations
+                operations: userOperations,
+                canEdit: true,
+                canCreate: true,
+                canDelete: true
             });
         },
         {

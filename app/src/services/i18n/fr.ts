@@ -52,7 +52,10 @@ export default {
     limitUser: 'Nombre d\'utilisateurs max',
     version: 'Version',
     content: 'Contenu',
-    userOperations: 'Operation'
+    userOperations: 'Operation',
+    canCreate: 'Droit de création',
+    canEdit: 'Droit de modification',
+    canDelete: 'Droit de suppression',
   },
   confirm: {
     title: 'Êtes-vous sûr?',

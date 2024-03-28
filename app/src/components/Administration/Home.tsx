@@ -8,7 +8,7 @@ import withDataManager, {
 import './style.less';
 import FormView, { FormViewSection } from '../FormView';
 import { FileAction, PointerAction, isAuthorized } from '../../services/auth/auth';
-import { IconKey, QR4YOU_ID, getExtension, getFormattedDate, getIcon, showSuccesNotification } from '../../services/utils';
+import { IconKey, QR4YOU_ID, getExtension, getFormattedDate, getIcon, showSuccesNotification, triggerDownload } from '../../services/utils';
 import { API_URL } from '../../services/utils';
 import { Avatar, Card, Col, List, Progress, Row, Space, Statistic, Table, Tooltip } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -96,7 +96,6 @@ const AdminHomePage: FC = ({
                 folder = (await getRootFolder(QR4YOU_ID))[0];
             }
             let i = 1;
-            console.log(folder);
             const getParentTree = async (folder: any, tree: any[] = []): Promise<any[]> => {
                 if (tree.length == 0) {
                     tree.unshift(folder);
@@ -155,17 +154,6 @@ const AdminHomePage: FC = ({
             .catch(console.error);
     };
 
-    const triggerDownload = (filename: string, data: string) => {
-        const a = document.createElement('a');
-        a.href = data;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        setTimeout(() => {
-            window.URL.revokeObjectURL(data); // Delay revoking the ObjectURL for Firefox
-        }, 100);
-    };
     useEffect(() => {
         refetchQR4YOUFolder();
     }, [folderId]);

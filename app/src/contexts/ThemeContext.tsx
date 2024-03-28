@@ -20,7 +20,16 @@ interface ThemeProviderProps {
 }
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
-    const [isDarkMode, setIsDarkMode] = useState(true);
+    // Récupérer le thème stocké dans le localStorage ou utiliser le thème sombre par défaut
+    const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
+        const storedTheme = localStorage.getItem('theme');
+        return storedTheme ? JSON.parse(storedTheme) : true;
+    });
+
+    // Mettre à jour le localStorage lorsque le thème est modifié
+    useEffect(() => {
+        localStorage.setItem('theme', JSON.stringify(isDarkMode));
+    }, [isDarkMode]);
 
     useEffect(() => {
         const link = document.createElement('link');
@@ -32,7 +41,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
         return () => {
           document.head.removeChild(link);
         };
-      }, [isDarkMode]);
+    }, [isDarkMode]);
 
     const toggleTheme = () => {
         setIsDarkMode(!isDarkMode);

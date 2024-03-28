@@ -76,8 +76,7 @@ textarea,
     padding: 0 !important;
 }
 
-text::placeholder
-input::placeholder {
+text::placeholder input::placeholder {
     font-size: 1rem !important;
 }
 
@@ -315,7 +314,7 @@ input[type="file"]::file-selector-button:hover {
 }
 
 .ant-table-row-level-0 td:first-child {
- /*   text-align: left !important; */
+    /*   text-align: left !important; */
     font-weight: bold;
 }
 
@@ -480,6 +479,10 @@ textarea,
 
 .ant-dropdown-menu-title-content .anticon {
     margin-right: 5px !important;
+}
+
+.ant-modal-body pre {
+    color: white;
 }
 
 .ant-modal-body img {
@@ -720,7 +723,8 @@ input[type="file"]::file-selector-button {
     border-bottom: solid 0.5px rgb(73, 80, 87) !important;
 }
 
-.ant-empty-description, .home-left .section-title {
+.ant-empty-description,
+.home-left .section-title {
     color: white !important;
 }
 

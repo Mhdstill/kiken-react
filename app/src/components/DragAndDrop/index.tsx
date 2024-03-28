@@ -14,7 +14,6 @@ const DragAndDrop: React.FC<DragAndDropProps> = ({ onFileUpload, customRequest, 
         multiple: true,
         customRequest,
         onDrop(e) {
-            console.log('Dropped files', e.dataTransfer.files);
         },
         ...props,
     };
