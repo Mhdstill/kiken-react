@@ -137,6 +137,13 @@ export const isAuthorized = (action: Action) => {
   return userHasAccess(action) && operationHasAccess(action);
 };
 
+export const isAuthorizedDrive = (action: Action) => {
+  if (userHasDriveAccess(action)) {
+    return true;
+  }
+  return userHasAccess(action) && operationHasAccess(action);
+};
+
 export const userHasAccess = (action: Action) => {
   const role = sessionStorage.getItem('role');
   if (role) {
@@ -165,28 +172,31 @@ export const operationHasAccess = (action: Action) => {
   return modules.includes(perm);
 };
 
-export const userHasDriveAccess = (action: string) => {
+export const userHasDriveAccess = (action: Action) => {
   const role = sessionStorage.getItem('role');
-  if (role == Role.CLIENT || Role.ADMIN) {
+
+  if (role === Role.CLIENT || role === Role.ADMIN) {
     return true;
   }
 
-  const driveAccess = sessionStorage.getItem('driveAccess');
-  if (!driveAccess) {
+  const driveAccessString = sessionStorage.getItem('driveAccess');
+  if (!driveAccessString) {
     return false;
   }
 
+  const driveAccess = JSON.parse(driveAccessString);
   console.log(driveAccess);
-  const driveAccesses = JSON.parse(driveAccess);
-  if (action === "create") {
-    return driveAccesses.canCreate;
-  } else if (action === "update") {
-    return driveAccesses.CanUpdate;
-  } else if (action === 'delete') {
-    return driveAccesses.canDelete;
-  } else {
-    return false;
+  console.log(action);
+  switch (action) {
+    case FileAction.EDIT_FILENAME:
+      return !!driveAccess.canEdit;
+    case FileAction.CREATE_FOLDER:
+    case FileAction.UPLOAD_FILE:
+      return !!driveAccess.canCreate;
+    case FileAction.DELETE_FILE:
+      return !!driveAccess.canDelete;
+    default:
+      return false; 
   }
-
-
 };
+

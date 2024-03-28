@@ -32,11 +32,12 @@ const LoginPage: FC = ({
 
   const { mutate, isLoading } = useMutation(login, {
     onSuccess: (data) => {
-      const { token, refreshToken, role, modules, operations } = data;
+      const { token, refreshToken, role, modules, operations, driveAccess } = data;
       sessionStorage.setItem('token', token);
       sessionStorage.setItem('refresh_token', refreshToken);
       sessionStorage.setItem('role', role);
       sessionStorage.setItem('modules', JSON.stringify(modules));
+      sessionStorage.setItem('driveAccess', JSON.stringify(driveAccess));
       sessionStorage.setItem('operations', JSON.stringify(operations));
 
       if (operations && operations.length >= 1) {

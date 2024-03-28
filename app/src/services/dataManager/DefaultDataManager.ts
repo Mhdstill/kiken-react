@@ -30,7 +30,8 @@ export class DefaultDataManager implements DataManager {
         refreshToken: response.data.refresh_token,
         role: response.data.role,
         operations: response.data.operations,
-        modules: response.data.modules
+        modules: response.data.modules,
+        driveAccess: response.data.driveAccess
       };
     } catch (err) {
       throw new Error((err.response && err.response.statusText) ? err.response.statusText : err);

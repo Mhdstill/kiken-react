@@ -100,7 +100,7 @@ const Sidebar = () => {
                     </li>
 
                     <>
-                        <NavItem title="Accueil" icon={faHome} path={`/admin`} />
+                        {usAuth ? (<NavItem title="Accueil" icon={faHome} path={"/admin"} />) : (<></>)}
                     </>
 
                     {qrdAuth ? (
@@ -145,7 +145,7 @@ const Sidebar = () => {
                     {isOnline ?
                         (
                             <>
-                                <NavItem title="Paramètres" icon={faGear} path={"/admin/settings"} />
+                                {usAuth ? (<NavItem title="Paramètres" icon={faGear} path={"/admin/settings"} />) : (<></>)}
                                 <NavItem title="Déconnexion" icon={faRightFromBracket} path={"/logout"} />
 
 

@@ -42,7 +42,7 @@ import {
 } from '../../services/utils';
 import {
   FileAction as Action,
-  isAuthorized,
+  isAuthorizedDrive,
   ModalAction,
   userHasDriveAccess,
 } from '../../services/auth/auth';
@@ -263,7 +263,7 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
   };
 
   let [users, setUsers] = useState<any>([]);
-  if (isAuthorized(Action.EDIT_ACCESS) && userHasDriveAccess('create')) {
+  if (isAuthorizedDrive(Action.EDIT_ACCESS)) {
     useQuery(
       ['users'],
       async () => {
@@ -600,7 +600,7 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
     Action.EDIT_ACCESS,
     Action.EDIT_FILENAME,
     Action.DELETE_FILE,
-  ].filter((action) => isAuthorized(action));
+  ].filter((action) => isAuthorizedDrive(action));
 
   if (permissions.length > 0) {
     columns.push({
@@ -643,7 +643,7 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
               }}
             />
           )}
-          {permissions.indexOf(Action.EDIT_ACCESS) > -1 && userHasDriveAccess('update') && (
+          {permissions.indexOf(Action.EDIT_ACCESS) > -1 && (
             <UserOutlined
               className="access"
               onClick={() => {
@@ -654,7 +654,7 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
               }}
             />
           )}
-          {permissions.indexOf(Action.EDIT_FILENAME) > -1 && userHasDriveAccess('update') && (
+          {permissions.indexOf(Action.EDIT_FILENAME) > -1 && (
             <EditOutlined
               className="edit"
               onClick={() => {
@@ -665,7 +665,7 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
               }}
             />
           )}
-          {permissions.indexOf(Action.DELETE_FILE) > -1 && userHasDriveAccess('delete') && (
+          {permissions.indexOf(Action.DELETE_FILE) > -1 && (
             <Popconfirm
               title={t('confirm.title')}
               okText={t('confirm.ok')}
@@ -684,7 +684,7 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
    * New file/folder buttons
    */
   const items: MenuProps['items'] = [];
-  if (isAuthorized(Action.CREATE_FOLDER) && userHasDriveAccess('create')) {
+  if (isAuthorizedDrive(Action.CREATE_FOLDER)) {
     items.push({
       label: (
         <div
@@ -700,7 +700,7 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
       key: 'folder',
     });
   }
-  if (isAuthorized(Action.UPLOAD_FILE) && userHasDriveAccess('create')) {
+  if (isAuthorizedDrive(Action.UPLOAD_FILE)) {
     items.push({
       label: (
         <div

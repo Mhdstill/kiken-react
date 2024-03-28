@@ -97,7 +97,7 @@ const TableHomeView: FC<TableViewProps> = (props) => {
       {tree && tree.length > 0 && (
         <div className='row mb-2'>
           <div className='col'>
-            <div className='c-card d-flex align-items-center w-100 p-2' style={{}}>
+            <div className='c-card d-flex align-items-center w-100 p-2' style={{overflow: 'hidden'}}>
               <FontAwesomeIcon icon={faFolder} style={{ fontSize: "18px" }} className='me-2' />
               <FontAwesomeIcon icon={faChevronRight} style={{ fontSize: "16px" }} className='me-2' />
               {tree.map((value, key) => (
