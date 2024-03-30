@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useReducer, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { FormInstance, Popconfirm, Tag, Tooltip, Upload, Modal } from 'antd';
+import { FormInstance, Popconfirm, Tag, Tooltip, Upload, Modal, Checkbox } from 'antd';
 import type { MenuProps } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFolder, faImage, faFile, faFilePdf, faFileWord, faEnvelope, faFilePowerpoint, faFileExcel } from '@fortawesome/free-solid-svg-icons';
@@ -81,6 +81,7 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
   ) {
     navigate(location.pathname);
   }
+
 
   const fileUpload = useMutation(
     (options: any): any => {
@@ -523,11 +524,20 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
       align: 'left',
       sorter: (a, b) => a.name.localeCompare(b.name),
       render: (value, record) => (
-        <Tooltip placement="bottomLeft" title={record.name}>
-          <span style={{ textAlign: 'left' }}>
-            {getFileIcon(record)} {getNameComponent(record)}
-          </span>
-        </Tooltip>
+        <>
+          {permissions.indexOf(Action.DELETE_FILE) > -1 && (
+            <Checkbox
+              className='me-4'
+              checked={selectedRows.some(row => row.key === record.key)}
+              onChange={() => toggleRowSelection(record.key, record['@type'])}
+            />
+          )}
+          <Tooltip placement="bottomLeft" title={record.name}>
+            <span style={{ textAlign: 'left' }}>
+              {getFileIcon(record)} {getNameComponent(record)}
+            </span>
+          </Tooltip>
+        </>
       ),
     },
     {
@@ -719,6 +729,40 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
     });
   }
 
+  const [selectedRows, setSelectedRows] = useState<{ key: React.Key; type: Type }[]>([]);
+  const toggleRowSelection = (rowKey: React.Key, fileType: Type) => {
+    const selectedIndex = selectedRows.findIndex(row => row.key === rowKey);
+    if (selectedIndex === -1) {
+      setSelectedRows([...selectedRows, { key: rowKey, type: fileType }]);
+    } else {
+      setSelectedRows(selectedRows.filter(row => row.key !== rowKey));
+    }
+  };
+
+  if (isAuthorizedDrive(Action.DELETE_FILE) && selectedRows.length >= 1) {
+    items.push({
+      label: (
+        <div
+          onClick={() => {
+            selectedRows.forEach((row: { key: React.Key; type: Type }) => {
+              const fileToDelete = folders?.data.find((file: FileType) => file.key === row.key);
+              if (fileToDelete) {
+                deleteFile.mutate(fileToDelete);
+                setSelectedRows([]);
+              }
+            });
+          }}
+
+        >
+          <DeleteOutlined /> {t('file.delete', { rows: selectedRows.length })}{selectedRows && selectedRows.length > 1 && (<>s</>)}
+        </div>
+      ),
+      key: 'file',
+    });
+  }
+
+
+
   const hideModal = () => {
     modalDispatch({
       type: ModalAction.CLOSE_MODAL,
@@ -732,6 +776,7 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
       setIsLoadingInitialData(false);
     }
   }, [folders]);
+
 
 
   return (

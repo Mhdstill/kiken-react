@@ -29,6 +29,7 @@ export default {
   nodata: 'Pas de données',
   file: {
     upload: 'Téléverser fichier(s)',
+    delete: 'Supprimer {{rows}} ligne',
   },
   folder: {
     new: 'Nouveau dossier',

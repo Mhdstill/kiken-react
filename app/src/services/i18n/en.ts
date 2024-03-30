@@ -29,6 +29,7 @@ export default {
   nodata: 'No data',
   file: {
     upload: 'Upload a file',
+    delete: 'Delete {{rows}} row'
   },
   folder: {
     new: 'New folder',
