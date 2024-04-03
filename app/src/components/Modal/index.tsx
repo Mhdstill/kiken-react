@@ -10,6 +10,7 @@ interface CustomModalProps extends WithTranslation {
   okText?: string|boolean;
   onCancel: () => void;
   children?: React.ReactNode;
+  width?: number;
 }
 
 const CustomModal = ({
@@ -19,6 +20,7 @@ const CustomModal = ({
   okText,
   onCancel,
   children,
+  width,
 }: CustomModalProps) => {
   let footer = [];
 

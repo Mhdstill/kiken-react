@@ -274,6 +274,7 @@ export const API_URL = 'https://api.qr4you.fr';
 export const QR4YOU_ID = '7e5cdd75-d1cc-4aea-94be-a7bb9e2a1896';
 
 export const triggerDownload = (filename: string, data: string): void => {
+  console.log("download")
   const a = document.createElement('a');
   a.href = data;
   a.download = filename;

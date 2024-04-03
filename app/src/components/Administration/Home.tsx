@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect, useReducer, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import type { WithTranslation } from 'react-i18next';
 import withTranslation from '../../hoc/withTranslation';
@@ -10,7 +10,7 @@ import FormView, { FormViewSection } from '../FormView';
 import { FileAction, PointerAction, isAuthorized } from '../../services/auth/auth';
 import { IconKey, QR4YOU_ID, getExtension, getFormattedDate, getIcon, showSuccesNotification, triggerDownload } from '../../services/utils';
 import { API_URL } from '../../services/utils';
-import { Avatar, Card, Col, List, Progress, Row, Space, Statistic, Table, Tooltip } from 'antd';
+import { Avatar, Card, Col, FormInstance, List, Progress, Row, Space, Statistic, Table, Tooltip } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ArrowDownOutlined, ArrowUpOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
@@ -19,12 +19,20 @@ import Notification from '../../types/Notification';
 import { ColumnsType } from 'antd/lib/table';
 import { faArrowLeft, faEnvelope, faFile, faFilePdf, faFileWord, faFolder, faImage } from '@fortawesome/free-solid-svg-icons';
 import { useOperation } from '../../contexts/OperationContext';
+import FileContentViewer, { READABLE_EXTENSIONS } from '../FileContentViewer';
+import {
+    FileAction as Action,
+    isAuthorizedDrive,
+    ModalAction,
+    userHasDriveAccess,
+} from '../../services/auth/auth';
+import Modal from '../Modal';
 
 const AdminHomePage: FC = ({
     dataManager,
     t,
 }: WithTranslation & WithDataManagerProps) => {
-
+    const [modalFormData, setModalFormData] = useState<any | null>(null);
     const [folderId, setFolderId] = useState<string | null>(null);
     const { operations, operationToken } = useOperation();
     const formatTextAreaContent = (text: any) => {
@@ -140,19 +148,65 @@ const AdminHomePage: FC = ({
     });
     const notifications = (operation && operation.notifications) ? operation.notifications : [];
 
+    const modalReducer = (prevState: any, action: any) => {
+        switch (action.type) {
+            case Action.SHOW_CONTENT:
+                return {
+                    content: action.content,
+                    showModal: true,
+                    onOk: action.onOk,
+                    okText: action.okText,
+                };
+            case ModalAction.CLOSE_MODAL:
+            default:
+                setModalFormData(null);
+                return {
+                    selectedFile: null,
+                    content: null,
+                    showModal: false,
+                    onOk: undefined,
+                    okText: undefined,
+                };
+        }
+    };
+
+    const [modalState, modalDispatch] = useReducer(modalReducer, {
+        selectedFile: null,
+        content: null,
+        showModal: false,
+        onOk: undefined,
+        okText: undefined,
+    });
+    const hideModal = () => {
+        modalDispatch({
+            type: ModalAction.CLOSE_MODAL,
+        });
+    };
+
     // Table handles
     const downloadFile = (file: FileType) => {
         if (!operationToken) {
             return;
         }
         dataManager
-            .downloadFile(operationToken, file.id)
+            .downloadFile(QR4YOU_ID, file.id)
             .then((blob) => {
                 const url = URL.createObjectURL(blob);
-                triggerDownload(file.name, url);
+                if (file.extension && READABLE_EXTENSIONS.includes(file.extension)) {
+                    modalDispatch({
+                        type: Action.SHOW_CONTENT,
+                        onOk: () => triggerDownload(file.name, url),
+                        okText: t('modal.download'),
+                        content: <FileContentViewer file={file} blob={blob} />
+                    });
+                } else {
+                    triggerDownload(file.name, url);
+                }
+
             })
             .catch(console.error);
     };
+
 
     useEffect(() => {
         refetchQR4YOUFolder();
@@ -198,7 +252,7 @@ const AdminHomePage: FC = ({
                 <>
                     {folderId && (
                         <FontAwesomeIcon
-                            style={{ position: 'absolute', left: '15px', top:'8px' }}
+                            style={{ position: 'absolute', left: '15px', top: '8px' }}
                             className='me-4' icon={faArrowLeft}
                             onClick={() => setFolderId(null)}
                         />
@@ -362,6 +416,14 @@ const AdminHomePage: FC = ({
 
                 </div>
             </div >
+            <Modal
+                showModal={modalState.showModal}
+                onOk={modalState.onOk}
+                okText={modalState.okText}
+                onCancel={hideModal}
+            >
+                {modalState.content}
+            </Modal>
         </>
     );
 };

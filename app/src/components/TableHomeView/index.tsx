@@ -32,6 +32,8 @@ interface TableViewProps extends WithTranslation {
   showModal: boolean;
   modalContent: ReactNode;
   minusTabSize?: boolean;
+  setCurrentPageKeys?: any | null;
+
 }
 
 const TableHomeView: FC<TableViewProps> = (props) => {
@@ -45,6 +47,9 @@ const TableHomeView: FC<TableViewProps> = (props) => {
     if (props.data) {
       setPaddingTop(props.data.length > pageSize ? 0 : 0);
       setFilteredData(props.data);
+
+      const initialPageData = props.data.slice(0, 10);
+      props.setCurrentPageKeys(initialPageData);
     }
     if (props.tree) {
       setTree(props.tree);
@@ -62,6 +67,14 @@ const TableHomeView: FC<TableViewProps> = (props) => {
     } else {
       setPaddingTop(0);
     }
+
+    
+    const currentPage = pagination.current || 1;
+    const startIndex = (currentPage - 1) * 10;
+    const endIndex = currentPage * 10;
+
+    const currentPageData = filteredData?.slice(startIndex, endIndex) || [];
+    props.setCurrentPageKeys(currentPageData);
   };
 
   const handleSearch = (searchText: string) => {

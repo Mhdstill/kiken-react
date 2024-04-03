@@ -75,6 +75,13 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
   const location = useLocation();
   const navigate = useNavigate();
 
+  const permissions = [
+    Action.SHOW_QRCODE,
+    Action.EDIT_ACCESS,
+    Action.EDIT_FILENAME,
+    Action.DELETE_FILE,
+  ].filter((action) => isAuthorizedDrive(action));
+
   if (
     searchParams.has('download') &&
     (!searchParams.has('id') || !searchParams.has('name'))
@@ -129,6 +136,7 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
   const [filteredInfo, setFilteredInfo] = useState<
     Record<string, FilterValue | null>
   >({});
+  const [currentPageKeys, setCurrentPageKeys] = useState<React.Key[]>([]);
 
   const getExtension = (path: string) => {
     const split = path.split('.');
@@ -268,7 +276,6 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
     useQuery(
       ['users'],
       async () => {
-        console.log(operationToken);
         return await dataManager.getUsersByOperationToken(operationToken);
       },
       {
@@ -384,7 +391,6 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
     if (action.file && action.file.users) {
       let users = [];
       Object.entries(action.file.users).forEach(([key, val]) => {
-        //  console.log(val.email);
       });
     }
     switch (action.type) {
@@ -517,12 +523,22 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
   const columns: ColumnsType<FileType> = [
     {
       key: 'name',
-      title: t('name'),
+      title:
+        <>
+          {permissions.indexOf(Action.DELETE_FILE) > -1 && (
+            <Checkbox
+              className='me-4'
+              style={{ float: "left" }}
+              onChange={() => toggleRowSelectionAll()}
+            />
+          )}
+          {t('name')}
+        </>,
       ellipsis: {
         showTitle: false,
       },
       align: 'left',
-      sorter: (a, b) => a.name.localeCompare(b.name),
+      // sorter: (a, b) => a.name.localeCompare(b.name),
       render: (value, record) => (
         <>
           {permissions.indexOf(Action.DELETE_FILE) > -1 && (
@@ -605,12 +621,7 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
   /**
    * Add actions
    */
-  const permissions = [
-    Action.SHOW_QRCODE,
-    Action.EDIT_ACCESS,
-    Action.EDIT_FILENAME,
-    Action.DELETE_FILE,
-  ].filter((action) => isAuthorizedDrive(action));
+
 
   if (permissions.length > 0) {
     columns.push({
@@ -738,6 +749,31 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
       setSelectedRows(selectedRows.filter(row => row.key !== rowKey));
     }
   };
+  
+  /*
+  const toggleRowSelectionAll = () => {
+    if (selectedRows.length === folders?.data.length) {
+      setSelectedRows([]);
+    } else {
+      const allRows = folders?.data.map((file: FileType) => ({ key: file.key, type: file['@type'] })) || [];
+      setSelectedRows(allRows);
+    }
+  };
+  */
+
+  const toggleRowSelectionAll = () => {
+    console.log(currentPageKeys);
+    if (selectedRows.length === currentPageKeys.length) {
+      setSelectedRows([]);
+    } else {
+      const allRows = currentPageKeys?.map((file: any) => ({ key: file.key, type: file['@type'] })) || [];
+      setSelectedRows(allRows);
+    }
+  };
+
+
+
+
 
   if (isAuthorizedDrive(Action.DELETE_FILE) && selectedRows.length >= 1) {
     items.push({
@@ -794,6 +830,7 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
         showModal={modalState.showModal}
         modalContent={modalState.content}
         okText={modalState.okText}
+        setCurrentPageKeys={setCurrentPageKeys}
       />
     </>
   );

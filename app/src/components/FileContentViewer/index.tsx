@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import DocViewer, { DocViewerRenderers } from "react-doc-viewer";
 import { FileType } from '../../types/File';
-import { triggerDownload } from '../../services/utils';
-import { Document, Page } from 'react-pdf';
-import { pdfjs } from 'react-pdf';
+import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
@@ -31,12 +28,9 @@ const FileContentViewer: React.FC<FileContentViewerProps> = ({ blob, file }) => 
     }, [blob]);
 
     switch (file.extension?.toLowerCase()) {
-
-
         case 'jpg':
         case 'png':
         case 'jpeg':
-        case 'pdf':
             return (
                 <img
                     style={{
@@ -46,12 +40,18 @@ const FileContentViewer: React.FC<FileContentViewerProps> = ({ blob, file }) => 
                     src={url}
                     alt="PDF"
                 />
-                /*
-                <Document file={url} onLoadSuccess={onDocumentLoadSuccess}>
-                    <Page pageNumber={pageNumber} />
-                </Document> */
             );
 
+        case 'pdf':
+            return (
+                <div style={{ maxWidth: '100%', width: '100%', overflow: 'auto' }}>
+                    <Document file={url} onLoadSuccess={onDocumentLoadSuccess}>
+                        {[...Array(numPages)].map((_, index) => (
+                            <Page key={`page_${index + 1}`} pageNumber={index + 1} />
+                        ))}
+                    </Document>
+                </div>
+            );
 
         case 'txt':
             const [text, setText] = useState<string>('');
@@ -67,7 +67,6 @@ const FileContentViewer: React.FC<FileContentViewerProps> = ({ blob, file }) => 
 
             return <pre>{text}</pre>;
 
-
         case 'pptx':
         case 'ppt':
         case 'xlsx':
@@ -76,10 +75,8 @@ const FileContentViewer: React.FC<FileContentViewerProps> = ({ blob, file }) => 
         case 'docx':
             return null;
 
-
-
         default:
-            return null; 
+            return null;
     }
 };
 
