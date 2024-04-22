@@ -108,7 +108,7 @@ const TableHomeView: FC<TableViewProps> = (props) => {
       </div>
 
       {tree && tree.length > 0 && (
-        <div className='row mb-2'>
+        <div className='row mb-2' id="tree-bar">
           <div className='col'>
             <div className='c-card d-flex align-items-center w-100 p-2' style={{overflow: 'hidden'}}>
               <FontAwesomeIcon icon={faFolder} style={{ fontSize: "18px" }} className='me-2' />

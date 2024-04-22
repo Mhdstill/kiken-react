@@ -1,0 +1,23 @@
+@media (max-width: 576px) {
+    .page-home, .table-container {
+        padding: 10px 0 !important;
+    }
+
+    .page-home .c-card, .page-home #searchbar {
+        border-radius: 0 !important;
+    }
+
+    .page-home #tree-bar {
+        margin-bottom: 0 !important;
+        background-color: rgb(14, 14, 14) !important;
+    }
+
+    .page-home .ant-table.ant-table-middle .ant-table-title, .ant-table.ant-table-middle .ant-table-footer, .ant-table.ant-table-middle .ant-table-thead > tr > th, .ant-table.ant-table-middle .ant-table-tbody > tr > td, .ant-table.ant-table-middle tfoot > tr > th, .ant-table.ant-table-middle tfoot > tr > td {
+        border-radius: 0 !important;
+    }
+
+    .page-home .ant-table-wrapper div, .page-home .ant-table table, .page-home .ant-table-container table > thead > tr:first-child th:first-child {
+        border-radius:  0 !important;
+    }
+
+}
