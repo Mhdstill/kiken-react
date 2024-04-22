@@ -562,6 +562,7 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
       ellipsis: {
         showTitle: false,
       },
+      responsive: ['md'],
       sorter: (a, b) => a.name.localeCompare(b.name),
       render: (value, record) => (
         <Tooltip placement="bottomLeft" title={record.name}>

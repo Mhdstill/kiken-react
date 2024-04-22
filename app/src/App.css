@@ -3,6 +3,10 @@
         padding: 10px 0 !important;
     }
 
+    .page-home .actions-container {
+        margin-right: 10px !important;
+    }
+
     .page-home .c-card, .page-home #searchbar {
         border-radius: 0 !important;
     }
