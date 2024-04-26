@@ -18,7 +18,7 @@ const DefaultLayout: FC = () => {
   // Fonction pour mettre à jour la classe en fonction de la page
   const updateContainerClass = () => {
     console.log(operationToken);
-    if (operationToken && location.pathname === `/${operationToken}`) {
+    if (operationToken && (location.pathname === `/${operationToken}` || location.pathname.startsWith(`/${operationToken}/folder/`))) {
       setContainerClass('container-fluid page-home');
     } else if (location.pathname === '/page2') {
       setContainerClass('container-fluid page2-container');

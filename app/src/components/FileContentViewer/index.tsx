@@ -41,35 +41,57 @@ const FileContentViewer: React.FC<FileContentViewerProps> = ({ blob, file }) => 
                 }
             }
         });
-    
+
         observer.observe(document.body, { childList: true, subtree: true });
     }
-    
+
     function observeResize(element: HTMLElement) {
         const resizeObserver = new ResizeObserver(() => {
             console.log('Element resized');
-            console.log('Width:', element.clientWidth);
-    
-            // Mettre à jour le style de .ant-modal
+
+            // Mettre à jour la modal
             const modal = document.querySelector('.ant-modal') as HTMLElement;
-            if (modal) {
-                const pdfWidth = element.clientWidth;
-                const newWidth = pdfWidth + 48;
-                modal.style.width = `${newWidth}px`;
-            }
-    
-            // Mettre à jour le style de .ant-modal-body
             const modalBody = document.querySelector('.ant-modal-body') as HTMLElement;
-            if (modalBody) {
+            if (modal && modalBody) {
                 const pdfWidth = element.clientWidth;
-                const newWidth = pdfWidth + 48;
+                const largeurEcran = window.innerWidth;
+                var newWidth = pdfWidth + 48;
+                console.log(newWidth)
+                if (largeurEcran <= pdfWidth) {
+                    newWidth = largeurEcran - 48;
+                    const style = document.createElement('style');
+                    style.textContent = `
+                            .react-pdf__Page {
+                                width: ${newWidth} !important;
+                            }
+                            .react-pdf__Page__canvas {
+                                max-width: 100% !important;
+                                height: auto !important;
+                            }
+                        `;
+                    document.head.appendChild(style);
+                    /*
+                    console.log(newWidth)
+                    const pages = document.querySelectorAll('.react-pdf__Page');
+                    pages.forEach((page: any) => {
+                        console.log(page);
+                        page.style.width = `${newWidth - 50}px`;
+                    });
+                    const canvas = document.querySelectorAll('.react-pdf__Page__canvas');
+                    canvas.forEach((canva: any) => {
+                        canva.style.width = `100%`;
+                        canva.style.height = `auto`;
+                    }); */
+                }
+                modal.style.width = `${newWidth}px`;
                 modalBody.style.width = `${newWidth}px`;
+
             }
         });
-    
+
         resizeObserver.observe(element);
     }
-    
+
     function onDocumentLoadSuccess({ numPages }: { numPages: number }): void {
         setNumPages(numPages);
         waitForElementAndResize('.react-pdf__Page', (documentElement: HTMLElement) => {
@@ -97,7 +119,7 @@ const FileContentViewer: React.FC<FileContentViewerProps> = ({ blob, file }) => 
                 <div id="pdf-document" style={{ maxWidth: '100%' }}>
                     {loading ? (<Spin size="large" />) : (<></>)}
 
-                    <div id="pdf-document" style={{ maxWidth: '100%', display: loading ? 'none' : 'block' }}>
+                    <div style={{ maxWidth: '100%', display: loading ? 'none' : 'block' }}>
                         <Document file={url} onLoadSuccess={onDocumentLoadSuccess}>
                             {[...Array(numPages)].map((_, index) => (
                                 <Page key={`page_${index + 1}`} pageNumber={index + 1} />
