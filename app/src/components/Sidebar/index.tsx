@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { faUser, faClipboardList, faHome, faRightFromBracket, faSignature, faBuilding, faChevronRight, faChevronDown, faTable, faList, faUserTie, faGear, faGears, faFolder, faShop, faCircle, faArrowsRotate } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -28,6 +28,11 @@ const Sidebar = () => {
         setOperationToken(value);
         sessionStorage.setItem('operation_token', value);
     };
+
+    useEffect(() => {
+        if (selectedOperation)
+            sessionStorage.setItem('operation_token', selectedOperation);
+    }, [selectedOperation]);
 
     var isOnline = false;
     if (sessionStorage.getItem('token')) {

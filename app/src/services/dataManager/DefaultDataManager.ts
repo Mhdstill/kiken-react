@@ -98,7 +98,7 @@ export class DefaultDataManager implements DataManager {
         throw new Error('Espace de stockage complet');
       }
       const response = await this.axios.post('/api/media_objects', data);
-      await this.createNotification({ title: 'Fichier ajouté', content: 'Le fichier "' + data.get('name') + '" a bien été ajouté à votre QR Drive.', icon: 'fa-file' }, operation_token)
+     // await this.createNotification({ title: 'Fichier ajouté', content: 'Le fichier "' + data.get('name') + '" a bien été ajouté à votre QR Drive.', icon: 'fa-file' }, operation_token)
       return response.data;
     } catch (err) {
       throw new Error((err.response && err.response.statusText) ? err.response.statusText : err);

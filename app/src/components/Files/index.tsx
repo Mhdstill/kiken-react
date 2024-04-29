@@ -69,7 +69,11 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
   t,
 }) => {
   const params = useParams();
-  const operationToken = params.operationToken as string;
+  if (sessionStorage.getItem('operation_token')) {
+    var operationToken = sessionStorage.getItem('operation_token') as string;
+  } else {
+    var operationToken = params.operationToken as string;
+  }
   const folderId = params.folderId;
   const [searchParams] = useSearchParams();
   const location = useLocation();
@@ -212,7 +216,7 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
       console.error(e);
     },
     refetchOnWindowFocus: false,
-    refetchInterval: 5000,
+    refetchInterval: 500,
     refetchIntervalInBackground: true,
   });
 
@@ -750,7 +754,7 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
       setSelectedRows(selectedRows.filter(row => row.key !== rowKey));
     }
   };
-  
+
   /*
   const toggleRowSelectionAll = () => {
     if (selectedRows.length === folders?.data.length) {
