@@ -185,7 +185,12 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
       const data = folders.concat(files);
       return { root: folder, data, tree };
     } catch (error) {
-      console.error(error);
+      if (!sessionStorage.getItem('token')) {
+        sessionStorage.setItem('redirectPath', location.pathname + location.search);
+        navigate('/login');
+      }
+
+      //console.error(error);
       return { root: folder || null, data: [], tree: [] };
     }
   };

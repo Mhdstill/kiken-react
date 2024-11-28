@@ -45,7 +45,15 @@ const LoginPage: FC = ({
         sessionStorage.setItem('operation_token', operationToken);
         setOperationToken(operationToken);
         setOperations(operations);
-        navigate('/admin');
+
+        const redirectPath = sessionStorage.getItem('redirectPath');
+        if (redirectPath) {
+          sessionStorage.removeItem('redirectPath');
+          navigate(redirectPath);
+        } else {
+          navigate('/admin');
+        }
+        
       } else {
         navigate(-1);
       }
