@@ -191,7 +191,7 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
       }
 
       //console.error(error);
-      return { root: folder || null, data: [], tree: [] };
+      navigate("/");
     }
   };
 
