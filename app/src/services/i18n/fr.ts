@@ -145,4 +145,8 @@ export default {
       email: 'Email déjà utilisé.'
     }
   },
+  errors: {
+    accessDenied: "Vous n'avez pas accès à ce dossier",
+    unauthenticated: "Vous devez vous connecter pour accéder à cette page.",
+  },
 };

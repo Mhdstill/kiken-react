@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useReducer, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { FormInstance, Popconfirm, Tag, Tooltip, Upload, Modal, Checkbox } from 'antd';
+import { FormInstance, Popconfirm, Tag, Tooltip, Upload, Modal, Checkbox, notification } from 'antd';
 import type { MenuProps } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFolder, faImage, faFile, faFilePdf, faFileWord, faEnvelope, faFilePowerpoint, faFileExcel } from '@fortawesome/free-solid-svg-icons';
@@ -163,10 +163,10 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
         if (folder.parent) {
           tree.unshift(folder.parent);
           return getParentTree(folder.parent, tree);
-        } else {
-          return tree;
         }
+        return tree;
       };
+
       let tree = await getParentTree(folder);
       const folders = folder.subfolders.map((folder: FileType) => {
         const path = `/${operationToken}/folder/${folder.id}`;
@@ -187,11 +187,21 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
     } catch (error) {
       if (!sessionStorage.getItem('token')) {
         sessionStorage.setItem('redirectPath', location.pathname + location.search);
+        notification.error({
+          message: t('error'),
+          description: t('errors.unauthenticated'),
+          placement: 'topLeft'
+        });
         navigate('/login');
+      } else {
+        notification.error({
+          message: t('error'),
+          description: t('errors.accessDenied'),
+          placement: 'topLeft'
+        });
+        navigate("/");
       }
-
-      //console.error(error);
-      navigate("/");
+      return { root: null, data: [], tree: [] };
     }
   };
 
@@ -204,6 +214,7 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
   } = useQuery(['folders'], getFolders, {
     onSuccess: (folders) => {
       if (
+        folders?.data &&
         searchParams.has('download') &&
         searchParams.has('id') &&
         searchParams.has('name')
@@ -214,7 +225,9 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
             f.id == searchParams.get('id') &&
             f.name === searchParams.get('name')
         );
-        downloadFile(file);
+        if (file) {
+          downloadFile(file);
+        }
       }
     },
     onError: (e) => {

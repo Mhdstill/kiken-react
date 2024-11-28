@@ -140,4 +140,8 @@ export default {
       email: 'Email already used.'
     }
   },
+  errors: {
+    accessDenied: "You don't have access to this folder",
+    unauthenticated: "You must be logged in to access this page.",
+  },
 };
