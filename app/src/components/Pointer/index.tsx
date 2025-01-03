@@ -217,11 +217,11 @@ const PointerPage: FC = ({
       )
     } else if (isDarkMode) {
       return (
-        <img style={{ height: '60px' }} src={"/images/logo-black.svg"} alt="Logo"></img>
+        <img style={{ height: '60px' }} src={"/images/logo-qr4you-black.svg"} alt="Logo"></img>
       )
     } else {
       return (
-        <img style={{ height: '60px' }} src={"/images/logo.svg"} alt="Logo"></img>
+        <img style={{ height: '60px' }} src={"/images/logo-qr4you.svg"} alt="Logo"></img>
       )
     }
   }

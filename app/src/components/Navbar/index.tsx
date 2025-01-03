@@ -43,7 +43,7 @@ const Navbar: React.FC = ({ t }: WithTranslation) => {
           id="navbarBlur" navbar-scroll="true"
         >
           <FontAwesomeIcon icon={faBars} className='menu-icon' style={{ position: 'absolute', left: 0, color: 'white', cursor: 'pointer' }} onClick={handleIconClick} />
-          <img style={{ height: '48px', cursor: 'pointer' }} onClick={() => navigate("/admin")} src="/images/logo.svg" alt="Logo de QR4You" />
+          <img style={{ height: '48px', cursor: 'pointer' }} onClick={() => navigate("/admin")} src="/images/logo-disney.svg" alt="Logo de Disney" />
 
           {initialThemeSet && <ToggleSwitch initialValue={isDarkMode} onClick={toggleTheme} />}
         </nav>

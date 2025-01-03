@@ -88,7 +88,7 @@ const LoginPage: FC = ({
             <div className="card shadow-2-strong" style={{ borderRadius: '1rem' }}>
               <div className="card-body p-5 text-center">
 
-                <img style={{ height: '60px' }} src={!isDarkMode ? "/images/logo-black.svg" : "/images/logo.svg"} alt="Logo de QR4You"></img>
+                <img style={{ height: '60px' }} src={!isDarkMode ? "/images/logo-qr4you-black.svg" : "/images/logo-qr4you.svg"} alt="Logo de QR4You"></img>
 
                 <h3 className='mt-2 title-txt'>Connexion</h3>
                 <Card>
