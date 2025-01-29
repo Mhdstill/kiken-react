@@ -93,6 +93,7 @@ const AdminHomePage: FC = ({
 
     const getQR4YOUFolder = async () => {
         if (!operationToken) {
+            window.location.reload();
             return;
         }
 

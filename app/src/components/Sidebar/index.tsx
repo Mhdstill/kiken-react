@@ -27,6 +27,7 @@ const Sidebar = () => {
         setSelectedOperation(value);
         setOperationToken(value);
         sessionStorage.setItem('operation_token', value);
+        window.location.reload();
     };
 
     useEffect(() => {
@@ -128,14 +129,14 @@ const Sidebar = () => {
                         (<></>)
                     }
 
-                    {ptAuth ? (
+                    {/* ptAuth ? (
                         <>
                             <NavItem title="QR Form" icon={faClipboardList} path="/admin/pointers" dropdownItems={pointerItems} />
                         </>
                     )
                         :
                         (<></>)
-                    }
+                    */ }
 
                     {usAuth ? (
                         <>

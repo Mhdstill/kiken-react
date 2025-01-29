@@ -271,7 +271,7 @@ export const getExtension = (path: string) => {
 };
 
 export const API_URL = 'https://api.qr4you.fr';
-export const QR4YOU_ID = '7e5cdd75-d1cc-4aea-94be-a7bb9e2a1896';
+export const QR4YOU_ID = 'ab4d8c0b-a4ac-44c4-b913-720dac5f0cdf';
 
 export const triggerDownload = (filename: string, data: string): void => {
   console.log("download")

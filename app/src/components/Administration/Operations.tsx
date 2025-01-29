@@ -235,9 +235,14 @@ const OperationsPage: FC<
     },
     {
       key: 'limitDrive',
-      title: 'Limit QR Drive',
+      title: 'Limit Drive',
       dataIndex: 'limitDrive',
-      sorter: (a: any, b: any) => a.limitDrive.localeCompare(b.limitDrive),
+      sorter: (a: any, b: any) => {
+        if (!a.limitDrive && !b.limitDrive) return 0;
+        if (!a.limitDrive) return -1;
+        if (!b.limitDrive) return 1;
+        return Number(a.limitDrive) - Number(b.limitDrive);
+      },
       render: (value) => (
         <Tooltip placement="bottomLeft" title={value}>
           {getGeneralSize(value)}
@@ -248,7 +253,12 @@ const OperationsPage: FC<
       key: 'limitUser',
       title: 'Limit Utilisateurs',
       dataIndex: 'limitUser',
-      sorter: (a: any, b: any) => a.limitUser.localeCompare(b.limitUser),
+      sorter: (a: any, b: any) => {
+        if (!a.limitUser && !b.limitUser) return 0;
+        if (!a.limitUser) return -1;
+        if (!b.limitUser) return 1;
+        return Number(a.limitUser) - Number(b.limitUser);
+      },
       render: (value) => (
         <Tooltip placement="bottomLeft" title={value}>
           {value}
@@ -259,7 +269,12 @@ const OperationsPage: FC<
       key: 'limitOperation',
       title: 'Limit Operations',
       dataIndex: 'limitOperation',
-      sorter: (a: any, b: any) => a.limitOperation.localeCompare(b.limitOperation),
+      sorter: (a: any, b: any) => {
+        if (!a.limitOperation && !b.limitOperation) return 0;
+        if (!a.limitOperation) return -1;
+        if (!b.limitOperation) return 1;
+        return Number(a.limitOperation) - Number(b.limitOperation);
+      },
       render: (value) => (
         <Tooltip placement="bottomLeft" title={value}>
           {value}
