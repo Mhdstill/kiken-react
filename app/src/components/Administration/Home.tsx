@@ -147,7 +147,9 @@ const AdminHomePage: FC = ({
         refetchInterval: 40000,
         refetchIntervalInBackground: true,
     });
-    const notifications = (operation && operation.notifications) ? operation.notifications : [];
+    const notifications = (operation && operation.notifications) 
+        ? [...operation.notifications].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+        : [];
 
     const modalReducer = (prevState: any, action: any) => {
         switch (action.type) {

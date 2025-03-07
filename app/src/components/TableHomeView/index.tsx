@@ -68,10 +68,9 @@ const TableHomeView: FC<TableViewProps> = (props) => {
       setPaddingTop(0);
     }
 
-    
     const currentPage = pagination.current || 1;
-    const startIndex = (currentPage - 1) * 10;
-    const endIndex = currentPage * 10;
+    const startIndex = (currentPage - 1) * 50;
+    const endIndex = currentPage * 50;
 
     const currentPageData = filteredData?.slice(startIndex, endIndex) || [];
     props.setCurrentPageKeys(currentPageData);
@@ -137,11 +136,11 @@ const TableHomeView: FC<TableViewProps> = (props) => {
         dataSource={filteredData}
         scroll={{ x: '100%' }}
         loading={props.isFetching}
-        /* pagination={{
-           pageSize: pageSize,
-           hideOnSinglePage: true,
-           position: ['topRight'],
-         }} */
+        pagination={{
+          pageSize: 50,
+          hideOnSinglePage: true,
+          position: ['topRight'],
+        }}
         locale={{ emptyText: props.t('nodata') }}
         size="middle"
         onChange={handleTableChange}
