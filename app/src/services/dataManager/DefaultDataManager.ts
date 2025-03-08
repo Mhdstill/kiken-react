@@ -79,7 +79,7 @@ export class DefaultDataManager implements DataManager {
 
   async uploadFile(data: FormData): Promise<any> {
     try {
-      const { operation_token } = sessionStorage;
+      const { operation_token } = localStorage;
       if (!operation_token) {
         throw new Error('Operation non valide');
       }
@@ -216,7 +216,7 @@ export class DefaultDataManager implements DataManager {
     try {
       const { email, password, operations, canEdit, canDelete, canCreate } = data;
 
-      const { operation_token } = sessionStorage;
+      const { operation_token } = localStorage;
       const operation = await this.getOperation(operation_token);
       if (!operation) {
         throw new Error('Une erreur a eu lieu.');
@@ -233,7 +233,7 @@ export class DefaultDataManager implements DataManager {
         canDeleteDrive: canDelete,
         canCreateDrive: canCreate
       };
-      const { role: userRole } = sessionStorage;
+      const { role: userRole } = localStorage;
       let req;
 
       if (userRole === Role.ADMIN) {
@@ -254,7 +254,7 @@ export class DefaultDataManager implements DataManager {
 
   async getClients(): Promise<User[]> {
     try {
-      const { operation_token, role } = sessionStorage;
+      const { operation_token, role } = localStorage;
 
       if (!operation_token || role !== Role.ADMIN) {
         return [];
@@ -272,7 +272,7 @@ export class DefaultDataManager implements DataManager {
 
   async getUsers(): Promise<User[]> {
     try {
-      const { operation_token, role } = sessionStorage;
+      const { operation_token, role } = localStorage;
       if (operation_token && role === Role.CLIENT) {
         return this.getUsersByOperationToken(operation_token);
       } else {
@@ -541,7 +541,7 @@ export class DefaultDataManager implements DataManager {
   async updateUser(user: User, data: any): Promise<boolean> {
     try {
       const { email, password, canCreate, canEdit, canDelete, operations } = data;
-      const { operation_token, role } = sessionStorage;
+      const { operation_token, role } = localStorage;
 
       let body: { email: any; password?: any; operations: any; canEditDrive?: any; canDeleteDrive?: any; canCreateDrive?: any; };
       body = { email, password, operations, canCreateDrive: canCreate, canDeleteDrive: canDelete, canEditDrive: canEdit };
@@ -565,7 +565,7 @@ export class DefaultDataManager implements DataManager {
 
   async deleteUser(user: User): Promise<User> {
     try {
-      const { operation_token, role } = sessionStorage;
+      const { operation_token, role } = localStorage;
       if (operation_token && role === Role.CLIENT) {
         await this.axios.delete(`/api/${operation_token}/users/${user.id}`);
       } else {
@@ -802,7 +802,7 @@ export class DefaultDataManager implements DataManager {
 
   async getClockIns(): Promise<Pointer[]> {
     try {
-      const { operation_token } = sessionStorage;
+      const { operation_token } = localStorage;
       const response: any = await this.axios.get(
         `/api/${operation_token}/clock_ins`
       );

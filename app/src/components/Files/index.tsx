@@ -69,8 +69,8 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
   t,
 }) => {
   const params = useParams();
-  if (sessionStorage.getItem('operation_token')) {
-    var operationToken = sessionStorage.getItem('operation_token') as string;
+  if (localStorage.getItem('operation_token')) {
+    var operationToken = localStorage.getItem('operation_token') as string;
   } else {
     var operationToken = params.operationToken as string;
   }
@@ -190,8 +190,8 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
       const data = folders.concat(files);
       return { root: folder, data, tree };
     } catch (error) {
-      if (!sessionStorage.getItem('token')) {
-        sessionStorage.setItem('redirectPath', location.pathname + location.search);
+      if (!localStorage.getItem('token')) {
+        localStorage.setItem('redirectPath', location.pathname + location.search);
         notification.error({
           message: t('error'),
           description: t('errors.unauthenticated'),
