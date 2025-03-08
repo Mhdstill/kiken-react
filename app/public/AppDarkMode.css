@@ -653,6 +653,10 @@ textarea,
     #theme-name {
         display: none;
     }
+
+    .tree-bar .col {
+        padding: 0 !important;
+    }
 }
 
 .ant-modal-body label {
@@ -739,4 +743,8 @@ input[type="file"]::file-selector-button {
 .ant-modal-close-x svg {
     background-color: red !important;
     color: white !important;
+}
+
+.ant-pagination-options {
+    display: none !important;
 }

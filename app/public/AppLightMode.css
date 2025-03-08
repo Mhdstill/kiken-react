@@ -660,6 +660,10 @@ input[type="file"]::file-selector-button:hover
     #theme-name {
         display: none;
     }
+
+    .tree-bar .col {
+        padding: 0 !important;
+    }
 }
 
 .loading-container {
@@ -701,4 +705,13 @@ input[type="file"]::file-selector-button{
 
 .home-left .anticon-check svg {
     color: var(--main-color) !important;
+}
+
+.ant-modal-close-x svg {
+    background-color: red !important;
+    color: white !important;
+}
+
+.ant-pagination-options {
+    display: none !important;
 }
