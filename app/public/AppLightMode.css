@@ -661,7 +661,7 @@ input[type="file"]::file-selector-button:hover
         display: none;
     }
 
-    .tree-bar .col {
+    #tree-bar .col {
         padding: 0 !important;
     }
 }
