@@ -653,10 +653,6 @@ textarea,
     #theme-name {
         display: none;
     }
-
-    #tree-bar .col {
-        padding: 0 !important;
-    }
 }
 
 .ant-modal-body label {

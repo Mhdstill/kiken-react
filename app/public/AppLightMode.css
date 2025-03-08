@@ -660,10 +660,6 @@ input[type="file"]::file-selector-button:hover
     #theme-name {
         display: none;
     }
-
-    #tree-bar .col {
-        padding: 0 !important;
-    }
 }
 
 .loading-container {
