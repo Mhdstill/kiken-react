@@ -50,7 +50,7 @@ const Navbar: React.FC = ({ t }: WithTranslation) => {
           }}>
             <img 
               style={{ 
-                maxHeight: '170px',
+                maxHeight: '250px',
                 width: 'auto',
                 objectFit: 'contain',
                 cursor: 'pointer'
