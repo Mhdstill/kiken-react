@@ -708,6 +708,26 @@ input[type="file"]::file-selector-button{
     color: white !important;
 }
 
+
+@media (max-width: 768px) {
+    .pdf-page {
+        padding: 0;
+    }
+
+    .pdf-page canvas {
+        width: 100% !important;
+    }
+
+    /* Ajuster la taille de la modal sur mobile */
+    :global(.ant-modal-content) {
+        padding: 12px !important;
+    }
+
+    :global(.ant-modal-body) {
+        padding: 12px !important;
+    }
+} 
+
 .ant-pagination-options {
     display: none !important;
 }
