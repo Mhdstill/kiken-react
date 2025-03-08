@@ -95,7 +95,7 @@ const Sidebar = () => {
         <aside className="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3 bg-gradient-dark" id="sidenav-main">
             <div className="sidenav-header">
                 <i className="fas fa-times p-3 cursor-pointer text-white opacity-5 position-absolute end-0 top-0 d-xl-none" aria-hidden="true" id="iconSidenav"></i>
-                <img style={{ height: '48px' }} src="/images/logo-disney.svg" alt="Logo de Disney"></img>
+                <img style={{ height: '48px' }} src="/images/logo-saffox.png" alt="Logo de Disney"></img>
             </div>
             <hr className="horizontal light mt-0 mb-2" />
             <div className="collapse navbar-collapse  w-auto  h-100" id="sidenav-collapse-main">

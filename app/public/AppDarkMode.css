@@ -735,3 +735,8 @@ input[type="file"]::file-selector-button {
 .home-left .anticon-check svg {
     color: var(--main-color) !important;
 }
+
+.ant-modal-close-x svg {
+    background-color: red !important;
+    color: white !important;
+}

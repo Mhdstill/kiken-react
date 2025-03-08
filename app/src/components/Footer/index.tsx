@@ -4,9 +4,18 @@ const { Footer: BaseFooter } = Layout;
 
 const Footer = () => {
   return (
-    <BaseFooter style={{ textAlign: 'center', fontSize: '1rem' }}>
-      ©2024 QR4YOU
-    </BaseFooter>
+    <div style={{ 
+        textAlign: 'center', 
+        padding: '10px',
+        fontSize: '14px',
+        color: '#666'
+    }}>
+        © Développé par <a 
+            href="https://dev4you.fr" 
+            target="_blank" 
+            rel="noopener noreferrer"
+        >DEV4YOU</a>
+    </div>
   );
 };
 
