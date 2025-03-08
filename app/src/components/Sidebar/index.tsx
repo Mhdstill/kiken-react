@@ -21,22 +21,22 @@ const Sidebar = () => {
     const { Option } = Select;
 
     const { operations, setOperationToken, operationToken } = useOperation();
-    const [selectedOperation, setSelectedOperation] = useState(sessionStorage.getItem('operation_token'));
+    const [selectedOperation, setSelectedOperation] = useState(localStorage.getItem('operation_token'));
 
     const handleOperationChange = (value: string) => {
         setSelectedOperation(value);
         setOperationToken(value);
-        sessionStorage.setItem('operation_token', value);
+        localStorage.setItem('operation_token', value);
         window.location.reload();
     };
 
     useEffect(() => {
         if (selectedOperation)
-            sessionStorage.setItem('operation_token', selectedOperation);
+            localStorage.setItem('operation_token', selectedOperation);
     }, [selectedOperation]);
 
     var isOnline = false;
-    if (sessionStorage.getItem('token')) {
+    if (localStorage.getItem('token')) {
         var opAuth = Object.values(OperationAction).find((action) =>
             isAuthorized(action)
         );

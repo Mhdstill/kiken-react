@@ -13,7 +13,7 @@ const { Content } = Layout;
 const DefaultLayout: FC = () => {
   const location = useLocation();
   const [containerClass, setContainerClass] = useState<string>('container-fluid');
-  const operationToken = sessionStorage.getItem('operation_token');
+  const operationToken = localStorage.getItem('operation_token');
 
   // Fonction pour mettre à jour la classe en fonction de la page
   const updateContainerClass = () => {

@@ -145,7 +145,7 @@ export const isAuthorizedDrive = (action: Action) => {
 };
 
 export const userHasAccess = (action: Action) => {
-  const role = sessionStorage.getItem('role');
+  const role = localStorage.getItem('role');
   if (role) {
     const perm = userPermissions[action];
     if (perm === null) {
@@ -157,7 +157,7 @@ export const userHasAccess = (action: Action) => {
 };
 
 export const operationHasAccess = (action: Action) => {
-  const modulesString = sessionStorage.getItem('modules');
+  const modulesString = localStorage.getItem('modules');
 
   if (!modulesString) {
     return false;
@@ -173,13 +173,13 @@ export const operationHasAccess = (action: Action) => {
 };
 
 export const userHasDriveAccess = (action: Action) => {
-  const role = sessionStorage.getItem('role');
+  const role = localStorage.getItem('role');
 
   if (role === Role.CLIENT || role === Role.ADMIN) {
     return true;
   }
 
-  const driveAccessString = sessionStorage.getItem('driveAccess');
+  const driveAccessString = localStorage.getItem('driveAccess');
   if (!driveAccessString) {
     return false;
   }

@@ -60,7 +60,7 @@ const OperationUsersPage: FC<
         refetchIntervalInBackground: true,
     });
 
-    const role = sessionStorage.getItem('role');
+    const role = localStorage.getItem('role');
 
     const getOperations = async () => {
         const ops = await dataManager.getOperations();

@@ -60,7 +60,7 @@ const UsersPage: FC<
     refetchIntervalInBackground: true,
   });
 
-  const role = sessionStorage.getItem('role');
+  const role = localStorage.getItem('role');
 
   const getOperations = async () => {
     if (role === Role.ADMIN) {
@@ -69,7 +69,7 @@ const UsersPage: FC<
         return Object.assign(op, { key: i });
       });
     } else {
-      const operationToken = sessionStorage.getItem('operation_token');
+      const operationToken = localStorage.getItem('operation_token');
       return [operationToken];
     }
     return null;
@@ -264,7 +264,7 @@ const UsersPage: FC<
             ? [(operations as any[]).find((op) => op['@id'] === operationName)[
               '@id'
             ]]
-            : [sessionStorage.getItem('operation_token')],
+            : [localStorage.getItem('operation_token')],
       });
     },
     {

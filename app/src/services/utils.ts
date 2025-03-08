@@ -12,11 +12,11 @@ export const buildAxiosInstance = (config: CreateAxiosDefaults) => {
 
   /*
   axiosClient.interceptors.request.use((config) => {
-    const token = sessionStorage.getItem('token');
+    const token = localStorage.getItem('token');
 
     if (token) {
 
-      const refreshToken = sessionStorage.getItem('refresh_token');
+      const refreshToken = localStorage.getItem('refresh_token');
       if (!checkTokenValidity && refreshToken) {
         refreshAuthToken(refreshToken);
       }
@@ -32,8 +32,8 @@ export const buildAxiosInstance = (config: CreateAxiosDefaults) => {
 
   axiosClient.interceptors.request.use(async (config: any) => {
     try {
-      const token = sessionStorage.getItem('token');
-      const refreshToken = sessionStorage.getItem('refresh_token');
+      const token = localStorage.getItem('token');
+      const refreshToken = localStorage.getItem('refresh_token');
 
       if (token) {
         const isValid = await checkTokenValidity(token);
@@ -58,8 +58,8 @@ export const buildAxiosInstance = (config: CreateAxiosDefaults) => {
   axiosClient.interceptors.response.use(
     (response) => response,
     (error) => {
-      const token = sessionStorage.getItem('token');
-      const refreshToken = sessionStorage.getItem('refresh_token');
+      const token = localStorage.getItem('token');
+      const refreshToken = localStorage.getItem('refresh_token');
       if (token && refreshToken) {
         const decoded = jwtDecode<JwtPayload>(token);
         const currTime = new Date().getTime() / 1000;
@@ -162,8 +162,8 @@ export const refreshAuthToken = async (refreshToken: string) => {
     const data = await response.json();
     localStorage.setItem("token", data.token);
     localStorage.setItem("refresh_token", data.refresh_token);
-    sessionStorage.setItem("token", data.token);
-    sessionStorage.setItem("refresh_token", data.refresh_token);
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("refresh_token", data.refresh_token);
     return data.token;
   } catch (error) {
     console.error(error);

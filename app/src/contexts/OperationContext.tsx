@@ -28,16 +28,16 @@ interface OperationProviderProps {
 }
 
 export const OperationProvider: React.FC<OperationProviderProps> = ({ children }) => {
-    const [operationToken, setOperationToken] = useState<string | null>(sessionStorage.getItem('operation_token'));
+    const [operationToken, setOperationToken] = useState<string | null>(localStorage.getItem('operation_token'));
     const [operations, setOperations] = useState<Operation[]>([]);
 
     useEffect(() => {
-        const token = sessionStorage.getItem('operation_token');
+        const token = localStorage.getItem('operation_token');
         if (token) {
             setOperationToken(token);
         }
         // Charger les opérations stockées en session si nécessaire
-        const storedOperations = sessionStorage.getItem('operations');
+        const storedOperations = localStorage.getItem('operations');
         if (storedOperations) {
             setOperations(JSON.parse(storedOperations));
         }

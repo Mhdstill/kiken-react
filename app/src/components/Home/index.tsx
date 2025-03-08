@@ -5,8 +5,8 @@ const HomePage: FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (sessionStorage.getItem('token')) {
-      const operationToken = sessionStorage.getItem('operation_token');
+    if (localStorage.getItem('token')) {
+      const operationToken = localStorage.getItem('operation_token');
       if (operationToken) {
         navigate(`/${operationToken}`);
       }

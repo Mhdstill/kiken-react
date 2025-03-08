@@ -21,8 +21,8 @@ const LoginPage: FC = ({
   const { isDarkMode, toggleTheme } = useTheme();
   const { setOperations, setOperationToken } = useOperation();
 
-  if (sessionStorage.getItem('token')) {
-    const operationToken = sessionStorage.getItem('operation_token');
+  if (localStorage.getItem('token')) {
+    const operationToken = localStorage.getItem('operation_token');
     navigate('/admin');
   }
 
@@ -33,22 +33,22 @@ const LoginPage: FC = ({
   const { mutate, isLoading } = useMutation(login, {
     onSuccess: (data) => {
       const { token, refreshToken, role, modules, operations, driveAccess } = data;
-      sessionStorage.setItem('token', token);
-      sessionStorage.setItem('refresh_token', refreshToken);
-      sessionStorage.setItem('role', role);
-      sessionStorage.setItem('modules', JSON.stringify(modules));
-      sessionStorage.setItem('driveAccess', JSON.stringify(driveAccess));
-      sessionStorage.setItem('operations', JSON.stringify(operations));
+      localStorage.setItem('token', token);
+      localStorage.setItem('refresh_token', refreshToken);
+      localStorage.setItem('role', role);
+      localStorage.setItem('modules', JSON.stringify(modules));
+      localStorage.setItem('driveAccess', JSON.stringify(driveAccess));
+      localStorage.setItem('operations', JSON.stringify(operations));
 
       if (operations && operations.length >= 1) {
         const operationToken = operations[0].id;
-        sessionStorage.setItem('operation_token', operationToken);
+        localStorage.setItem('operation_token', operationToken);
         setOperationToken(operationToken);
         setOperations(operations);
 
-        const redirectPath = sessionStorage.getItem('redirectPath');
+        const redirectPath = localStorage.getItem('redirectPath');
         if (redirectPath) {
-          sessionStorage.removeItem('redirectPath');
+          localStorage.removeItem('redirectPath');
           navigate(redirectPath);
         } else {
           navigate('/admin');

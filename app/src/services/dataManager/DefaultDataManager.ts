@@ -379,7 +379,7 @@ export class DefaultDataManager implements DataManager {
       let req;
       req = await this.axios.post('/api/updates', body);
 
-      const operation_token = sessionStorage.getItem('operation_token');
+      const operation_token = localStorage.getItem('operation_token');
       if (operation_token) {
         await this.createNotification({ title: 'Nouvelle mise à jour', content: 'La mise à jour ' + version + ' a été ajouté à l\'application', icon: 'fa-user' }, operation_token)
       }
@@ -415,9 +415,9 @@ export class DefaultDataManager implements DataManager {
   /** Notifications */
   async getNotifications(): Promise<Update[]> {
     try {
-      const operation_token = sessionStorage.getItem('operation_token');
+      const operation_token = localStorage.getItem('operation_token');
       if (!operation_token) {
-        throw new Error("No operation token provided and none found in sessionStorage.");
+        throw new Error("No operation token provided and none found in localStorage.");
       }
 
       const response: any = await this.axios.get(
@@ -432,7 +432,7 @@ export class DefaultDataManager implements DataManager {
   async createNotification(data: any, operationToken: string): Promise<boolean> {
     try {
       if (!operationToken) {
-        throw new Error("No operation token provided and none found in sessionStorage.");
+        throw new Error("No operation token provided and none found in localStorage.");
       }
 
       const { title, content, icon } = data;
@@ -454,9 +454,9 @@ export class DefaultDataManager implements DataManager {
   async getFields(operation_token: string | null = null): Promise<PointerField[]> {
     try {
       if (!operation_token) {
-        operation_token = sessionStorage.getItem('operation_token');
+        operation_token = localStorage.getItem('operation_token');
         if (!operation_token) {
-          throw new Error("No operation token provided and none found in sessionStorage.");
+          throw new Error("No operation token provided and none found in localStorage.");
         }
       }
 
@@ -484,9 +484,9 @@ export class DefaultDataManager implements DataManager {
   async createField(data: any, operation_token: string | null = null): Promise<boolean> {
     try {
       if (!operation_token) {
-        operation_token = sessionStorage.getItem('operation_token');
+        operation_token = localStorage.getItem('operation_token');
         if (!operation_token) {
-          throw new Error("No operation token provided and none found in sessionStorage.");
+          throw new Error("No operation token provided and none found in localStorage.");
         }
       }
       const { label, type, isUnique, allwaysFill, isRequired } = data;

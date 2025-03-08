@@ -22,7 +22,7 @@ const SettingsPage: FC = ({
     var qrdAuth = Object.values(FileAction).find((action) =>
         isAuthorized(action)
     );
-    const operationToken = sessionStorage.getItem('operation_token');
+    const operationToken = localStorage.getItem('operation_token');
     const getOperation = async () => {
         if (!operationToken) {
             throw new Error("Pas de token d'opération disponible");

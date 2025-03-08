@@ -35,7 +35,7 @@ type ProtectedRouteProps = {
 export const LogoutPage = () => {
   const navigate = useNavigate();
   useEffect(() => {
-    sessionStorage.clear();
+    localStorage.clear();
     navigate('/login');
   }, []);
   return null;
@@ -45,7 +45,7 @@ const ProtectedRoute = ({
   rolesAllowed,
   children,
 }: ProtectedRouteProps): JSX.Element => {
-  const role = sessionStorage.getItem('role');
+  const role = localStorage.getItem('role');
   if (role) {
     if (rolesAllowed.find((allowedRole) => role === allowedRole)) {
       return <React.Fragment>{children}</React.Fragment>;
