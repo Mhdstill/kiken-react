@@ -227,12 +227,11 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
         );
         if (file) {
           downloadFile(file);
-          /*
           const newSearchParams = new URLSearchParams(searchParams);
           newSearchParams.delete('download');
           newSearchParams.delete('id');
           newSearchParams.delete('name');
-          window.history.replaceState({}, '', `${window.location.pathname}${newSearchParams.toString() ? '?' + newSearchParams.toString() : ''}`); */
+          window.history.replaceState({}, '', `${window.location.pathname}${newSearchParams.toString() ? '?' + newSearchParams.toString() : ''}`);
         }
       }
     },
@@ -240,7 +239,7 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
       console.error(e);
     },
     refetchOnWindowFocus: false,
-    refetchInterval: searchParams.has('download') ? false : 10000,
+    refetchInterval: searchParams.has('download') ? false : 500,
     refetchIntervalInBackground: true,
   });
 
