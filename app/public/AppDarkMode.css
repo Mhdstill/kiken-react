@@ -828,6 +828,14 @@ input[type="file"]::file-selector-button {
     :global(.ant-modal-body) {
         padding: 12px !important;
     }
+
+    #tree-bar {
+        margin: 0 !important;
+    }
+
+    #tree-bar .col {
+        padding: 0 !important;
+    }
 } 
 
 .ant-pagination-options {
