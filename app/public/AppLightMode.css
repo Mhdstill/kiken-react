@@ -703,12 +703,80 @@ input[type="file"]::file-selector-button{
     color: var(--main-color) !important;
 }
 
+
+
+
+
+
+
+
 .ant-modal-close-x svg {
     background-color: red !important;
     color: white !important;
 }
 
+.ant-pagination-options {
+    display: none !important;
+}
 
+
+
+
+
+
+
+
+
+.pdf-container {
+    width: 100%;
+    max-width: 100vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+.loading-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+}
+
+.pdf-document {
+    width: 100%;
+    max-width: 100%;
+}
+
+.pdf-page {
+    max-width: 100% !important;
+    margin-bottom: 1rem;
+}
+
+.pdf-page canvas {
+    max-width: 100% !important;
+    height: auto !important;
+}
+
+.viewer-image {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+.text-content {
+    max-width: 100%;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    padding: 1rem;
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* Styles spécifiques pour mobile */
 @media (max-width: 768px) {
     .pdf-page {
         padding: 0;
@@ -726,8 +794,21 @@ input[type="file"]::file-selector-button{
     :global(.ant-modal-body) {
         padding: 12px !important;
     }
+
+    #tree-bar {
+        margin: 0 !important;
+    }
+
+    #tree-bar .col {
+        padding: 0 !important;
+    }
 } 
 
 .ant-pagination-options {
     display: none !important;
+}
+
+.ant-modal-close-x svg {
+    background-color: red !important;
+    color: white !important;
 }

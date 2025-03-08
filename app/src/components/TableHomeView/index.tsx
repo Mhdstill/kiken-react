@@ -140,6 +140,7 @@ const TableHomeView: FC<TableViewProps> = (props) => {
           pageSize: 50,
           hideOnSinglePage: true,
           position: ['topRight'],
+          showSizeChanger: false
         }}
         locale={{ emptyText: props.t('nodata') }}
         size="middle"

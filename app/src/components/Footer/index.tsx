@@ -11,6 +11,7 @@ const Footer = () => {
         color: '#666'
     }}>
         © Développé par <a 
+            className="cursor-pointer"
             href="https://dev4you.fr" 
             target="_blank" 
             rel="noopener noreferrer"

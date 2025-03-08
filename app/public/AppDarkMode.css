@@ -736,6 +736,14 @@ input[type="file"]::file-selector-button {
     color: var(--main-color) !important;
 }
 
+
+
+
+
+
+
+
+
 .ant-modal-close-x svg {
     background-color: red !important;
     color: white !important;

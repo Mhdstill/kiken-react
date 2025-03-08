@@ -78,6 +78,8 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
   const [searchParams] = useSearchParams();
   const location = useLocation();
   const navigate = useNavigate();
+  const [isNavigating, setIsNavigating] = useState(false);
+  const [isFileLoading, setIsFileLoading] = useState(false);
 
   const permissions = [
     Action.SHOW_QRCODE,
@@ -118,6 +120,7 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
   );
 
   const downloadFile = (file: FileType) => {
+    setIsFileLoading(true);
     dataManager
       .downloadFile(operationToken, file.id)
       .then((blob) => {
@@ -132,9 +135,11 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
         } else {
           triggerDownload(file.name, url);
         }
-
       })
-      .catch(console.error);
+      .catch(console.error)
+      .finally(() => {
+        setIsFileLoading(false);
+      });
   };
 
   const [filteredInfo, setFilteredInfo] = useState<
@@ -538,7 +543,13 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
   const getNameComponent = (record: FileType) => {
     if (record['@type'] === Type.FOLDER) {
       return (
-        <Link onClick={() => setFilteredInfo({})} to={record.path}>
+        <Link 
+          onClick={() => {
+            setIsNavigating(true);
+            setFilteredInfo({});
+          }} 
+          to={record.path}
+        >
           {record.name}
         </Link>
       );
@@ -546,6 +557,16 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
     return <a onClick={() => downloadFile(record)}>{record.name}</a>;
   };
 
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const columns: ColumnsType<FileType> = [
     {
@@ -565,23 +586,28 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
         showTitle: false,
       },
       align: 'left',
-      // sorter: (a, b) => a.name.localeCompare(b.name),
-      render: (value, record) => (
-        <>
-          {permissions.indexOf(Action.DELETE_FILE) > -1 && (
-            <Checkbox
-              className='me-4'
-              checked={selectedRows.some(row => row.key === record.key)}
-              onChange={() => toggleRowSelection(record.key, record['@type'])}
-            />
-          )}
-          <Tooltip placement="bottomLeft" title={record.name}>
+      render: (value, record) => {
+        const content = (
+          <>
+            {permissions.indexOf(Action.DELETE_FILE) > -1 && (
+              <Checkbox
+                className='me-4'
+                checked={selectedRows.some(row => row.key === record.key)}
+                onChange={() => toggleRowSelection(record.key, record['@type'])}
+              />
+            )}
             <span style={{ textAlign: 'left' }}>
               {getFileIcon(record)} {getNameComponent(record)}
             </span>
+          </>
+        );
+
+        return isMobile ? content : (
+          <Tooltip placement="bottomLeft" title={record.name}>
+            {content}
           </Tooltip>
-        </>
-      ),
+        );
+      },
     },
     {
       key: 'size',
@@ -591,11 +617,14 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
       },
       responsive: ['md'],
       sorter: (a, b) => a.name.localeCompare(b.name),
-      render: (value, record) => (
-        <Tooltip placement="bottomLeft" title={record.name}>
-          {getSize(record)}
-        </Tooltip>
-      ),
+      render: (value, record) => {
+        const content = getSize(record);
+        return isMobile ? content : (
+          <Tooltip placement="bottomLeft" title={record.name}>
+            {content}
+          </Tooltip>
+        );
+      },
     },
     {
       key: 'createdAt',
@@ -838,6 +867,7 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
   useEffect(() => {
     if (folders && folders?.data) {
       setIsLoadingInitialData(false);
+      setIsNavigating(false);
     }
   }, [folders]);
 
@@ -848,7 +878,7 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
       <TableView
         data={folders?.data}
         tree={folders?.tree}
-        isFetching={isLoadingInitialData}
+        isFetching={isLoadingInitialData || isNavigating || isFileLoading}
         actionsItems={items}
         columns={columns}
         formData={modalFormData}
