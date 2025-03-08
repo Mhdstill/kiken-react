@@ -45,6 +45,13 @@ const CustomModal = ({
       bodyStyle={{ display: 'flex', justifyContent: 'center' }}
       destroyOnClose
       footer={footer}
+      maskClosable={false}
+      keyboard={false}
+      wrapProps={{ 
+        style: { 
+          overflowX: 'hidden'
+        } 
+      }}
     >
       {children}
     </Modal>
