@@ -26,8 +26,9 @@ import {
   useSearchParams,
 } from 'react-router-dom';
 import type { WithTranslation } from 'react-i18next';
+import { DragDropContext, Droppable, Draggable, DroppableProvided, DraggableProvided, DraggableStateSnapshot, DropResult } from 'react-beautiful-dnd';
 
-import TableView from '../TableHomeView';
+import TableView from '../TableView';
 import ModalForm from '../Modal/ModalForm';
 import withDataManager, {
   WithDataManagerProps,
@@ -63,6 +64,72 @@ interface FileType extends File {
   size?: number;
   extension?: string;
 }
+
+const DraggableRow = ({ children, data, moveFile, moveFolder, ...props }: { children: React.ReactNode; data: FileType[]; moveFile: any; moveFolder: any; [key: string]: any }) => {
+  const { 'data-row-key': rowKey } = props;
+  const record = data.find((item: FileType) => item.key === rowKey);
+  
+  if (!record) return null;
+
+  return (
+    <tr
+      {...props}
+      className={`draggable-row ${record['@type'] === Type.FOLDER ? 'folder-row' : 'file-row'}`}
+      draggable
+      onDragStart={(e) => {
+        e.dataTransfer.setData('text/plain', JSON.stringify({
+          id: record.id,
+          type: record['@type']
+        }));
+        e.currentTarget.classList.add('dragging');
+        // Ajouter une classe au body pour indiquer qu'un drag est en cours
+        document.body.classList.add('dragging-active');
+      }}
+      onDragEnd={(e) => {
+        e.currentTarget.classList.remove('dragging');
+        document.body.classList.remove('dragging-active');
+        // Nettoyer toutes les classes folder-drop-target
+        document.querySelectorAll('.folder-drop-target').forEach(el => {
+          el.classList.remove('folder-drop-target');
+        });
+      }}
+      onDragOver={(e) => {
+        if (record['@type'] === Type.FOLDER) {
+          e.preventDefault();
+          e.currentTarget.classList.add('folder-drop-target');
+        }
+      }}
+      onDragLeave={(e) => {
+        e.currentTarget.classList.remove('folder-drop-target');
+      }}
+      onDrop={(e) => {
+        e.preventDefault();
+        e.currentTarget.classList.remove('folder-drop-target');
+        
+        try {
+          const dragData = JSON.parse(e.dataTransfer.getData('text/plain'));
+          if (record['@type'] === Type.FOLDER && dragData.id !== record.id) {
+            if (dragData.type === Type.FOLDER) {
+              moveFolder({ 
+                folderId: dragData.id, 
+                targetFolderId: record.id 
+              });
+            } else {
+              moveFile({ 
+                fileId: dragData.id, 
+                targetFolderId: record.id 
+              });
+            }
+          }
+        } catch (error) {
+          console.error('Error processing drop:', error);
+        }
+      }}
+    >
+      {children}
+    </tr>
+  );
+};
 
 const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
   dataManager,
@@ -244,7 +311,7 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
       console.error(e);
     },
     refetchOnWindowFocus: false,
-    refetchInterval: searchParams.has('download') ? false : 500,
+    refetchInterval: searchParams.has('download') ? false : 5000000,
     refetchIntervalInBackground: true,
   });
 
@@ -871,7 +938,99 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
     }
   }, [folders]);
 
+  const moveFile = useMutation(
+    ({ fileId, targetFolderId }: { fileId: string; targetFolderId: string }): any => {
+      return dataManager.moveFile(operationToken, fileId, targetFolderId);
+    },
+    {
+      onSuccess: () => {
+        showSuccesNotification('fileMoved', t);
+        refetch();
+      },
+      onError: (e) => {
+        console.error(e);
+        showErrorNotification(e, t);
+      },
+    }
+  );
 
+  const moveFolder = useMutation(
+    ({ folderId, targetFolderId }: { folderId: string; targetFolderId: string }): any => {
+      return dataManager.moveFolder(operationToken, folderId, targetFolderId);
+    },
+    {
+      onSuccess: () => {
+        showSuccesNotification('folderMoved', t);
+        refetch();
+      },
+      onError: (e) => {
+        console.error(e);
+        showErrorNotification(e, t);
+      },
+    }
+  );
+
+  const onDragEnd = (result: DropResult) => {
+    console.log('Drag end result:', result);
+    if (!result.destination) return;
+
+    const sourceId = result.draggableId.split('-').slice(1).join('-');
+    const sourceIndex = result.source.index;
+    const destinationIndex = result.destination.index;
+
+    const dragRow = folders?.data.find((item: FileType) => item.id === sourceId);
+    const hoverRow = folders?.data[destinationIndex];
+
+    console.log('Drag operation:', {
+      sourceId,
+      sourceIndex,
+      destinationIndex,
+      dragRow,
+      hoverRow
+    });
+
+    if (!dragRow || !hoverRow) return;
+
+    // Si on déplace dans le même tableau, on ne fait rien car c'est juste un réarrangement visuel
+    if (sourceIndex !== destinationIndex) {
+      if (hoverRow['@type'] === Type.FOLDER) {
+        if (dragRow['@type'] === Type.FOLDER) {
+          moveFolder.mutate({ folderId: dragRow.id, targetFolderId: hoverRow.id });
+        } else {
+          moveFile.mutate({ fileId: dragRow.id, targetFolderId: hoverRow.id });
+        }
+      }
+    }
+  };
+
+  const components = {
+    body: {
+      wrapper: (props: any) => (
+        <DragDropContext onDragEnd={onDragEnd} {...({} as any)}>
+          <Droppable droppableId="table" {...({} as any)}>
+            {(provided: DroppableProvided) => (
+              <tbody
+                {...provided.droppableProps}
+                ref={provided.innerRef}
+                {...props}
+              >
+                {props.children}
+                {provided.placeholder}
+              </tbody>
+            )}
+          </Droppable>
+        </DragDropContext>
+      ),
+      row: (props: any) => (
+        <DraggableRow 
+          {...props} 
+          data={folders?.data || []} 
+          moveFile={moveFile.mutate}
+          moveFolder={moveFolder.mutate}
+        />
+      ),
+    },
+  };
 
   return (
     <>
@@ -889,6 +1048,7 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
         modalContent={modalState.content}
         okText={modalState.okText}
         setCurrentPageKeys={setCurrentPageKeys}
+        components={components}
       />
     </>
   );

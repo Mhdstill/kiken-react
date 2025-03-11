@@ -74,4 +74,16 @@ export interface DataManager {
 
   // Address
   createAddress(data: any): Promise<any>;
+
+  moveFile(
+    operationToken: string, 
+    fileId: string, 
+    targetFolderId: string
+  ): Promise<any>;
+  
+  moveFolder(
+    operationToken: string,
+    folderId: string,
+    targetFolderId: string
+  ): Promise<any>;
 }

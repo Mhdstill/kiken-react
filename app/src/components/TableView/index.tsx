@@ -22,6 +22,7 @@ import { Option } from 'antd/lib/mentions';
 interface TableViewProps extends WithTranslation {
   title?: string | undefined | null;
   data: any[] | undefined;
+  tree?: any[] | undefined;
   isFetching: boolean;
   actionsItems: MenuProps['items'];
   columns: ColumnsType<any>;
@@ -33,6 +34,8 @@ interface TableViewProps extends WithTranslation {
   showModal: boolean;
   modalContent: ReactNode;
   minusTabSize?: boolean;
+  components?: any;
+  setCurrentPageKeys?: (keys: any[]) => void;
 }
 
 const TableView: FC<TableViewProps> = (props) => {
@@ -233,6 +236,7 @@ const TableView: FC<TableViewProps> = (props) => {
         size="middle"
         onChange={handleTableChange}
         showSorterTooltip={false}
+        components={props.components}
       />
       <Modal
         showModal={props.showModal}

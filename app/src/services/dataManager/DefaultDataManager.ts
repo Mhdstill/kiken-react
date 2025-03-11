@@ -827,4 +827,32 @@ export class DefaultDataManager implements DataManager {
     }
   }
 
+  async moveFile(operationToken: string, fileId: string, targetFolderId: string): Promise<any> {
+    try {
+      const response = await this.axios.put(
+        `/api/${operationToken}/media_objects/${fileId}`,
+        {
+          folder: `/api/${operationToken}/folders/${targetFolderId}`
+        }
+      );
+      return response.data;
+    } catch (err) {
+      throw new Error((err.response && err.response.statusText) ? err.response.statusText : err);
+    }
+  }
+
+  async moveFolder(operationToken: string, folderId: string, targetFolderId: string): Promise<any> {
+    try {
+      const response = await this.axios.put(
+        `/api/${operationToken}/folders/${folderId}`,
+        {
+          parent: `/api/${operationToken}/folders/${targetFolderId}`
+        }
+      );
+      return response.data;
+    } catch (err) {
+      throw new Error((err.response && err.response.statusText) ? err.response.statusText : err);
+    }
+  }
+
 }

@@ -1,5 +1,5 @@
 # Définit l'image de base à utiliser
-FROM node:16-alpine
+FROM node:18-alpine
 
 # Définit le répertoire de travail dans l'image Docker
 WORKDIR /app

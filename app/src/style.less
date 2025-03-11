@@ -58,3 +58,94 @@
 .g-sidenav-show.g-sidenav-pinned .sidenav {
   transform:translateX(0)
 }
+
+.drop-over-downward td {
+  border-bottom: 2px dashed #1890ff;
+}
+
+.drop-over-upward td {
+  border-top: 2px dashed #1890ff;
+}
+
+.dragging {
+  opacity: 0.5;
+  background: #fafafa;
+}
+
+.ant-table-tbody > tr.dragging > td {
+  background: #fafafa;
+  cursor: move;
+}
+
+.ant-table-tbody > tr:hover > td {
+  background: #f5f5f5;
+}
+
+.droppable-table {
+  tr {
+    transition: all 0.2s ease;
+  }
+}
+
+.folder-drop-target {
+  background-color: rgba(24, 144, 255, 0.1) !important;
+  outline: 2px solid #1890ff;
+  outline-offset: -2px;
+  transition: all 0.2s ease;
+}
+
+.dragging-row {
+  background-color: white !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  opacity: 0.9;
+  transform: scale(1.02);
+  z-index: 1000;
+  
+  td {
+    background-color: white !important;
+  }
+}
+
+.draggable-row {
+  transition: all 0.2s ease;
+  cursor: move;
+
+  &.dragging {
+    opacity: 0.5;
+    background: #fafafa !important;
+    
+    td {
+      background: #fafafa !important;
+    }
+  }
+
+  &.folder-row {
+    &.folder-drop-target {
+      background-color: rgba(24, 144, 255, 0.1) !important;
+      outline: 2px solid #1890ff;
+      outline-offset: -2px;
+
+      td {
+        background-color: rgba(24, 144, 255, 0.1) !important;
+      }
+    }
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.02);
+    }
+  }
+}
+
+// Style global pour indiquer qu'un drag est en cours
+body.dragging-active {
+  .folder-row:not(.dragging) {
+    transition: all 0.2s ease;
+    
+    &:hover {
+      background-color: rgba(24, 144, 255, 0.1) !important;
+      outline: 2px dashed #1890ff;
+      outline-offset: -2px;
+    }
+  }
+}
