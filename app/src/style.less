@@ -149,3 +149,26 @@ body.dragging-active {
     }
   }
 }
+
+.arbo-name {
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:not(.active):hover {
+    background-color: rgba(0, 0, 0, 0.02);
+  }
+
+  &.folder-drop-target {
+    background-color: rgba(24, 144, 255, 0.1) !important;
+    outline: 2px solid #1890ff;
+    outline-offset: -2px;
+  }
+}
+
+body.dragging-active .arbo-name:not(.active):hover {
+  background-color: rgba(24, 144, 255, 0.1) !important;
+  outline: 2px dashed #1890ff;
+  outline-offset: -2px;
+}

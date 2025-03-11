@@ -1048,6 +1048,8 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
         okText={modalState.okText}
         setCurrentPageKeys={setCurrentPageKeys}
         components={components}
+        moveFile={moveFile.mutate}
+        moveFolder={moveFolder.mutate}
       />
     </>
   );

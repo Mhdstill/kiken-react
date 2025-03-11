@@ -14,6 +14,7 @@ import {
 import Modal from '../Modal';
 import withTranslation from '../../hoc/withTranslation';
 import { useTablePageSize } from '../../hooks/useTablePageSize';
+import { Type } from '../../types/File';
 
 import '../../style.less';
 import SearchBar from '../Searchbar';
@@ -34,6 +35,8 @@ interface TableViewProps extends WithTranslation {
   minusTabSize?: boolean;
   components?: any;
   setCurrentPageKeys?: any | null;
+  moveFile?: (params: { fileId: string; targetFolderId: string }) => void;
+  moveFolder?: (params: { folderId: string; targetFolderId: string }) => void;
 }
 
 const TableHomeView: FC<TableViewProps> = (props) => {
@@ -87,6 +90,29 @@ const TableHomeView: FC<TableViewProps> = (props) => {
     setFilteredData(filtered);
   };
 
+  const handleTreeDrop = (e: React.DragEvent, targetFolder: any) => {
+    e.preventDefault();
+    e.currentTarget.classList.remove('folder-drop-target');
+    
+    try {
+      const dragData = JSON.parse(e.dataTransfer.getData('text/plain'));
+      if (dragData.id !== targetFolder.id) {
+        if (dragData.type === Type.FOLDER) {
+          props.moveFolder?.({ 
+            folderId: dragData.id, 
+            targetFolderId: targetFolder.id 
+          });
+        } else {
+          props.moveFile?.({ 
+            fileId: dragData.id, 
+            targetFolderId: targetFolder.id 
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Error processing drop:', error);
+    }
+  };
 
   return (
     <div className="table-container">
@@ -114,12 +140,23 @@ const TableHomeView: FC<TableViewProps> = (props) => {
               <FontAwesomeIcon icon={faChevronRight} style={{ fontSize: "16px" }} className='me-2' />
               {tree.map((value, key) => (
                 <React.Fragment key={key}>
-                  <span className={`arbo-name me-2 ${key === tree.length - 1 ? 'active' : ''}`}
+                  <span 
+                    className={`arbo-name me-2 ${key === tree.length - 1 ? 'active' : ''}`}
                     onClick={key < tree.length - 1 ? () => navigate(value["@id"].replace("/api", "").replace("folders", "folder")) : undefined}
+                    onDragOver={(e) => {
+                      if (key < tree.length - 1) { // Ne pas permettre le drop sur le dossier actuel
+                        e.preventDefault();
+                        e.currentTarget.classList.add('folder-drop-target');
+                      }
+                    }}
+                    onDragLeave={(e) => {
+                      e.currentTarget.classList.remove('folder-drop-target');
+                    }}
+                    onDrop={(e) => key < tree.length - 1 && handleTreeDrop(e, value)}
                   >
                     {value.name}
                   </span>
-                  {key < tree.length - 1 && ( // Vérifie si c'est le dernier élément du tableau
+                  {key < tree.length - 1 && (
                     <FontAwesomeIcon icon={faChevronRight} style={{ fontSize: "16px" }} className='me-2' />
                   )}
                 </React.Fragment>
@@ -128,7 +165,6 @@ const TableHomeView: FC<TableViewProps> = (props) => {
           </div>
         </div>
       )}
-
 
       <Table
         style={{ paddingTop }}
