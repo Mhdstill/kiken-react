@@ -22,15 +22,17 @@ const dataManager = new DefaultDataManager(axiosClient);
 const queryClient = new QueryClient();
 
 root.render(
-  <Suspense fallback="loading">
-    <I18nextProvider i18n={i18n}>
-      <ConfigProvider locale={frFR}>
-        <QueryClientProvider client={queryClient}>
-          <DataManagerProvider dataManager={dataManager}>
-            <App />
-          </DataManagerProvider>
-        </QueryClientProvider>
-      </ConfigProvider>
-    </I18nextProvider>
-  </Suspense>
+  <React.StrictMode>
+    <Suspense fallback="loading">
+      <I18nextProvider i18n={i18n}>
+        <ConfigProvider locale={frFR}>
+          <QueryClientProvider client={queryClient}>
+            <DataManagerProvider dataManager={dataManager}>
+              <App />
+            </DataManagerProvider>
+          </QueryClientProvider>
+        </ConfigProvider>
+      </I18nextProvider>
+    </Suspense>
+  </React.StrictMode>
 );

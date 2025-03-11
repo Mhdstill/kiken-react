@@ -83,6 +83,8 @@ export default {
       updateDeleted: "La mise à jour {{update}} a été supprimé avec succès.",
       updateUpdated: "La mise à jour {{update}} a été mis à jour avec succès.",
       updateCreated: "La mise à jour {{update}} a été créé avec succès.",
+      fileMoved: 'The file has been successfully moved.',
+      folderMoved: 'The folder has been successfully moved.',
       pointerFieldDeleted: 'The field {{field}} has been successfully deleted.',
       pointerFieldCreated: 'The field {{field}} has been successfully created',
       pointerFieldUpdated: 'The field {{field}} has been successfully updated.',

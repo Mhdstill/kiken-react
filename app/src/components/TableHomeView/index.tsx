@@ -32,8 +32,8 @@ interface TableViewProps extends WithTranslation {
   showModal: boolean;
   modalContent: ReactNode;
   minusTabSize?: boolean;
+  components?: any;
   setCurrentPageKeys?: any | null;
-
 }
 
 const TableHomeView: FC<TableViewProps> = (props) => {
@@ -146,6 +146,7 @@ const TableHomeView: FC<TableViewProps> = (props) => {
         size="middle"
         onChange={handleTableChange}
         showSorterTooltip={false}
+        components={props.components}
       />
       <Modal
         showModal={props.showModal}

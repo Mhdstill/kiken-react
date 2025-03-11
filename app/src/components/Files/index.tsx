@@ -28,7 +28,7 @@ import {
 import type { WithTranslation } from 'react-i18next';
 import { DragDropContext, Droppable, Draggable, DroppableProvided, DraggableProvided, DraggableStateSnapshot, DropResult } from 'react-beautiful-dnd';
 
-import TableView from '../TableView';
+import TableView from '../TableHomeView';
 import ModalForm from '../Modal/ModalForm';
 import withDataManager, {
   WithDataManagerProps,
@@ -65,7 +65,7 @@ interface FileType extends File {
   extension?: string;
 }
 
-const DraggableRow = ({ children, data, moveFile, moveFolder, ...props }: { children: React.ReactNode; data: FileType[]; moveFile: any; moveFolder: any; [key: string]: any }) => {
+const DraggableRow = ({ children, data, moveFile, moveFolder, canDragDrop, ...props }: { children: React.ReactNode; data: FileType[]; moveFile: any; moveFolder: any; canDragDrop: boolean; [key: string]: any }) => {
   const { 'data-row-key': rowKey } = props;
   const record = data.find((item: FileType) => item.key === rowKey);
   
@@ -75,34 +75,32 @@ const DraggableRow = ({ children, data, moveFile, moveFolder, ...props }: { chil
     <tr
       {...props}
       className={`draggable-row ${record['@type'] === Type.FOLDER ? 'folder-row' : 'file-row'}`}
-      draggable
-      onDragStart={(e) => {
+      draggable={canDragDrop}
+      onDragStart={canDragDrop ? (e) => {
         e.dataTransfer.setData('text/plain', JSON.stringify({
           id: record.id,
           type: record['@type']
         }));
         e.currentTarget.classList.add('dragging');
-        // Ajouter une classe au body pour indiquer qu'un drag est en cours
         document.body.classList.add('dragging-active');
-      }}
-      onDragEnd={(e) => {
+      } : undefined}
+      onDragEnd={canDragDrop ? (e) => {
         e.currentTarget.classList.remove('dragging');
         document.body.classList.remove('dragging-active');
-        // Nettoyer toutes les classes folder-drop-target
         document.querySelectorAll('.folder-drop-target').forEach(el => {
           el.classList.remove('folder-drop-target');
         });
-      }}
-      onDragOver={(e) => {
+      } : undefined}
+      onDragOver={canDragDrop ? (e) => {
         if (record['@type'] === Type.FOLDER) {
           e.preventDefault();
           e.currentTarget.classList.add('folder-drop-target');
         }
-      }}
-      onDragLeave={(e) => {
+      } : undefined}
+      onDragLeave={canDragDrop ? (e) => {
         e.currentTarget.classList.remove('folder-drop-target');
-      }}
-      onDrop={(e) => {
+      } : undefined}
+      onDrop={canDragDrop ? (e) => {
         e.preventDefault();
         e.currentTarget.classList.remove('folder-drop-target');
         
@@ -124,7 +122,7 @@ const DraggableRow = ({ children, data, moveFile, moveFolder, ...props }: { chil
         } catch (error) {
           console.error('Error processing drop:', error);
         }
-      }}
+      } : undefined}
     >
       {children}
     </tr>
@@ -1027,6 +1025,7 @@ const FilesPage: FC<WithTranslation & WithDataManagerProps> = ({
           data={folders?.data || []} 
           moveFile={moveFile.mutate}
           moveFolder={moveFolder.mutate}
+          canDragDrop={isAuthorizedDrive(Action.CREATE_FOLDER)}
         />
       ),
     },
