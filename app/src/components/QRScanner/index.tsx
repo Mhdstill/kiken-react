@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faQrcode, faCamera, faLightbulb, faRotateRight } from '@fortawesome/free-solid-svg-icons';
+// @ts-ignore
+import jsQR from 'jsqr';
 
 // Interfaces personnalisées pour les capacités de la caméra
 interface ExtendedMediaTrackCapabilities extends MediaTrackCapabilities {
@@ -19,6 +21,7 @@ const QRScanner: React.FC = () => {
   const [permissionRequested, setPermissionRequested] = useState(false);
   const [debugInfo, setDebugInfo] = useState<string>('');
   const [videoReady, setVideoReady] = useState(false);
+  const [usingFallback, setUsingFallback] = useState(false);
   
   const isPWA = document.body.classList.contains('pwa-mode');
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
@@ -26,6 +29,7 @@ const QRScanner: React.FC = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const animationFrameRef = useRef<number | null>(null);
   
   // Fonction pour ajouter des informations de débogage
   const addDebugInfo = (info: string) => {
@@ -277,13 +281,9 @@ const QRScanner: React.FC = () => {
         addDebugInfo('BarcodeDetector API disponible, démarrage de la détection');
         startBarcodeDetection();
       } else {
-        addDebugInfo('BarcodeDetector API non disponible');
-        // Fallback pour les navigateurs qui ne supportent pas BarcodeDetector
-        if (isIOS) {
-          setScanError('Votre version d\'iOS ne prend pas en charge la détection de QR code. Essayez de mettre à jour votre appareil.');
-        } else {
-          setScanError('Votre navigateur ne prend pas en charge la détection de QR code. Essayez Chrome ou Edge.');
-        }
+        addDebugInfo('BarcodeDetector API non disponible, utilisation de jsQR comme solution de repli');
+        setUsingFallback(true);
+        startJsQrScanner();
       }
     }
   }, [videoReady, hasPermission, scanning]);
@@ -426,8 +426,83 @@ const QRScanner: React.FC = () => {
     setPermissionRequested(false);
     setScanning(true);
     setVideoReady(false);
+    setUsingFallback(false);
+    
+    // Annuler toute animation en cours
+    if (animationFrameRef.current) {
+      cancelAnimationFrame(animationFrameRef.current);
+      animationFrameRef.current = null;
+    }
+    
     setDebugInfo(''); // Réinitialiser les infos de débogage
   };
+
+  // Fonction de détection de QR code avec jsQR (fallback)
+  const startJsQrScanner = () => {
+    if (!videoRef.current || !canvasRef.current || !hasPermission || !scanning) {
+      addDebugInfo('Impossible de démarrer jsQR: conditions non remplies');
+      return;
+    }
+    
+    addDebugInfo('Démarrage de jsQR comme solution de repli');
+    
+    const canvas = canvasRef.current;
+    const context = canvas.getContext('2d');
+    
+    if (!context) {
+      addDebugInfo('Impossible d\'obtenir le contexte 2D du canvas');
+      setScanError('Erreur lors de l\'initialisation du scanner');
+      return;
+    }
+    
+    const scanQrCode = () => {
+      if (!videoRef.current || !canvasRef.current || !context || !scanning) {
+        return;
+      }
+      
+      // Ajuster la taille du canvas à celle de la vidéo
+      const video = videoRef.current;
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      
+      // Dessiner l'image vidéo sur le canvas
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+      
+      // Obtenir les données d'image
+      const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+      
+      // Analyser avec jsQR
+      const code = jsQR(imageData.data, imageData.width, imageData.height, {
+        inversionAttempts: 'dontInvert',
+      });
+      
+      if (code) {
+        addDebugInfo(`QR code détecté avec jsQR: ${code.data}`);
+        handleQRCodeDetected(code.data);
+      } else if (scanning) {
+        // Continuer à scanner
+        animationFrameRef.current = requestAnimationFrame(scanQrCode);
+      }
+    };
+    
+    // Démarrer le scan
+    animationFrameRef.current = requestAnimationFrame(scanQrCode);
+  };
+
+  // Nettoyer les ressources lors du démontage du composant
+  useEffect(() => {
+    return () => {
+      // Nettoyer les ressources de la caméra lors du démontage
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
+      }
+      
+      // Annuler toute animation en cours
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+    };
+  }, []);
 
   return (
     <div className="page-home">
@@ -440,6 +515,12 @@ const QRScanner: React.FC = () => {
           <p className="text-center text-muted mb-3">
             Placez le QR code à l'intérieur du cadre
           </p>
+          {usingFallback && (
+            <p className="text-center text-warning small">
+              <FontAwesomeIcon icon={faCamera} className="me-1" />
+              Mode de compatibilité activé
+            </p>
+          )}
         </div>
 
         <div className="scanner-viewport">
