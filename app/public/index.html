@@ -5,7 +5,10 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+  <meta name="theme-color" content="#000000">
+  <meta name="description" content="QR4YOU - Application de gestion de QR codes">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="/images/logo-qr4you-192.png">
 
   <script src="https://material-dashboard-laravel-livewire.creative-tim.com/assets/js/core/popper.min.js"></script>
   <!-- <script src="https://material-dashboard-laravel-livewire.creative-tim.com/assets/js/core/bootstrap.min.js"></script> -->
@@ -37,6 +40,20 @@
 
 <body class="g-sidenav-show">
   <div id="root"></div>
+  <noscript>Vous devez activer JavaScript pour exécuter cette application.</noscript>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js')
+          .then(registration => {
+            console.log('SW registered: ', registration);
+          })
+          .catch(registrationError => {
+            console.log('SW registration failed: ', registrationError);
+          });
+      });
+    }
+  </script>
 </body>
 
 </html>
