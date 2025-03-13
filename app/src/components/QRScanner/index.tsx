@@ -17,6 +17,8 @@ const QRScanner: React.FC = () => {
   const [scanning, setScanning] = useState(true);
   const [scanError, setScanError] = useState<string | null>(null);
   const [permissionRequested, setPermissionRequested] = useState(false);
+  const [debugInfo, setDebugInfo] = useState<string>('');
+  
   const isPWA = document.body.classList.contains('pwa-mode');
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
   
@@ -24,20 +26,28 @@ const QRScanner: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   
+  // Fonction pour ajouter des informations de débogage
+  const addDebugInfo = (info: string) => {
+    console.log(info);
+    setDebugInfo(prev => `${prev}\n${info}`);
+  };
+  
   // Fonction pour demander les permissions via le service worker
   const requestPermissionViaServiceWorker = () => {
     // Vérifier si nous sommes en développement (adresse IP) ou en production
     const isDevelopment = window.location.hostname.match(/^\d+\.\d+\.\d+\.\d+$/) !== null;
     
     if (isDevelopment) {
-      console.log('Mode développement détecté, ignorant le service worker');
+      addDebugInfo('Mode développement détecté, ignorant le service worker');
       return Promise.reject(new Error('Service Worker ignoré en mode développement'));
     }
     
     if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+      addDebugInfo('Demande de permission via service worker...');
       return new Promise<void>((resolve, reject) => {
         const messageChannel = new MessageChannel();
         messageChannel.port1.onmessage = (event) => {
+          addDebugInfo(`Réponse du service worker: ${JSON.stringify(event.data)}`);
           if (event.data.type === 'CAMERA_PERMISSION_GRANTED') {
             resolve();
           } else {
@@ -56,6 +66,7 @@ const QRScanner: React.FC = () => {
         }
       });
     }
+    addDebugInfo('Service Worker non disponible');
     return Promise.reject(new Error('Service Worker non disponible'));
   };
   
@@ -63,14 +74,17 @@ const QRScanner: React.FC = () => {
     // Fonction pour démarrer la caméra
     const startCamera = async () => {
       try {
+        addDebugInfo('Démarrage de la caméra...');
         setPermissionRequested(true);
         
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+          addDebugInfo('MediaDevices API non supportée');
           // Pour iOS, essayer via le service worker
           if (isIOS) {
             try {
               await requestPermissionViaServiceWorker();
             } catch (error) {
+              addDebugInfo(`Erreur service worker: ${error instanceof Error ? error.message : String(error)}`);
               setHasPermission(false);
               setScanError('Accès à la caméra refusé. Sur iOS, veuillez autoriser l\'accès à la caméra dans les paramètres de Safari.');
               return;
@@ -85,8 +99,10 @@ const QRScanner: React.FC = () => {
         // Demander explicitement la permission avant d'accéder à la caméra
         if (navigator.permissions && navigator.permissions.query) {
           try {
+            addDebugInfo('Vérification des permissions...');
             // @ts-ignore - 'camera' n'est pas dans les types standard
             const permissionStatus = await navigator.permissions.query({ name: 'camera' });
+            addDebugInfo(`État de la permission: ${permissionStatus.state}`);
             
             if (permissionStatus.state === 'denied') {
               setHasPermission(false);
@@ -98,6 +114,7 @@ const QRScanner: React.FC = () => {
             
             // Écouter les changements de permission
             permissionStatus.onchange = () => {
+              addDebugInfo(`Changement de permission: ${permissionStatus.state}`);
               if (permissionStatus.state === 'granted') {
                 setHasPermission(true);
                 setScanError(null);
@@ -110,43 +127,96 @@ const QRScanner: React.FC = () => {
               }
             };
           } catch (error) {
-            console.log('Erreur lors de la vérification des permissions:', error);
+            addDebugInfo(`Erreur lors de la vérification des permissions: ${error instanceof Error ? error.message : String(error)}`);
             // Continuer même si la vérification échoue
           }
         }
         
         // Essayer d'accéder directement à la caméra
         try {
+          addDebugInfo('Tentative d\'accès à la caméra...');
+          
+          // Contraintes spécifiques pour iOS
           const constraints = {
-            video: { 
-              facingMode: 'environment',
-              width: { ideal: 1280 },
-              height: { ideal: 720 }
-            }
+            audio: false,
+            video: isIOS ? 
+              {
+                facingMode: 'environment',
+                width: { min: 640, ideal: 1280, max: 1920 },
+                height: { min: 480, ideal: 720, max: 1080 }
+              } : 
+              { 
+                facingMode: 'environment',
+                width: { ideal: 1280 },
+                height: { ideal: 720 }
+              }
           };
           
+          addDebugInfo(`Contraintes utilisées: ${JSON.stringify(constraints)}`);
           const stream = await navigator.mediaDevices.getUserMedia(constraints);
           streamRef.current = stream;
+          addDebugInfo('Flux vidéo obtenu');
           
           if (videoRef.current) {
-            videoRef.current.srcObject = stream;
-            videoRef.current.play();
-            setHasPermission(true);
+            // Nettoyer d'abord toute source existante
+            if (videoRef.current.srcObject) {
+              const oldStream = videoRef.current.srcObject as MediaStream;
+              oldStream.getTracks().forEach(track => track.stop());
+              videoRef.current.srcObject = null;
+            }
             
-            // Utiliser BarcodeDetector API si disponible
-            if ('BarcodeDetector' in window) {
-              startBarcodeDetection();
-            } else {
-              // Fallback pour les navigateurs qui ne supportent pas BarcodeDetector
-              if (isIOS) {
-                setScanError('Votre version d\'iOS ne prend pas en charge la détection de QR code. Essayez de mettre à jour votre appareil.');
-              } else {
-                setScanError('Votre navigateur ne prend pas en charge la détection de QR code. Essayez Chrome ou Edge.');
+            videoRef.current.srcObject = stream;
+            addDebugInfo('Flux vidéo assigné à l\'élément vidéo');
+            
+            // Pour iOS, essayer de forcer le démarrage de la vidéo
+            if (isIOS) {
+              try {
+                await videoRef.current.play();
+                addDebugInfo('Lecture vidéo démarrée immédiatement');
+              } catch (err) {
+                addDebugInfo('Impossible de démarrer la vidéo immédiatement, utilisation de onloadedmetadata');
               }
             }
+            
+            // Ajouter un gestionnaire d'événements pour savoir quand la vidéo commence à jouer
+            videoRef.current.onloadedmetadata = () => {
+              addDebugInfo('Métadonnées vidéo chargées');
+              if (videoRef.current) {
+                videoRef.current.play()
+                  .then(() => {
+                    addDebugInfo('Lecture vidéo démarrée');
+                    setHasPermission(true);
+                    
+                    // Utiliser BarcodeDetector API si disponible
+                    if ('BarcodeDetector' in window) {
+                      addDebugInfo('BarcodeDetector API disponible, démarrage de la détection');
+                      startBarcodeDetection();
+                    } else {
+                      addDebugInfo('BarcodeDetector API non disponible');
+                      // Fallback pour les navigateurs qui ne supportent pas BarcodeDetector
+                      if (isIOS) {
+                        setScanError('Votre version d\'iOS ne prend pas en charge la détection de QR code. Essayez de mettre à jour votre appareil.');
+                      } else {
+                        setScanError('Votre navigateur ne prend pas en charge la détection de QR code. Essayez Chrome ou Edge.');
+                      }
+                    }
+                  })
+                  .catch(err => {
+                    addDebugInfo(`Erreur lors du démarrage de la lecture vidéo: ${err instanceof Error ? err.message : String(err)}`);
+                    setScanError('Erreur lors du démarrage de la caméra: ' + (err instanceof Error ? err.message : String(err)));
+                  });
+              }
+            };
+            
+            videoRef.current.onerror = (err) => {
+              addDebugInfo(`Erreur vidéo: ${JSON.stringify(err)}`);
+              setScanError('Erreur lors de l\'initialisation de la vidéo');
+            };
+          } else {
+            addDebugInfo('Référence vidéo non disponible');
           }
         } catch (error: any) {
-          console.error('Erreur d\'accès à la caméra:', error);
+          addDebugInfo(`Erreur d'accès à la caméra: ${error.name} - ${error.message}`);
           setHasPermission(false);
           
           // Messages d'erreur plus spécifiques
@@ -165,7 +235,7 @@ const QRScanner: React.FC = () => {
           }
         }
       } catch (error) {
-        console.error('Erreur générale:', error);
+        addDebugInfo(`Erreur générale: ${error instanceof Error ? error.message : String(error)}`);
         setHasPermission(false);
         setScanError('Une erreur s\'est produite lors de l\'initialisation de la caméra.');
       }
@@ -185,11 +255,12 @@ const QRScanner: React.FC = () => {
   
   const startBarcodeDetection = async () => {
     if (!videoRef.current || !hasPermission || !scanning) {
+      addDebugInfo('Impossible de démarrer la détection de code-barres: conditions non remplies');
       return;
     }
     
     try {
-      console.log('Initialisation du détecteur de QR code...');
+      addDebugInfo('Initialisation du détecteur de QR code...');
       // @ts-ignore - BarcodeDetector n'est pas encore dans les types standard de TypeScript
       const barcodeDetector = new BarcodeDetector({ formats: ['qr_code'] });
       
@@ -203,7 +274,7 @@ const QRScanner: React.FC = () => {
             const barcodes = await barcodeDetector.detect(videoRef.current);
             
             if (barcodes.length > 0) {
-              console.log('QR code détecté avec succès:', barcodes[0].rawValue);
+              addDebugInfo(`QR code détecté avec succès: ${barcodes[0].rawValue}`);
               // QR code détecté
               handleQRCodeDetected(barcodes[0].rawValue);
             } else {
@@ -214,7 +285,9 @@ const QRScanner: React.FC = () => {
             }
           } else {
             // La vidéo n'est pas encore prête, attendre un peu
-            console.log('Vidéo pas encore prête, nouvelle tentative...');
+            if (Math.random() < 0.01) { // Réduire la fréquence des logs
+              addDebugInfo('Vidéo pas encore prête, nouvelle tentative...');
+            }
             setTimeout(() => {
               if (scanning) {
                 requestAnimationFrame(detectCode);
@@ -222,7 +295,9 @@ const QRScanner: React.FC = () => {
             }, 100);
           }
         } catch (error) {
-          console.error('Erreur lors de la détection:', error);
+          if (Math.random() < 0.01) { // Réduire la fréquence des logs
+            addDebugInfo(`Erreur lors de la détection: ${error instanceof Error ? error.message : String(error)}`);
+          }
           if (scanning) {
             requestAnimationFrame(detectCode);
           }
@@ -231,7 +306,7 @@ const QRScanner: React.FC = () => {
       
       detectCode();
     } catch (error) {
-      console.error('BarcodeDetector non supporté ou erreur:', error);
+      addDebugInfo(`BarcodeDetector non supporté ou erreur: ${error instanceof Error ? error.message : String(error)}`);
       if (isIOS) {
         setScanError('Votre version d\'iOS ne prend pas en charge la détection de QR code. Essayez de mettre à jour votre appareil.');
       } else {
@@ -241,7 +316,7 @@ const QRScanner: React.FC = () => {
   };
   
   const handleQRCodeDetected = (scannedUrl: string) => {
-    console.log('QR Code scanné:', scannedUrl);
+    addDebugInfo(`QR Code scanné: ${scannedUrl}`);
     
     try {
       // Vérifier si c'est une URL valide
@@ -266,7 +341,7 @@ const QRScanner: React.FC = () => {
       // Construire la nouvelle URL avec le domaine actuel
       const newUrl = `${currentDomain}${path}`;
       
-      console.log('Redirection vers:', newUrl);
+      addDebugInfo(`Redirection vers: ${newUrl}`);
       
       // Arrêter le scan
       setScanning(false);
@@ -279,7 +354,7 @@ const QRScanner: React.FC = () => {
       // Rediriger vers la nouvelle URL
       window.location.href = newUrl;
     } catch (error) {
-      console.error('URL invalide:', error);
+      addDebugInfo(`URL invalide: ${error instanceof Error ? error.message : String(error)}`);
       setScanError('QR Code invalide. Veuillez scanner un QR Code contenant une URL valide.');
       setScanning(false);
     }
@@ -299,20 +374,23 @@ const QRScanner: React.FC = () => {
             advanced: [{ torch: newFlashState } as ExtendedMediaTrackConstraintSet]
           }).then(() => {
             setFlashOn(newFlashState);
+            addDebugInfo(`Flash ${newFlashState ? 'activé' : 'désactivé'}`);
           }).catch(error => {
-            console.error('Erreur lors de l\'activation du flash:', error);
+            addDebugInfo(`Erreur lors de l'activation du flash: ${error instanceof Error ? error.message : String(error)}`);
           });
         } else {
-          console.log('Le flash n\'est pas supporté sur cet appareil');
+          addDebugInfo('Le flash n\'est pas supporté sur cet appareil');
         }
       }
     }
   };
 
   const restartScanner = () => {
+    addDebugInfo('Redémarrage du scanner...');
     setScanError(null);
     setPermissionRequested(false);
     setScanning(true);
+    setDebugInfo(''); // Réinitialiser les infos de débogage
   };
 
   return (
@@ -336,6 +414,7 @@ const QRScanner: React.FC = () => {
                 id="qr-video" 
                 muted 
                 playsInline 
+                autoPlay
                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}
               />
               <canvas 
@@ -368,6 +447,14 @@ const QRScanner: React.FC = () => {
                         : "Caméra non activée"}
                   </p>
                 </>
+              )}
+              
+              {/* Afficher les informations de débogage en mode développement */}
+              {debugInfo && (
+                <div className="mt-3 p-2 bg-light text-start" style={{ fontSize: '10px', maxHeight: '150px', overflow: 'auto', whiteSpace: 'pre-wrap' }}>
+                  <strong>Logs de débogage:</strong>
+                  {debugInfo}
+                </div>
               )}
             </div>
           )}

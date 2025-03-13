@@ -14,9 +14,14 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="QR4YOU">
-  <!-- Permissions pour iOS -->
+  
+  <!-- Permissions pour la caméra - versions mises à jour -->
   <meta http-equiv="Feature-Policy" content="camera *">
-  <meta http-equiv="Permissions-Policy" content="camera=(), microphone=()">
+  <meta http-equiv="Permissions-Policy" content="camera=*, microphone=*">
+  
+  <!-- Balises supplémentaires pour forcer l'accès à la caméra -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="HandheldFriendly" content="true">
 
   <script src="https://material-dashboard-laravel-livewire.creative-tim.com/assets/js/core/popper.min.js"></script>
   <!-- <script src="https://material-dashboard-laravel-livewire.creative-tim.com/assets/js/core/bootstrap.min.js"></script> -->
@@ -52,12 +57,26 @@
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/service-worker.js')
+        // Utiliser un chemin relatif au lieu d'un chemin absolu
+        const swPath = new URL('./service-worker.js', window.location.href).href;
+        console.log('Tentative d\'enregistrement du SW à:', swPath);
+        
+        navigator.serviceWorker.register(swPath, { scope: './' })
           .then(registration => {
-            console.log('SW registered: ', registration);
+            console.log('SW enregistré avec succès:', registration);
           })
           .catch(registrationError => {
             console.log('SW registration failed: ', registrationError);
+            
+            // Tentative de secours avec un chemin absolu si le chemin relatif échoue
+            console.log('Tentative de secours avec chemin absolu');
+            navigator.serviceWorker.register('/service-worker.js')
+              .then(registration => {
+                console.log('SW enregistré avec succès (secours):', registration);
+              })
+              .catch(secondError => {
+                console.error('Échec de l\'enregistrement du SW même avec secours:', secondError);
+              });
           });
       });
     }
