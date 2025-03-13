@@ -15,6 +15,7 @@
       "purpose": "any maskable"
     }
   ],
+  "id": "/",
   "start_url": "/?source=pwa",
   "display": "standalone",
   "theme_color": "#000000",
@@ -25,5 +26,17 @@
     "camera"
   ],
   "related_applications": [],
-  "prefer_related_applications": false
+  "prefer_related_applications": false,
+  "description": "Application de scan de QR codes",
+  "screenshots": [
+    {
+      "src": "/images/screenshot1.png",
+      "type": "image/png",
+      "sizes": "540x720"
+    }
+  ],
+  "categories": ["utilities", "productivity"],
+  "dir": "ltr",
+  "lang": "fr",
+  "display_override": ["standalone", "fullscreen"]
 } 

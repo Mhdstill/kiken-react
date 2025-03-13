@@ -26,6 +26,14 @@ const QRScanner: React.FC = () => {
   
   // Fonction pour demander les permissions via le service worker
   const requestPermissionViaServiceWorker = () => {
+    // Vérifier si nous sommes en développement (adresse IP) ou en production
+    const isDevelopment = window.location.hostname.match(/^\d+\.\d+\.\d+\.\d+$/) !== null;
+    
+    if (isDevelopment) {
+      console.log('Mode développement détecté, ignorant le service worker');
+      return Promise.reject(new Error('Service Worker ignoré en mode développement'));
+    }
+    
     if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
       return new Promise<void>((resolve, reject) => {
         const messageChannel = new MessageChannel();
@@ -181,6 +189,7 @@ const QRScanner: React.FC = () => {
     }
     
     try {
+      console.log('Initialisation du détecteur de QR code...');
       // @ts-ignore - BarcodeDetector n'est pas encore dans les types standard de TypeScript
       const barcodeDetector = new BarcodeDetector({ formats: ['qr_code'] });
       
@@ -188,17 +197,29 @@ const QRScanner: React.FC = () => {
         if (!videoRef.current || !scanning) return;
         
         try {
-          // @ts-ignore
-          const barcodes = await barcodeDetector.detect(videoRef.current);
-          
-          if (barcodes.length > 0) {
-            // QR code détecté
-            handleQRCodeDetected(barcodes[0].rawValue);
-          } else {
-            // Continuer à scanner
-            if (scanning) {
-              requestAnimationFrame(detectCode);
+          // Vérifier que la vidéo est bien chargée et en cours de lecture
+          if (videoRef.current.readyState === videoRef.current.HAVE_ENOUGH_DATA) {
+            // @ts-ignore
+            const barcodes = await barcodeDetector.detect(videoRef.current);
+            
+            if (barcodes.length > 0) {
+              console.log('QR code détecté avec succès:', barcodes[0].rawValue);
+              // QR code détecté
+              handleQRCodeDetected(barcodes[0].rawValue);
+            } else {
+              // Continuer à scanner
+              if (scanning) {
+                requestAnimationFrame(detectCode);
+              }
             }
+          } else {
+            // La vidéo n'est pas encore prête, attendre un peu
+            console.log('Vidéo pas encore prête, nouvelle tentative...');
+            setTimeout(() => {
+              if (scanning) {
+                requestAnimationFrame(detectCode);
+              }
+            }, 100);
           }
         } catch (error) {
           console.error('Erreur lors de la détection:', error);
@@ -224,7 +245,17 @@ const QRScanner: React.FC = () => {
     
     try {
       // Vérifier si c'est une URL valide
-      const url = new URL(scannedUrl);
+      let url;
+      try {
+        url = new URL(scannedUrl);
+      } catch (e) {
+        // Si ce n'est pas une URL valide, essayer de préfixer avec https://
+        try {
+          url = new URL(`https://${scannedUrl}`);
+        } catch (e2) {
+          throw new Error('URL invalide même avec préfixe https://');
+        }
+      }
       
       // Extraire le chemin sans le domaine
       const path = url.pathname + url.search + url.hash;
