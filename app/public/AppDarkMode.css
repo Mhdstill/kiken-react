@@ -846,3 +846,270 @@ input[type="file"]::file-selector-button {
     background-color: red !important;
     color: white !important;
 }
+
+/* Styles pour la barre de navigation en bas */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-around;
+  background-color: #1E1C22;
+  box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  height: 75px;
+  padding-bottom: env(safe-area-inset-bottom);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 8px 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.bottom-nav-item.active {
+  color: var(--main-color);
+}
+
+.bottom-nav-item svg {
+  font-size: 24px;
+  margin-bottom: 4px;
+  transition: transform 0.2s ease;
+}
+
+.bottom-nav-item:hover svg {
+  transform: translateY(-2px);
+}
+
+.bottom-nav-item span {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Style spécial pour le bouton Scanner */
+.bottom-nav-scan {
+  margin-top: -30px;
+}
+
+.scan-button-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.scan-button {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--main-color), #04a066);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(6, 216, 137, 0.4);
+  margin-bottom: 2px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.scan-button:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 15px rgba(6, 216, 137, 0.5);
+}
+
+.scan-button svg {
+  font-size: 30px;
+  color: white;
+  margin: 0;
+}
+
+.bottom-nav-scan span {
+  margin-top: 4px;
+  color: var(--main-color);
+}
+
+/* Styles pour le scanner QR */
+.scanner-container {
+  overflow: hidden;
+  border-radius: 18px;
+  padding: 0;
+  background-color: #1E1C22 !important;
+}
+
+.scanner-header {
+  padding: 15px;
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.scanner-header h2 {
+  color: var(--main-color);
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.scanner-header p {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.scanner-viewport {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  background-color: #121212;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Styles pour la vidéo du scanner QR */
+#qr-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.scanner-viewport section {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.scanner-viewport section > div {
+  width: 100% !important;
+  height: 100% !important;
+  padding: 0 !important;
+}
+
+.scanner-viewport video {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}
+
+.scanner-frame {
+  position: absolute;
+  width: 80%;
+  height: 80%;
+  max-width: 280px;
+  max-height: 280px;
+  border: 2px solid transparent;
+  box-sizing: border-box;
+  z-index: 10;
+}
+
+.corner {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-color: var(--main-color);
+  border-style: solid;
+  border-width: 0;
+}
+
+.top-left {
+  top: 0;
+  left: 0;
+  border-top-width: 4px;
+  border-left-width: 4px;
+}
+
+.top-right {
+  top: 0;
+  right: 0;
+  border-top-width: 4px;
+  border-right-width: 4px;
+}
+
+.bottom-left {
+  bottom: 0;
+  left: 0;
+  border-bottom-width: 4px;
+  border-left-width: 4px;
+}
+
+.bottom-right {
+  bottom: 0;
+  right: 0;
+  border-bottom-width: 4px;
+  border-right-width: 4px;
+}
+
+.scanner-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.3);
+  z-index: 5;
+  text-align: center;
+  padding: 20px;
+}
+
+.scanner-placeholder .text-danger {
+  color: #ff6b6b !important;
+}
+
+.scanner-placeholder .btn-outline-primary {
+  color: var(--main-color);
+  border-color: var(--main-color);
+  background: transparent;
+  padding: 8px 16px;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+}
+
+.scanner-placeholder .btn-outline-primary:hover {
+  background-color: var(--main-color);
+  color: #000;
+}
+
+.scanner-controls {
+  padding: 15px;
+  display: flex;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.flash-button {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 30px;
+  padding: 10px 20px;
+  color: rgba(255, 255, 255, 0.7);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.3s ease;
+}
+
+.flash-button:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.flash-button.active {
+  background: var(--main-color);
+  color: #000;
+}
+
+.flash-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pwa-badge-permanent {
+  display: inline-block;
+  background-color: var(--main-color);
+  color: #000;
+  padding: 5px 15px;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 12px;
+  box-shadow: 0 2px 5px rgba(6, 216, 137, 0.3);
+}

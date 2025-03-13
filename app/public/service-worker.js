@@ -34,6 +34,20 @@ self.addEventListener('activate', event => {
       );
     })
   );
+  
+  // Demander les permissions nécessaires lors de l'activation
+  if (self.registration && self.registration.permissions) {
+    self.registration.permissions.query({ name: 'camera' })
+      .then(permissionStatus => {
+        console.log('Statut de permission caméra:', permissionStatus.state);
+        if (permissionStatus.state !== 'granted') {
+          console.log('Demande de permission caméra');
+        }
+      })
+      .catch(error => {
+        console.error('Erreur lors de la vérification des permissions:', error);
+      });
+  }
 });
 
 // Stratégie de cache: Network first, puis cache
@@ -55,4 +69,43 @@ self.addEventListener('fetch', event => {
         return caches.match(event.request);
       })
   );
+});
+
+// Gestion des messages depuis l'application
+self.addEventListener('message', event => {
+  if (event.data && event.data.type === 'REQUEST_CAMERA_PERMISSION') {
+    if (self.registration && self.registration.permissions) {
+      self.registration.permissions.query({ name: 'camera' })
+        .then(permissionStatus => {
+          if (permissionStatus.state !== 'granted') {
+            // Tenter de demander la permission
+            navigator.mediaDevices.getUserMedia({ video: true })
+              .then(() => {
+                // Permission accordée
+                event.ports[0].postMessage({ type: 'CAMERA_PERMISSION_GRANTED' });
+              })
+              .catch(error => {
+                // Permission refusée
+                event.ports[0].postMessage({ 
+                  type: 'CAMERA_PERMISSION_DENIED',
+                  error: error.message
+                });
+              });
+          } else {
+            // Permission déjà accordée
+            event.ports[0].postMessage({ type: 'CAMERA_PERMISSION_GRANTED' });
+          }
+        })
+        .catch(error => {
+          event.ports[0].postMessage({ 
+            type: 'CAMERA_PERMISSION_ERROR',
+            error: error.message
+          });
+        });
+    } else {
+      event.ports[0].postMessage({ 
+        type: 'CAMERA_PERMISSION_NOT_SUPPORTED'
+      });
+    }
+  }
 }); 

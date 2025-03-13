@@ -4,6 +4,7 @@ import {
   Navigate,
   RouterProvider,
   useNavigate,
+  Outlet
 } from 'react-router-dom';
 
 import FilesPage from './components/Files';
@@ -11,6 +12,8 @@ import HomePage from './components/Home';
 import DefaultLayout from './components/Layout';
 import LoginPage from './components/Login';
 import PointerPage from './components/Pointer';
+import BottomNavBar from './components/BottomNavBar';
+import QRScanner from './components/QRScanner';
 import { Role } from './services/auth/auth';
 import './App.css'
 import './Fonts.css'
@@ -54,10 +57,30 @@ const ProtectedRoute = ({
   return <Navigate to="/" replace={true} />;
 };
 
+// Wrapper pour ajouter la barre de navigation
+const WithBottomNav: FC = () => {
+  return (
+    <>
+      <DefaultLayout />
+      <BottomNavBar />
+    </>
+  );
+};
+
+// Wrapper pour la page de formulaire
+const FormWithBottomNav: FC = () => {
+  return (
+    <>
+      <PointerPage />
+      <BottomNavBar />
+    </>
+  );
+};
+
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <DefaultLayout />,
+    element: <WithBottomNav />,
     children: [
       { index: true, element: <HomePage /> },
       {
@@ -68,17 +91,20 @@ const router = createBrowserRouter([
         path: ':operationToken/folder/:folderId',
         element: <FilesPage />,
       },
+      {
+        path: 'scan',
+        element: <QRScanner />,
+      },
     ],
   },
   {
     path: 'admin',
     element: (
       <ProtectedRoute rolesAllowed={[Role.ADMIN, Role.CLIENT]}>
-        <DefaultLayout />
+        <WithBottomNav />
       </ProtectedRoute>
     ),
     children: [
-
       //Home
       {
         index: true,
@@ -174,8 +200,7 @@ const router = createBrowserRouter([
   },
   {
     path: ':operationToken/form',
-    element:
-      <PointerPage />
+    element: <FormWithBottomNav />
   },
 ]);
 

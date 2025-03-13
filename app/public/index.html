@@ -9,6 +9,14 @@
   <meta name="description" content="QR4YOU - Application de gestion de QR codes">
   <link rel="manifest" href="/manifest.json">
   <link rel="apple-touch-icon" href="/images/logo-qr4you-192.png">
+  
+  <!-- Balises meta pour iOS -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="QR4YOU">
+  <!-- Permissions pour iOS -->
+  <meta http-equiv="Feature-Policy" content="camera *">
+  <meta http-equiv="Permissions-Policy" content="camera=(), microphone=()">
 
   <script src="https://material-dashboard-laravel-livewire.creative-tim.com/assets/js/core/popper.min.js"></script>
   <!-- <script src="https://material-dashboard-laravel-livewire.creative-tim.com/assets/js/core/bootstrap.min.js"></script> -->
@@ -53,6 +61,14 @@
           });
       });
     }
+    
+    // Détection du mode PWA
+    window.addEventListener('load', () => {
+      if (window.matchMedia('(display-mode: standalone)').matches || 
+          window.navigator.standalone === true) {
+        document.body.classList.add('pwa-mode');
+      }
+    });
   </script>
 </body>
 

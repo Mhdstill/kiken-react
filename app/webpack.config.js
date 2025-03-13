@@ -66,7 +66,19 @@ module.exports = {
   ],
   devServer: {
     host: '0.0.0.0',
-    port: 3000,
+    port: 8080,
     historyApiFallback: true,
+    hot: true,
+    allowedHosts: 'all',
+    client: {
+      overlay: {
+        errors: true,
+        warnings: false,
+      },
+      progress: true,
+    },
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+    },
   },
 };
