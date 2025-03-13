@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faQrcode, faCamera, faLightbulb, faRotateRight } from '@fortawesome/free-solid-svg-icons';
 // @ts-ignore
-import { Html5Qrcode } from 'html5-qrcode';
+import { Html5Qrcode, Html5QrcodeScanType, Html5QrcodeScanner } from 'html5-qrcode';
 
 // Interface pour les appareils de caméra
 interface CameraDevice {
@@ -29,13 +29,19 @@ const QRScanner: React.FC = () => {
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const scannerContainerId = "qr-reader";
   
-  // Configuration pour le scanner
+  // Configuration améliorée pour le scanner
   const qrConfig = {
     fps: 10,
     qrbox: { width: 250, height: 250 },
     aspectRatio: 1.0,
     disableFlip: false,
-    formatsToSupport: [0], // QR_CODE uniquement
+    experimentalFeatures: {
+      useBarCodeDetectorIfSupported: true
+    },
+    rememberLastUsedCamera: true,
+    supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA],
+    showTorchButtonIfSupported: true,
+    showZoomSliderIfSupported: true,
   };
   
   // Fonction pour initialiser le scanner
@@ -80,7 +86,7 @@ const QRScanner: React.FC = () => {
     
     try {
       await scannerRef.current.start(
-        deviceId,
+        { deviceId: { exact: deviceId } },
         qrConfig,
         handleQRCodeDetected,
         handleScanError
@@ -149,7 +155,13 @@ const QRScanner: React.FC = () => {
     
     try {
       // Vérifier si c'est une URL valide
-      const url = new URL(scannedUrl);
+      let url;
+      try {
+        url = new URL(scannedUrl);
+      } catch (e) {
+        // Si ce n'est pas une URL valide, essayer de préfixer avec https://
+        url = new URL(`https://${scannedUrl}`);
+      }
       
       // Extraire le chemin sans le domaine
       const path = url.pathname + url.search + url.hash;
@@ -179,7 +191,10 @@ const QRScanner: React.FC = () => {
   // Fonction pour gérer les erreurs de scan
   const handleScanError = (error: string | Error) => {
     // Ne pas afficher les erreurs de scan, seulement les erreurs d'initialisation
-    console.log('Erreur de scan (ignorée):', error);
+    // Réduire la fréquence des logs pour éviter de spammer la console
+    if (Math.random() < 0.01) { // Log seulement 1% des erreurs
+      console.log('Erreur de scan (ignorée):', error);
+    }
   };
   
   // Fonction pour basculer le flash
