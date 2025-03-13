@@ -18,6 +18,7 @@ const QRScanner: React.FC = () => {
   const [scanError, setScanError] = useState<string | null>(null);
   const [permissionRequested, setPermissionRequested] = useState(false);
   const [debugInfo, setDebugInfo] = useState<string>('');
+  const [videoReady, setVideoReady] = useState(false);
   
   const isPWA = document.body.classList.contains('pwa-mode');
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
@@ -70,6 +71,67 @@ const QRScanner: React.FC = () => {
     return Promise.reject(new Error('Service Worker non disponible'));
   };
   
+  // Fonction pour initialiser la vidéo avec le flux
+  const initializeVideo = (stream: MediaStream) => {
+    addDebugInfo('Initialisation de la vidéo avec le flux...');
+    
+    if (!videoRef.current) {
+      addDebugInfo('ERREUR: Référence vidéo non disponible lors de l\'initialisation');
+      return false;
+    }
+    
+    try {
+      // Nettoyer d'abord toute source existante
+      if (videoRef.current.srcObject) {
+        const oldStream = videoRef.current.srcObject as MediaStream;
+        oldStream.getTracks().forEach(track => track.stop());
+        videoRef.current.srcObject = null;
+      }
+      
+      videoRef.current.srcObject = stream;
+      addDebugInfo('Flux vidéo assigné à l\'élément vidéo');
+      
+      // Pour iOS, essayer de forcer le démarrage de la vidéo
+      if (isIOS) {
+        videoRef.current.play()
+          .then(() => {
+            addDebugInfo('Lecture vidéo démarrée immédiatement');
+            setVideoReady(true);
+          })
+          .catch(err => {
+            addDebugInfo(`Impossible de démarrer la vidéo immédiatement: ${err instanceof Error ? err.message : String(err)}`);
+            // Continuer avec onloadedmetadata
+          });
+      }
+      
+      // Ajouter un gestionnaire d'événements pour savoir quand la vidéo commence à jouer
+      videoRef.current.onloadedmetadata = () => {
+        addDebugInfo('Métadonnées vidéo chargées');
+        videoRef.current?.play()
+          .then(() => {
+            addDebugInfo('Lecture vidéo démarrée');
+            setHasPermission(true);
+            setVideoReady(true);
+          })
+          .catch(err => {
+            addDebugInfo(`Erreur lors du démarrage de la lecture vidéo: ${err instanceof Error ? err.message : String(err)}`);
+            setScanError('Erreur lors du démarrage de la caméra: ' + (err instanceof Error ? err.message : String(err)));
+          });
+      };
+      
+      videoRef.current.onerror = (err) => {
+        addDebugInfo(`Erreur vidéo: ${JSON.stringify(err)}`);
+        setScanError('Erreur lors de l\'initialisation de la vidéo');
+      };
+      
+      return true;
+    } catch (error) {
+      addDebugInfo(`Erreur lors de l'initialisation de la vidéo: ${error instanceof Error ? error.message : String(error)}`);
+      return false;
+    }
+  };
+  
+  // Effet pour démarrer la caméra
   useEffect(() => {
     // Fonction pour démarrer la caméra
     const startCamera = async () => {
@@ -157,64 +219,16 @@ const QRScanner: React.FC = () => {
           streamRef.current = stream;
           addDebugInfo('Flux vidéo obtenu');
           
-          if (videoRef.current) {
-            // Nettoyer d'abord toute source existante
-            if (videoRef.current.srcObject) {
-              const oldStream = videoRef.current.srcObject as MediaStream;
-              oldStream.getTracks().forEach(track => track.stop());
-              videoRef.current.srcObject = null;
+          // Attendre que le DOM soit complètement rendu avant d'initialiser la vidéo
+          setTimeout(() => {
+            if (initializeVideo(stream)) {
+              addDebugInfo('Vidéo initialisée avec succès');
+            } else {
+              addDebugInfo('Échec de l\'initialisation de la vidéo');
+              setScanError('Erreur lors de l\'initialisation de la vidéo. Veuillez réessayer.');
             }
-            
-            videoRef.current.srcObject = stream;
-            addDebugInfo('Flux vidéo assigné à l\'élément vidéo');
-            
-            // Pour iOS, essayer de forcer le démarrage de la vidéo
-            if (isIOS) {
-              try {
-                await videoRef.current.play();
-                addDebugInfo('Lecture vidéo démarrée immédiatement');
-              } catch (err) {
-                addDebugInfo('Impossible de démarrer la vidéo immédiatement, utilisation de onloadedmetadata');
-              }
-            }
-            
-            // Ajouter un gestionnaire d'événements pour savoir quand la vidéo commence à jouer
-            videoRef.current.onloadedmetadata = () => {
-              addDebugInfo('Métadonnées vidéo chargées');
-              if (videoRef.current) {
-                videoRef.current.play()
-                  .then(() => {
-                    addDebugInfo('Lecture vidéo démarrée');
-                    setHasPermission(true);
-                    
-                    // Utiliser BarcodeDetector API si disponible
-                    if ('BarcodeDetector' in window) {
-                      addDebugInfo('BarcodeDetector API disponible, démarrage de la détection');
-                      startBarcodeDetection();
-                    } else {
-                      addDebugInfo('BarcodeDetector API non disponible');
-                      // Fallback pour les navigateurs qui ne supportent pas BarcodeDetector
-                      if (isIOS) {
-                        setScanError('Votre version d\'iOS ne prend pas en charge la détection de QR code. Essayez de mettre à jour votre appareil.');
-                      } else {
-                        setScanError('Votre navigateur ne prend pas en charge la détection de QR code. Essayez Chrome ou Edge.');
-                      }
-                    }
-                  })
-                  .catch(err => {
-                    addDebugInfo(`Erreur lors du démarrage de la lecture vidéo: ${err instanceof Error ? err.message : String(err)}`);
-                    setScanError('Erreur lors du démarrage de la caméra: ' + (err instanceof Error ? err.message : String(err)));
-                  });
-              }
-            };
-            
-            videoRef.current.onerror = (err) => {
-              addDebugInfo(`Erreur vidéo: ${JSON.stringify(err)}`);
-              setScanError('Erreur lors de l\'initialisation de la vidéo');
-            };
-          } else {
-            addDebugInfo('Référence vidéo non disponible');
-          }
+          }, 100);
+          
         } catch (error: any) {
           addDebugInfo(`Erreur d'accès à la caméra: ${error.name} - ${error.message}`);
           setHasPermission(false);
@@ -253,8 +267,29 @@ const QRScanner: React.FC = () => {
     };
   }, [scanning, isIOS, permissionRequested]);
   
+  // Effet pour démarrer la détection de QR code une fois que la vidéo est prête
+  useEffect(() => {
+    if (videoReady && hasPermission && scanning) {
+      addDebugInfo('Vidéo prête, démarrage de la détection de QR code...');
+      
+      // Utiliser BarcodeDetector API si disponible
+      if ('BarcodeDetector' in window) {
+        addDebugInfo('BarcodeDetector API disponible, démarrage de la détection');
+        startBarcodeDetection();
+      } else {
+        addDebugInfo('BarcodeDetector API non disponible');
+        // Fallback pour les navigateurs qui ne supportent pas BarcodeDetector
+        if (isIOS) {
+          setScanError('Votre version d\'iOS ne prend pas en charge la détection de QR code. Essayez de mettre à jour votre appareil.');
+        } else {
+          setScanError('Votre navigateur ne prend pas en charge la détection de QR code. Essayez Chrome ou Edge.');
+        }
+      }
+    }
+  }, [videoReady, hasPermission, scanning]);
+  
   const startBarcodeDetection = async () => {
-    if (!videoRef.current || !hasPermission || !scanning) {
+    if (!videoRef.current || !hasPermission || !scanning || !videoReady) {
       addDebugInfo('Impossible de démarrer la détection de code-barres: conditions non remplies');
       return;
     }
@@ -390,6 +425,7 @@ const QRScanner: React.FC = () => {
     setScanError(null);
     setPermissionRequested(false);
     setScanning(true);
+    setVideoReady(false);
     setDebugInfo(''); // Réinitialiser les infos de débogage
   };
 
@@ -407,22 +443,25 @@ const QRScanner: React.FC = () => {
         </div>
 
         <div className="scanner-viewport">
-          {hasPermission === true && scanning ? (
-            <>
-              <video 
-                ref={videoRef} 
-                id="qr-video" 
-                muted 
-                playsInline 
-                autoPlay
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              />
-              <canvas 
-                ref={canvasRef} 
-                style={{ display: 'none' }}
-              />
-            </>
-          ) : (
+          <video 
+            ref={videoRef} 
+            id="qr-video" 
+            muted 
+            playsInline 
+            autoPlay
+            style={{ 
+              width: '100%', 
+              height: '100%', 
+              objectFit: 'cover',
+              display: hasPermission === true && scanning ? 'block' : 'none'
+            }}
+          />
+          <canvas 
+            ref={canvasRef} 
+            style={{ display: 'none' }}
+          />
+          
+          {(hasPermission !== true || !scanning) && (
             <div className="scanner-placeholder">
               {scanError ? (
                 <>
