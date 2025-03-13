@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faQrcode, faCamera, faLightbulb, faRotateRight } from '@fortawesome/free-solid-svg-icons';
+import { useNavigate } from 'react-router-dom';
 // @ts-ignore
 import jsQR from 'jsqr';
 
@@ -14,6 +15,7 @@ interface ExtendedMediaTrackConstraintSet extends MediaTrackConstraintSet {
 }
 
 const QRScanner: React.FC = () => {
+  const navigate = useNavigate();
   const [flashOn, setFlashOn] = useState(false);
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const [scanning, setScanning] = useState(true);
@@ -370,13 +372,7 @@ const QRScanner: React.FC = () => {
       // Extraire le chemin sans le domaine
       const path = url.pathname + url.search + url.hash;
       
-      // Obtenir le domaine actuel
-      const currentDomain = window.location.origin;
-      
-      // Construire la nouvelle URL avec le domaine actuel
-      const newUrl = `${currentDomain}${path}`;
-      
-      addDebugInfo(`Redirection vers: ${newUrl}`);
+      addDebugInfo(`Navigation vers le chemin: ${path}`);
       
       // Arrêter le scan
       setScanning(false);
@@ -386,8 +382,8 @@ const QRScanner: React.FC = () => {
         streamRef.current.getTracks().forEach(track => track.stop());
       }
       
-      // Rediriger vers la nouvelle URL
-      window.location.href = newUrl;
+      // Utiliser navigate pour la navigation SPA
+      navigate(path);
     } catch (error) {
       addDebugInfo(`URL invalide: ${error instanceof Error ? error.message : String(error)}`);
       setScanError('QR Code invalide. Veuillez scanner un QR Code contenant une URL valide.');
